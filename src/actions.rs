@@ -21,6 +21,11 @@ pub fn command_exists(command: &str) -> bool {
 }
 
 pub fn execute(command: &str, args: Vec<String>) -> std::process::ExitStatus {
+    if !command_exists(command) {
+        print_err(format!("Can't run '{}': not found.", command));
+        exit(1);
+    }
+
     let prefix = Style::new().fg(Blue).paint("Running >");
     println!("{} {} {}", prefix, command, args.join(" "));
 
