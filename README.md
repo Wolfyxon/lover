@@ -20,7 +20,6 @@ lover new myCoolProjectName
 ```
 
 ### Running
-To run your game, use:
 ```
 lover run
 ```
