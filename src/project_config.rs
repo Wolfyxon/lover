@@ -24,6 +24,9 @@ pub struct ProjectConfig {
     #[serde(default = "def_source")]
     pub source: String,
 
+    #[serde(default = "def_build")]
+    pub build: String,
+
     pub package: Package
 }
 
@@ -66,4 +69,8 @@ pub fn get() -> ProjectConfig {
 
 fn def_source() -> String{
     "src".to_string()
+}
+
+fn def_build() -> String {
+    "build".to_string()
 }
