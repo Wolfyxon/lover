@@ -9,14 +9,10 @@ use output::print_err;
 
 mod actions;
 
-struct CommandContext<'a> {
-    cl_settings: &'a CommandLineSettings
-}
-
 struct Command {
     alias: String,
     description: String,
-    function: fn(context: CommandContext)
+    function: fn()
 }
 
 fn main() {
@@ -33,11 +29,7 @@ fn main() {
 
     for command in get_commands() {
         if &command.alias == alias {
-            let ctx = CommandContext {
-                cl_settings: &cl_settings
-            };
-
-            (command.function)(ctx);
+            (command.function)();
             return;
         }
     }
@@ -78,18 +70,18 @@ fn show_help() {
     println!("Lover");
 }
 
-fn cmd_help(ctx: CommandContext) {
+fn cmd_help() {
     show_help();
 }
 
-fn cmd_run(ctx: CommandContext) {
+fn cmd_run() {
     actions::execute("love", vec![project_config::get().source]);
 }
 
-fn cmd_build(ctx: CommandContext) {
+fn cmd_build() {
     todo!("Not implemented")
 }
 
-fn cmd_new(ctx: CommandContext) {
+fn cmd_new() {
     todo!("New");
 }
