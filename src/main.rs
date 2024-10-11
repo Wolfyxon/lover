@@ -1,6 +1,3 @@
-use std::path::Path;
-use std::process::exit;
-
 mod command_input;
 use command_input::{CommandLineSettings, get_command_line_settings};
 
@@ -8,7 +5,7 @@ mod project_config;
 use project_config::ProjectConfig;
 
 mod output;
-use output::{print_err, print_warn};
+use output::print_err;
 
 mod actions;
 

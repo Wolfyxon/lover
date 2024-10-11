@@ -2,8 +2,8 @@ use std::process::Command;
 use std::process::exit;
 use std::process::Output;
 use ansi_term::Style;
-use ansi_term::Color::{Blue};
-use crate::output::{print_err};
+use ansi_term::Color::Blue;
+use crate::output::print_err;
 
 pub fn execute(command: &str, args: Vec<String>) -> Output {
     let prefix = Style::new().fg(Blue).paint("Running >");
