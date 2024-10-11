@@ -67,7 +67,7 @@ pub fn get() -> ProjectConfig {
     parse_res.unwrap()
 }
 
-fn def_source() -> String{
+fn def_source() -> String {
     "src".to_string()
 }
 
