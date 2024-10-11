@@ -20,8 +20,11 @@ pub fn execute(command: &str, args: Vec<String>) -> Output {
 
     let out = res.unwrap();
     
+    println!("");
+    println!("Command exited with code: {}", out.status.code().unwrap());
+
     if !out.status.success() {
-        print_err(format!("Command failed with code: {}", out.status.code().unwrap()));
+        print_err("Command failed".to_string());
         exit(1);
     }
 
