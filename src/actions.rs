@@ -4,6 +4,22 @@ use ansi_term::Style;
 use ansi_term::Color::Blue;
 use crate::output::print_err;
 
+pub fn command_exists(command: &str) -> bool {
+    let path_env_res = std::env::var_os("PATH");
+
+    if path_env_res.is_none() {
+        return false;
+    }
+
+    for path_dir in std::env::split_paths(&path_env_res.unwrap()) {
+        if path_dir.join(command).is_file() {
+            return true;
+        }
+    }
+
+    return false;
+}
+
 pub fn execute(command: &str, args: Vec<String>) -> std::process::ExitStatus {
     let prefix = Style::new().fg(Blue).paint("Running >");
     println!("{} {} {}", prefix, command, args.join(" "));
