@@ -1,4 +1,6 @@
 mod command_input;
+use std::{fs, path::Path, process::exit};
+
 use command_input::{CommandLineSettings, get_command_line_settings};
 
 mod project_config;
@@ -59,6 +61,11 @@ fn get_commands() -> Vec<Command> {
             function: cmd_build
         },
         Command {
+            alias: "clean".to_string(),
+            description: "Removes compiled build files.".to_string(),
+            function: cmd_clean
+        },
+        Command {
             alias: "new".to_string(),
             description: "Initializes a new Love2D project.".to_string(),
             function: cmd_new
@@ -80,6 +87,26 @@ fn cmd_run() {
 
 fn cmd_build() {
     todo!("Not implemented")
+}
+
+fn cmd_clean() {
+    let path_str = project_config::get().build;
+    let path = Path::new(&path_str);
+
+    if !path.exists() {
+        println!("Nothing to clean.");
+        return;
+    }
+
+    if path.is_file() {
+        print_err(format!("'{path_str}' is not a directory!"));
+        exit(1);
+    }
+
+    let res = fs::remove_dir_all(path);
+    if res.is_err() {
+        print_err(format!("Failed to delete '{}': {}", path_str, res.err().unwrap()));
+    }
 }
 
 fn cmd_new() {
