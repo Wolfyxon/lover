@@ -38,7 +38,7 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
     }
 
     if !quiet {
-        let prefix = Style::new().fg(Blue).paint("Running >");
+        let prefix = Style::new().fg(Blue).paint("Executing >");
         println!("{} {} {}", prefix, command, args.join(" "));
     }
 
