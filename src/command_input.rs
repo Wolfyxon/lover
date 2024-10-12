@@ -7,6 +7,10 @@ impl CommandLineSettings {
     pub fn get_command_alias(&self) -> Option<&String> {
         return self.args.get(0);
     }
+
+    pub fn has_flag(&self, flag: &str) -> bool {
+        return self.flags.contains(&flag.to_string());
+    }
 }
 
 pub fn get_command_line_settings() -> CommandLineSettings {
