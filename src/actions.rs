@@ -50,10 +50,12 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
 
     let status: std::process::ExitStatus = res.unwrap();
     let exit_code = status.code().unwrap();
-    
+
     if status.success() {
-        println!("");
-        println!("Command exited with code: {}", exit_code);
+        if !quiet {
+            println!("");
+            println!("Command exited with code: {}", exit_code);
+        }
     } else {
         print_err(format!("Command failed with code: {}", exit_code));
         exit(1);
