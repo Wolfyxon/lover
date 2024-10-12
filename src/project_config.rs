@@ -83,7 +83,10 @@ pub fn get() -> ProjectConfig {
         exit(1);
     }
 
-    parse_res.unwrap()
+    let conf = parse_res.unwrap();
+    conf.validate();
+
+    conf
 }
 
 fn def_directories() -> Directories {
