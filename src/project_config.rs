@@ -30,8 +30,10 @@ pub struct Directories {
 
 #[derive(Deserialize)]
 pub struct ProjectConfig {
-    pub directories: Directories,    
-    pub package: Package
+    pub package: Package,
+
+    #[serde(default = "def_directories")]
+    pub directories: Directories    
 }
 
 impl ProjectConfig {
@@ -69,6 +71,13 @@ pub fn get() -> ProjectConfig {
     }
 
     parse_res.unwrap()
+}
+
+fn def_directories() -> Directories {
+    Directories {
+        source: def_directories_source(),
+        build: def_directories_build()
+    }
 }
 
 fn def_directories_source() -> String {
