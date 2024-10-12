@@ -1,12 +1,17 @@
-use std::path::Path;
+use std::io::Read;
+use std::io::Write;
+use std::path::{Path, PathBuf};
+use std::fs::File;
 use std::process::Command;
 use std::process::exit;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
+use zip::write::SimpleFileOptions;
 
 use crate::console::{print_err, print_warn, print_success};
 use crate::files;
+use crate::files::get_file_tree;
 
 pub const PARSER: &str = "luac";
 
@@ -106,5 +111,40 @@ pub fn clean(path: &Path) {
     if res.is_err() {
         print_err(format!("Failed to delete '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
         exit(1);
+    }
+}
+
+pub fn archive(source: &Path, output: &Path) {
+    parse_all(source);
+
+    let output_file_res = File::create(output);
+    let tree_res = get_file_tree(source);
+
+    if output_file_res.is_err() {
+        print_err(format!("Cannot open '{}': {}", output.to_str().unwrap(), output_file_res.err().unwrap()));
+        exit(1);
+    }
+
+    if tree_res.is_err() {
+        print_err(format!("Cannot get source tree: {}", tree_res.err().unwrap()));
+        exit(1);
+    }
+
+    let output_file = output_file_res.unwrap();
+    let options = SimpleFileOptions::default();
+    let mut zip = zip::ZipWriter::new(output_file);
+    let mut buffer: Vec<u8> = Vec::new();
+    
+    println!("Archiving {}...", output.to_str().unwrap());
+
+    for path in tree_res.unwrap() {
+        let out_path = PathBuf::from_iter(path.components().skip(1));
+        let mut file = File::open(path).unwrap();
+            
+        file.read_to_end(&mut buffer).unwrap();
+        zip.start_file_from_path(out_path, options).unwrap();
+        zip.write_all(&buffer).unwrap();
+
+        buffer.clear();
     }
 }
