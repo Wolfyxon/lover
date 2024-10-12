@@ -71,5 +71,4 @@ pub fn get_file_tree(root: &Path) -> Result<Vec<PathBuf>, std::io::Error> {
     }
 
     Ok(res)
-
 }
