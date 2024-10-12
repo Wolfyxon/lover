@@ -40,6 +40,19 @@ impl ProjectConfig {
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(string)
     }
+
+    pub fn validate(&self) {
+        let mut errors: Vec<&str> = Vec::new();
+
+        if self.directories.source == self.directories.build {
+            errors.push("Do not attempt to use the same directory for build and source files!");
+        }
+
+        if !errors.is_empty() {
+            print_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
+            exit(1);
+        }
+    }
 }
 
 
