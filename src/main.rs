@@ -1,13 +1,10 @@
-mod command_input;
 use std::{fs, path::Path, process::exit};
 
-use command_input::{CommandLineSettings, get_command_line_settings};
+mod console;
+use console::{CommandLineSettings, get_command_line_settings, print_err};
 
 mod project_config;
 use project_config::ProjectConfig;
-
-mod output;
-use output::print_err;
 
 mod actions;
 

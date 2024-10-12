@@ -5,7 +5,7 @@ use std::process::exit;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
-use crate::output::{print_err, print_warn};
+use crate::console::{print_err, print_warn};
 
 pub const PARSER: &str = "luac";
 

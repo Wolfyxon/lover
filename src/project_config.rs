@@ -1,7 +1,7 @@
 use std::path::Path;
 use serde::{Deserialize};
 use std::process::exit;
-use crate::output::{print_err};
+use crate::console::{print_err};
 
 pub const PATH: &str = "lover.toml";
 
