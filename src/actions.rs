@@ -5,7 +5,7 @@ use std::process::exit;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
-use crate::console::{print_err, print_warn};
+use crate::console::{print_err, print_warn, print_success};
 
 pub const PARSER: &str = "luac";
 
@@ -86,7 +86,7 @@ pub fn parse_all(root: &Path) {
         execute(PARSER, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
     }
 
-    println!("Parsing completed successfully");
+    print_success("Parsing successful".to_string());
 }
 
 pub fn get_file_tree(root: &Path) -> Result<Vec<PathBuf>, std::io::Error> {
