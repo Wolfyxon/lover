@@ -3,6 +3,7 @@ use std::path::Path;
 use std::path::PathBuf;
 use std::process::Command;
 use std::process::exit;
+use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
 use crate::output::print_err;
@@ -23,18 +24,25 @@ pub fn command_exists(command: &str) -> bool {
     return false;
 }
 
-pub fn execute(command: &str, args: Vec<String>) -> std::process::ExitStatus {
+pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::ExitStatus {
     if !command_exists(command) {
         print_err(format!("Can't run '{}': not found.", command));
         exit(1);
     }
 
-    let prefix = Style::new().fg(Blue).paint("Running >");
-    println!("{} {} {}", prefix, command, args.join(" "));
+    if !quiet {
+        let prefix = Style::new().fg(Blue).paint("Running >");
+        println!("{} {} {}", prefix, command, args.join(" "));
+    }
 
-    let res = Command::new(command)
-        .args(args)
-        .status();
+    let mut pre_run = Command::new(command);
+    pre_run.args(args);
+
+    if quiet {
+        pre_run.stdout(Stdio::null());
+    }
+
+    let res = pre_run.status();
     
     if res.is_err() {
         print_err("Failed to execute command".to_string());    

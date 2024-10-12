@@ -82,7 +82,7 @@ fn cmd_help() {
 }
 
 fn cmd_run() {
-    actions::execute("love", vec![project_config::get().source]);
+    actions::execute("love", vec![project_config::get().source], false);
 }
 
 fn cmd_build() {
