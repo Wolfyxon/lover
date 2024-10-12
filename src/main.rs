@@ -85,9 +85,12 @@ fn cmd_help() {
 }
 
 fn cmd_run() {
-    
+    let src = project_config::get().directories.source;
+
+    print_significant("Running", src.clone());
+
     if !get_command_line_settings().has_flag("no-parse") {
-        actions::parse_all(Path::new(&project_config::get().directories.source));
+        actions::parse_all(Path::new(&src));
     }
 
     actions::execute("love", vec![project_config::get().directories.source], false);
