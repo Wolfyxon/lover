@@ -120,6 +120,7 @@ fn cmd_build() {
             let config = project_config::get();
             let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
         
+            actions::parse_all(Path::new(&project_config::get().directories.source));
             actions::archive(Path::new(config.directories.source.as_str()), &output);
         
             print_success(format!("Successfully built: {}", output.to_str().unwrap()));
