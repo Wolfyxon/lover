@@ -7,3 +7,4 @@ edition = "2021"
 serde = { version = "1.0.210", features = ["derive"] }
 ansi_term = "0.12.1"
 toml = "0.8.19"
+zip = "2.2.0"
