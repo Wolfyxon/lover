@@ -112,6 +112,8 @@ pub fn clean(path: &Path) {
         print_err(format!("Failed to delete '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
         exit(1);
     }
+
+    print_success("Clean successful".to_string());
 }
 
 pub fn create_dir(path: &Path) {
@@ -126,7 +128,7 @@ pub fn create_dir(path: &Path) {
 pub fn archive(source: &Path, output: &Path) {
     create_dir(output.parent().unwrap());
     parse_all(source);
-    
+
     let output_file_res = File::create(output);
     let tree_res = get_file_tree(source);
 
