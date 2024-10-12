@@ -1,6 +1,6 @@
 pub struct CommandLineSettings {
-    args: Vec<String>,
-    flags: Vec<String>
+    pub args: Vec<String>,
+    pub flags: Vec<String>
 }
 
 impl CommandLineSettings {
