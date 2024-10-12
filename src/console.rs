@@ -1,5 +1,5 @@
 use ansi_term::Style;
-use ansi_term::Color::{Red, Yellow};
+use ansi_term::Color::{Red, Yellow, Green};
 
 pub struct CommandLineSettings {
     pub args: Vec<String>,
@@ -47,4 +47,8 @@ pub fn print_err(message: String) {
 
 pub fn print_warn(message: String) {
     println!("{} {}", Style::new().fg(Yellow).bold().paint("Warning:"), message);
+}
+
+pub fn print_success(message: String) {
+    println!("{} {}", Style::new().fg(Green).bold().paint("Ok:"), message)
 }
