@@ -1,14 +1,12 @@
 # Lover
-[Love2D](https://love2d.org/) runner and cross platform builder inspired by Cargo.
+[Love2D](https://love2d.org/) command-line runner and cross platform builder inspired by Cargo.
 
 [See the wiki](https://github.com/Wolfyxon/lover/wiki).
 
 > [!NOTE]
 > This tool is in early development, most of the described features may not work yet.
 
-## Usage
-### Getting started
-Your project must contain a `lover.toml` file with the configuration, here's an example:
+## Example lover.toml
 ```toml
 [package]
 name = "Epic game"
@@ -16,30 +14,11 @@ description = "My cool game"
 author = "me"
 version = "1.0"
 ```
-You can also initialize a new project with everything already set up using:
-```
-lover new myCoolProjectName
-```
 
-### Running
-```
-lover run
-```
+## Why?
+I wanted to create a simple expandable and universal system for building, running and managing Love2D projects.
 
-### Building
-#### Your platform
-```
-lover build
-```
-#### Specific platform
-```
-lover build <platformName>
-```
-example:
-```
-lover build linux
-```
-#### All platforms from the config
-```
-lover build all
-```
+This is a replacement for my previous project [Love2D Universal](https://github.com/Wolfyxon/love2d-universal) which utilized a single Makefile, however a global system-wide tool is a way better approach.
+Also a single script setup for a large project is not a good idea (ignore my mess). Also this tool does not require installing as much software as Love2D Universal and has a nice error handling and warnings.
+
+This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) for managing projects written in Rust.
