@@ -1,3 +1,6 @@
+use std::collections::btree_map::Entry;
+use std::path::Path;
+use std::path::PathBuf;
 use std::process::Command;
 use std::process::exit;
 use ansi_term::Style;
@@ -49,4 +52,24 @@ pub fn execute(command: &str, args: Vec<String>) -> std::process::ExitStatus {
     }
 
     status
+}
+
+pub fn get_file_tree(root: &Path) -> Result<Vec<PathBuf>, std::io::Error> {
+    let paths = std::fs::read_dir(root)?;
+    let mut res: Vec<PathBuf> = Vec::new();
+
+    for entry_res in paths {
+        let entry = entry_res?;
+        let path = entry.path();
+
+        if path.is_file() {
+            res.push(path);
+        } else {
+            let mut sub = get_file_tree(path.as_path())?;
+            res.append(&mut sub);
+        }
+    }
+
+    Ok(res)
+
 }
