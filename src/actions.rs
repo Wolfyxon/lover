@@ -57,6 +57,7 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
             println!("Command exited with code: {}", exit_code);
         }
     } else {
+        println!("");
         print_err(format!("Command failed with code: {}", exit_code));
         exit(1);
     }
