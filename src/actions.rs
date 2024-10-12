@@ -56,7 +56,7 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
     if status.success() {
         if !quiet {
             println!("");
-            println!("Command exited with code: {}", exit_code);
+            print_success(format!("Command completed with code: {}", exit_code));
         }
     } else {
         println!("");
