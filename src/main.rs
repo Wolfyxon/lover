@@ -139,7 +139,10 @@ fn cmd_build() {
 }
 
 fn cmd_clean() {
-    actions::clean(Path::new(&project_config::get().directories.build));
+    let build = &project_config::get().directories.build;
+
+    print_significant("Removing", build.to_string());
+    actions::clean(Path::new(build));
 }
 
 fn cmd_new() {
