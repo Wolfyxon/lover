@@ -50,5 +50,5 @@ pub fn print_warn(message: String) {
 }
 
 pub fn print_success(message: String) {
-    println!("{} {}", Style::new().fg(Green).bold().paint("Ok:"), message)
+    println!("{} {}", Style::new().fg(Green).bold().paint("OK:"), message)
 }
