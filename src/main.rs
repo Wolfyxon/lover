@@ -123,6 +123,7 @@ fn cmd_clean() {
     let res = fs::remove_dir_all(path);
     if res.is_err() {
         print_err(format!("Failed to delete '{}': {}", path_str, res.err().unwrap()));
+        exit(1);
     }
 }
 
