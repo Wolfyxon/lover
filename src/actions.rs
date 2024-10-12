@@ -5,7 +5,7 @@ use std::process::exit;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
-use crate::output::print_err;
+use crate::output::{print_err, print_warn};
 
 pub fn command_exists(command: &str) -> bool {
     let path_env_res = std::env::var_os("PATH");
@@ -65,6 +65,30 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
     status
 }
 
+pub fn parse_all(root: &Path) {
+    let parser = "luac";
+
+    if !command_exists(&parser) {
+        print_warn(format!("'{}' not found. Skipping parse.", parser));
+        return;
+    }
+
+    println!("Parsing Lua scripts...");
+
+    let res = get_file_tree_of_type(root, "lua");
+
+    if res.is_err() {
+        print_err(format!("Failed to get scripts: {}", res.err().unwrap().to_string()));
+        exit(1);
+    }
+
+    for script in res.unwrap() {
+        execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
+    }
+
+    println!("Parsing completed successfully");
+}
+
 pub fn get_file_tree(root: &Path) -> Result<Vec<PathBuf>, std::io::Error> {
     let paths = std::fs::read_dir(root)?;
     let mut res: Vec<PathBuf> = Vec::new();
@@ -94,7 +118,7 @@ pub fn get_file_tree_of_type(root: &Path, extension: &str) -> Result<Vec<PathBuf
         if ext_res.is_none() {
             continue;
         }
-        
+
         if ext_res.unwrap() == extension {
             res.push(path);
         }
