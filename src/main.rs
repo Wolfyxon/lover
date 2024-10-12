@@ -91,6 +91,11 @@ fn cmd_run() {
 }
 
 fn cmd_parse() {
+    if !actions::command_exists(actions::PARSER) {
+        print_err(format!("Cannot parse: '{}' not found.", actions::PARSER));
+        exit(1);
+    }
+
     actions::parse_all(Path::new(&project_config::get().source));
 }
 
