@@ -114,6 +114,15 @@ pub fn clean(path: &Path) {
     }
 }
 
+pub fn create_dir(path: &Path) {
+    let res = std::fs::create_dir_all(path);
+
+    if res.is_err() {
+        print_err(format!("Failed to create '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
+        exit(1);
+    }
+}
+
 pub fn archive(source: &Path, output: &Path) {
     parse_all(source);
 
