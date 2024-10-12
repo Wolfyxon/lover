@@ -87,6 +87,7 @@ fn cmd_help() {
 }
 
 fn cmd_run() {
+    actions::parse_all(Path::new(&project_config::get().source));
     actions::execute("love", vec![project_config::get().source], false);
 }
 
