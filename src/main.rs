@@ -56,6 +56,11 @@ fn get_commands() -> Vec<Command> {
             function: cmd_run
         },
         Command {
+            alias: "parse".to_string(),
+            description: "Checks the validity of Lua scripts..".to_string(),
+            function: cmd_parse
+        },
+        Command {
             alias: "build".to_string(),
             description: "Packages the game.".to_string(),
             function: cmd_build
@@ -83,6 +88,10 @@ fn cmd_help() {
 
 fn cmd_run() {
     actions::execute("love", vec![project_config::get().source], false);
+}
+
+fn cmd_parse() {
+    actions::parse_all(Path::new(&project_config::get().source));
 }
 
 fn cmd_build() {
