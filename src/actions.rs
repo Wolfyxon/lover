@@ -7,7 +7,7 @@ use ansi_term::Style;
 use ansi_term::Color::Blue;
 use crate::output::{print_err, print_warn};
 
-const PARSER: &str = "luac";
+pub const PARSER: &str = "luac";
 
 pub fn command_exists(command: &str) -> bool {
     let path_env_res = std::env::var_os("PATH");
