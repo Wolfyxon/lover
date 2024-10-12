@@ -1,7 +1,7 @@
 use std::{fs, path::Path, process::exit};
 
 mod console;
-use console::{get_command_line_settings, print_err, print_success, CommandLineSettings};
+use console::{get_command_line_settings, print_err, print_success, print_significant, CommandLineSettings};
 
 mod project_config;
 use project_config::ProjectConfig;
@@ -114,6 +114,8 @@ fn cmd_build() {
     if arg_target_res.is_some() {
         target = arg_target_res.unwrap();
     }
+
+    print_significant("Building target", target.to_string());   
 
     match target {
         "love" => {
