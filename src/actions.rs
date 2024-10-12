@@ -1,11 +1,12 @@
 use std::path::Path;
-use std::path::PathBuf;
 use std::process::Command;
 use std::process::exit;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
+
 use crate::console::{print_err, print_warn, print_success};
+use crate::files;
 
 pub const PARSER: &str = "luac";
 
@@ -75,7 +76,7 @@ pub fn parse_all(root: &Path) {
 
     println!("Parsing Lua scripts...");
 
-    let res = get_file_tree_of_type(root, "lua");
+    let res = files::get_file_tree_of_type(root, "lua");
 
     if res.is_err() {
         print_err(format!("Failed to get scripts: {}", res.err().unwrap().to_string()));
@@ -87,42 +88,4 @@ pub fn parse_all(root: &Path) {
     }
 
     print_success("Parsing successful".to_string());
-}
-
-pub fn get_file_tree(root: &Path) -> Result<Vec<PathBuf>, std::io::Error> {
-    let paths = std::fs::read_dir(root)?;
-    let mut res: Vec<PathBuf> = Vec::new();
-
-    for entry_res in paths {
-        let entry = entry_res?;
-        let path = entry.path();
-
-        if path.is_file() {
-            res.push(path);
-        } else {
-            let mut sub = get_file_tree(path.as_path())?;
-            res.append(&mut sub);
-        }
-    }
-
-    Ok(res)
-}
-
-pub fn get_file_tree_of_type(root: &Path, extension: &str) -> Result<Vec<PathBuf>, std::io::Error> {
-    let tree = get_file_tree(root)?;
-    let mut res: Vec<PathBuf> = Vec::new();
-
-    for path in tree {
-        let ext_res = path.extension();
-
-        if ext_res.is_none() {
-            continue;
-        }
-
-        if ext_res.unwrap() == extension {
-            res.push(path);
-        }
-    }
-
-    Ok(res)
 }

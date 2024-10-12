@@ -6,6 +6,7 @@ use console::{CommandLineSettings, get_command_line_settings, print_err};
 mod project_config;
 use project_config::ProjectConfig;
 
+mod files;
 mod actions;
 
 struct Command {
