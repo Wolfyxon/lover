@@ -89,3 +89,22 @@ pub fn parse_all(root: &Path) {
 
     print_success("Parsing successful".to_string());
 }
+
+pub fn clean(path: &Path) {
+    if !path.exists() {
+        print_success("Nothing to clean.".to_string());
+        return;
+    }
+
+    if path.is_file() {
+        print_err(format!("'{}' is not a directory!", path.to_str().unwrap()));
+        exit(1);
+    }
+
+    let res = std::fs::remove_dir_all(path);
+    
+    if res.is_err() {
+        print_err(format!("Failed to delete '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
+        exit(1);
+    }
+}

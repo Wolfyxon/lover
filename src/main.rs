@@ -107,25 +107,7 @@ fn cmd_build() {
 }
 
 fn cmd_clean() {
-    let path_str = project_config::get().directories.build;
-    let path = Path::new(&path_str);
-
-    if !path.exists() {
-        print_success("Nothing to clean.".to_string());
-        return;
-    }
-
-    if path.is_file() {
-        print_err(format!("'{path_str}' is not a directory!"));
-        exit(1);
-    }
-
-    let res = fs::remove_dir_all(path);
-    
-    if res.is_err() {
-        print_err(format!("Failed to delete '{}': {}", path_str, res.err().unwrap()));
-        exit(1);
-    }
+    actions::clean(Path::new(&project_config::get().directories.build));
 }
 
 fn cmd_new() {
