@@ -1,7 +1,7 @@
 use std::{fs, path::Path, process::exit};
 
 mod console;
-use console::{CommandLineSettings, get_command_line_settings, print_err};
+use console::{get_command_line_settings, print_err, print_success, CommandLineSettings};
 
 mod project_config;
 use project_config::ProjectConfig;
@@ -111,7 +111,7 @@ fn cmd_clean() {
     let path = Path::new(&path_str);
 
     if !path.exists() {
-        println!("Nothing to clean.");
+        print_success("Nothing to clean.".to_string());
         return;
     }
 
