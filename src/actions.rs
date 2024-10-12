@@ -7,6 +7,8 @@ use ansi_term::Style;
 use ansi_term::Color::Blue;
 use crate::output::{print_err, print_warn};
 
+const PARSER: &str = "luac";
+
 pub fn command_exists(command: &str) -> bool {
     let path_env_res = std::env::var_os("PATH");
 
@@ -66,10 +68,8 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
 }
 
 pub fn parse_all(root: &Path) {
-    let parser = "luac";
-
-    if !command_exists(&parser) {
-        print_warn(format!("'{}' not found. Skipping parse.", parser));
+    if !command_exists(PARSER) {
+        print_warn(format!("'{}' not found. Skipping parse.", PARSER));
         return;
     }
 
@@ -83,7 +83,7 @@ pub fn parse_all(root: &Path) {
     }
 
     for script in res.unwrap() {
-        execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
+        execute(PARSER, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
     }
 
     println!("Parsing completed successfully");
