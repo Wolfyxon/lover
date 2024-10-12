@@ -87,10 +87,10 @@ fn cmd_help() {
 fn cmd_run() {
     
     if !get_command_line_settings().has_flag("no-parse") {
-        actions::parse_all(Path::new(&project_config::get().source));
+        actions::parse_all(Path::new(&project_config::get().directories.source));
     }
 
-    actions::execute("love", vec![project_config::get().source], false);
+    actions::execute("love", vec![project_config::get().directories.source], false);
 }
 
 fn cmd_parse() {
@@ -99,7 +99,7 @@ fn cmd_parse() {
         exit(1);
     }
 
-    actions::parse_all(Path::new(&project_config::get().source));
+    actions::parse_all(Path::new(&project_config::get().directories.source));
 }
 
 fn cmd_build() {
@@ -107,7 +107,7 @@ fn cmd_build() {
 }
 
 fn cmd_clean() {
-    let path_str = project_config::get().build;
+    let path_str = project_config::get().directories.build;
     let path = Path::new(&path_str);
 
     if !path.exists() {

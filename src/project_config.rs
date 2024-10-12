@@ -20,13 +20,17 @@ pub struct Package {
 }
 
 #[derive(Deserialize)]
-pub struct ProjectConfig {    
-    #[serde(default = "def_source")]
+pub struct Directories {
+    #[serde(default = "def_directories_source")]
     pub source: String,
 
-    #[serde(default = "def_build")]
+    #[serde(default = "def_directories_build")]
     pub build: String,
+}
 
+#[derive(Deserialize)]
+pub struct ProjectConfig {
+    pub directories: Directories,    
     pub package: Package
 }
 
@@ -67,10 +71,10 @@ pub fn get() -> ProjectConfig {
     parse_res.unwrap()
 }
 
-fn def_source() -> String {
+fn def_directories_source() -> String {
     "src".to_string()
 }
 
-fn def_build() -> String {
+fn def_directories_build() -> String {
     "build".to_string()
 }
