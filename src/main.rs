@@ -103,7 +103,33 @@ fn cmd_parse() {
 }
 
 fn cmd_build() {
-    todo!("Not implemented")
+    let mut target = "love";
+
+    // TODO: All targets from lover.toml
+    // TODO: Platform detection and building for that platform
+
+    let cmd = get_command_line_settings();
+    let arg_target_res = cmd.args.get(1);
+
+    if arg_target_res.is_some() {
+        target = arg_target_res.unwrap();
+    }
+
+    match target {
+        "love" => {
+            let config = project_config::get();
+            let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
+        
+            actions::archive(Path::new(config.directories.source.as_str()), &output);
+        
+            print_success(format!("Successfully built: {}", output.to_str().unwrap()));
+        }
+
+        _ => {
+            print_err(format!("Unknown target '{}'", target));
+            exit(1);
+        }
+    } 
 }
 
 fn cmd_clean() {
