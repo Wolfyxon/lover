@@ -128,7 +128,7 @@ fn main() {
     if alias_res.is_none() {
         
         if cl_settings.has_flag("version") {
-            println!("Lover {}", env!("CARGO_PKG_VERSION"));
+            show_version();
             return;
         }
 
@@ -230,6 +230,10 @@ fn show_help() {
         println!("  {}: {}", colored_alias, cmd.description);
     }
     println!("\nUse `lover help <command>` to see the usage of a specific command.");
+}
+
+fn show_version() {
+    println!("Lover {}", env!("CARGO_PKG_VERSION"));
 }
 
 fn cmd_help(cmd: &Command) {
