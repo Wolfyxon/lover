@@ -283,8 +283,10 @@ fn cmd_run(cmd: &Command) {
 }
 
 fn cmd_parse(cmd: &Command) {
-    if !actions::command_exists(actions::PARSER) {
-        print_err(format!("Cannot parse: '{}' not found.", actions::PARSER));
+    let parser = config::get().software.luac;
+
+    if !actions::command_exists(&parser) {
+        print_err(format!("Cannot parse: '{}' not found.", parser));
         exit(1);
     }
 
