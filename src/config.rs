@@ -18,6 +18,10 @@ impl Config {
             software: Software::default()
         }
     }
+
+    pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
+        toml::from_str(string)
+    }
 }
 
 #[derive(Deserialize)]
