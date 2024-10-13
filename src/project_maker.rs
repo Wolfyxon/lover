@@ -1,4 +1,4 @@
-use std::{process::exit, fs::read_dir, path::Path};
+use std::{fs::{self, read_dir, File}, io::Write, path::Path, process::exit};
 use crate::console::{print_err, print_success, print_significant};
 
 struct ComponentFile<'a> {
@@ -47,4 +47,37 @@ pub fn create(name: String, path: &Path) {
         print_err(format!("Directory '{}' must be empty", name));
         exit(1);
     }
+
+    /* Template files */
+
+    for component in get_template_files() {
+        let target_path = path.join(component.path);
+        let parent = target_path.parent().unwrap();
+
+        if !parent.exists() {
+            let res = fs::create_dir_all(parent);
+
+            if res.is_err() {
+                print_err(format!("Failed to create directory {}: {}", parent.to_str().unwrap(), res.err().unwrap()));
+                exit(1);
+            }
+        }
+
+        let file_res = File::create(&target_path);
+        
+        if file_res.is_err() {
+            print_err(format!("Failed to create file {}: {}", &target_path.to_str().unwrap(), file_res.err().unwrap()));
+            exit(1);
+        }
+
+        let mut file = file_res.unwrap();
+        let write_res = file.write_all(component.buffer);
+
+        if write_res.is_err() {
+            print_err(format!("Failed to write file '{}': {}", target_path.to_str().unwrap(), write_res.err().unwrap()));
+            exit(1);
+        }
+    }
+
+    /* Generating project config */
 }
