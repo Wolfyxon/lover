@@ -205,7 +205,7 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             description: "Initializes a new Love2D project.".to_string(),
             function: cmd_new,
             args: vec![
-                CommandArg::opt("name", "Name of your new project.")
+                CommandArg::req("name", "Name of your new project.")
             ],
             flags: vec![]
         }
