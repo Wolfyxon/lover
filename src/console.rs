@@ -28,7 +28,7 @@ impl ProgressBar {
     }
 
     pub fn update(&self, progress: usize) {
-        let width = 50.0;
+        let width = 32.0;
 
         let mut amt: f32 = 0.0;
 
