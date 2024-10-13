@@ -83,6 +83,18 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus{
     execute_with_env(command, args, HashMap::new(), quiet)
 }
 
+pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus {
+    let mut env = HashMap::new();
+
+    env.insert("__NV_PRIME_RENDER_OFFLOAD", "1");
+    env.insert("__GLX_VENDOR_LIBRARY_NAME", "nvidia");
+    env.insert("__VK_LAYER_NV_optimus", "NVIDIA_only");
+    env.insert("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/nvidia_icd.json");
+    
+    execute_with_env(command, args, env, quiet)
+}
+
+
 pub fn parse_all(root: &Path) {
     if !command_exists(PARSER) {
         print_warn(format!("'{}' not found. Skipping parse.", PARSER));
