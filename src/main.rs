@@ -25,7 +25,7 @@ impl<'a> Command<'a> {
             
             if arg.name == name {
                 let stgs = get_command_line_settings();
-                let res = stgs.args.get(i);
+                let res = stgs.args.get(i + 1);
                 
                 if res.is_none() {
                     return None;
