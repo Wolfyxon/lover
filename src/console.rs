@@ -28,11 +28,18 @@ impl ProgressBar {
     }
 
     pub fn update(&self, progress: usize) {
-        let perc = (progress / self.max) * 100;
-        let hashes = "#".repeat( perc );
-        let dashes = "-".repeat( 100 - perc );
+        let width = 50;
 
-        print!("\r[{}{}] {}/{}", hashes, dashes, progress, self.max);
+        let mut amt =  0;
+
+        if progress != 0 {
+            amt = progress / self.max;
+        }
+
+        let fill = "=".repeat( amt * width );
+        let spaces = " ".repeat( width - amt * width );
+
+        print!("\r[{}{}] {}/{}", fill, spaces, progress, self.max);
     }
 }
 
