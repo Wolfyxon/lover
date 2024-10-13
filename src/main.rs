@@ -127,6 +127,11 @@ fn main() {
 
     if alias_res.is_none() {
         
+        if cl_settings.has_flag("version") {
+            println!("Lover {}", env!("CARGO_PKG_VERSION"));
+            return;
+        }
+
         if !cl_settings.has_flag("help") {
             print_err("No command specified\n".to_string());
         }
