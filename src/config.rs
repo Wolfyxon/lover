@@ -1,3 +1,5 @@
+use std::path::{Path, PathBuf};
+
 use serde::Deserialize;
 
 const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
@@ -115,4 +117,8 @@ impl Software {
         DKP_TOOLS.to_owned() + "/3dslink"
     }
         
+}
+
+pub fn get_dir() -> PathBuf {
+    dirs::data_dir().unwrap().join("lover")
 }
