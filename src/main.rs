@@ -1,3 +1,4 @@
+use std::iter::Cycle;
 use std::{env, fs, path::Path, process::exit};
 use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
@@ -211,6 +212,9 @@ fn cmd_help(cmd: &Command) {
 
         for command in get_commands() {
             if command.alias == alias {
+                let styled_alias = Style::new().fg(Blue).paint(alias);
+                println!("Usage: {} {}\n", styled_alias, command.get_string_usage());
+
                 println!("Arguments:");
 
                 for arg in command.args {
