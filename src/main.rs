@@ -17,6 +17,28 @@ struct Command<'a> {
     flags: Vec<CommandFlag<'a>>,
 }
 
+impl<'a> Command<'a> {
+    pub fn get_arg(&self, name: &str) -> Option<String> {
+
+        for i in 0..self.args.len() {
+            let arg = &self.args[i];
+            
+            if arg.name == name {
+                let stgs = get_command_line_settings();
+                let res = stgs.args.get(i);
+                
+                if res.is_none() {
+                    return None;
+                }
+
+                return Some(res.unwrap().clone());
+            }
+        }
+
+        None
+    }
+}
+
 struct CommandArg<'a> {
     name: &'a str,
     description: &'a str,
