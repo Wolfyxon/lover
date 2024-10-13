@@ -179,6 +179,13 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "version".to_string(),
+            description: "Shows the current Lover version.".to_string(),
+            function: cmd_version,
+            args: vec![],
+            flags: vec![]
+        },
+        Command {
             alias: "run".to_string(),
             description: "Runs the game.".to_string(),
             function: cmd_run,
@@ -278,6 +285,10 @@ fn cmd_help(cmd: &Command) {
     } else {
         show_help();
     }
+}
+
+fn cmd_version(cmd: &Command) {
+    show_version();
 }
 
 fn cmd_run(cmd: &Command) {
