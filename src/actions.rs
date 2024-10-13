@@ -1,9 +1,11 @@
+use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::process::Command;
 use std::process::exit;
+use std::process::ExitStatus;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
@@ -31,7 +33,7 @@ pub fn command_exists(command: &str) -> bool {
     return false;
 }
 
-pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::ExitStatus {
+pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<&str, &str>, quiet: bool) -> ExitStatus {
     if !command_exists(command) {
         print_err(format!("Can't run '{}': not found.", command));
         exit(1);
@@ -44,6 +46,10 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
 
     let mut pre_run = Command::new(command);
     pre_run.args(args);
+    
+    for (key, value) in env {
+        pre_run.env(key, value);
+    }
 
     if quiet {
         pre_run.stdout(Stdio::null());
@@ -71,6 +77,10 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> std::process::E
     }
 
     status
+}
+
+pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus{
+    execute_with_env(command, args, HashMap::new(), quiet)
 }
 
 pub fn parse_all(root: &Path) {
