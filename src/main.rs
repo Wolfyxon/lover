@@ -41,6 +41,24 @@ impl<'a> Command<'a> {
 
         None
     }
+
+    pub fn get_string_usage(&self) -> String {
+        let mut res = String::new();
+
+        for arg in &self.args {
+            let mut l = "[";
+            let mut r = "]";
+
+            if arg.required {
+                 l = "<";
+                 r = ">";
+            }
+
+            res += format!("{}{}{} ", l, arg.name, r).as_str();
+        }
+
+        res
+    }
 }
 
 struct CommandArg<'a> {
