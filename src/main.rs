@@ -13,7 +13,7 @@ struct Command<'a> {
     alias: String,
     description: String,
     function: fn(),
-    args: Vec<CommandFlag<'a>>,
+    args: Vec<CommandArg<'a>>,
     flags: Vec<CommandFlag<'a>>,
 }
 
