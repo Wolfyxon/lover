@@ -83,6 +83,7 @@ pub struct Software {
 impl Software {
     pub fn default() -> Self {
         Software {
+            love: Software::default_love(),
             luac: Software::default_luac(),
             appimagetool: Software::default_appimagetool(),
             wine: Software::default_wine(),
