@@ -79,7 +79,7 @@ pub fn get() -> ProjectConfig {
     let parse_res = ProjectConfig::parse_str(string_res.unwrap().as_str());
 
     if parse_res.is_err() {
-        print_err(format!("Config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
+        print_err(format!("Project config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
         exit(1);
     }
 
