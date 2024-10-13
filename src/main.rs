@@ -8,6 +8,7 @@ use console::{get_command_line_settings, print_err, print_success, print_signifi
 mod project_config;
 
 mod files;
+mod project_maker;
 mod actions;
 
 mod config;
@@ -330,5 +331,16 @@ fn cmd_clean(cmd: &Command) {
 }
 
 fn cmd_new(cmd: &Command) {
-    todo!("New");
+    let char_blacklist = vec!["..", "/", "\\", "\""];
+    let name = cmd.get_arg("name").unwrap();
+    let path = Path::new(&name);
+
+    for blacklisted in &char_blacklist {
+        if name.contains(blacklisted) {
+            print_err(format!("Project name cannot contain: {}", &char_blacklist.join(" ")));
+            exit(1);
+        }
+    }
+    
+    project_maker::create(name.to_owned(), path);
 }
