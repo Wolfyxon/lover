@@ -126,7 +126,11 @@ fn main() {
     let alias_res = cl_settings.get_command_alias();
 
     if alias_res.is_none() {
-        print_err("No command specified\n".to_string());
+        
+        if !cl_settings.has_flag("help") {
+            print_err("No command specified\n".to_string());
+        }
+
         show_help();
         return;
     }
