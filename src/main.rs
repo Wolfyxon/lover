@@ -279,7 +279,7 @@ fn cmd_run(cmd: &Command) {
     let mut args = vec![project_config::get().directories.source];
     args.append(&mut std::env::args().skip(2).into_iter().collect());
     
-    actions::execute("love", args, false);
+    actions::execute(&config::get().software.love, args, false);
 }
 
 fn cmd_parse(cmd: &Command) {
