@@ -1,13 +1,11 @@
-use std::iter::Cycle;
-use std::{env, fs, path::Path, process::exit};
+use std::{path::Path, process::exit};
 use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
-use console::{get_command_line_settings, print_err, print_success, print_significant, CommandLineSettings};
+use console::{get_command_line_settings, print_err, print_success, print_significant};
 
 mod project_config;
-use project_config::ProjectConfig;
 
 mod files;
 mod actions;
