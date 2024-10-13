@@ -126,3 +126,7 @@ pub fn get_dir() -> PathBuf {
 pub fn get_config_path() -> PathBuf {
     get_dir().join("config.toml")
 }
+
+pub fn exists() -> bool {
+    return get_config_path().exists();
+}
