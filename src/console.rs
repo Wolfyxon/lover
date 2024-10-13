@@ -41,6 +41,10 @@ impl ProgressBar {
 
         print!("\r[{}{}] {}/{}", fill, spaces, progress, self.max);
     }
+
+    pub fn finish(&self) {
+        println!();
+    }
 }
 
 pub fn get_command_line_settings() -> CommandLineSettings {
