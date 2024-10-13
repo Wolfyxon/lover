@@ -12,7 +12,7 @@ mod actions;
 struct Command<'a> {
     alias: String,
     description: String,
-    function: fn(),
+    function: fn(&Command),
     args: Vec<CommandArg<'a>>,
     flags: Vec<CommandFlag<'a>>,
 }
@@ -79,7 +79,7 @@ fn main() {
 
     for command in get_commands() {
         if &command.alias == alias {
-            (command.function)();
+            (command.function)(&command);
             return;
         }
     }
@@ -150,11 +150,11 @@ fn show_help() {
     println!("Lover");
 }
 
-fn cmd_help() {
+fn cmd_help(cmd: &Command) {
     show_help();
 }
 
-fn cmd_run() {
+fn cmd_run(cmd: &Command) {
     let src = project_config::get().directories.source;
 
     print_significant("Running", src.clone());
@@ -169,7 +169,7 @@ fn cmd_run() {
     actions::execute("love", args, false);
 }
 
-fn cmd_parse() {
+fn cmd_parse(cmd: &Command) {
     if !actions::command_exists(actions::PARSER) {
         print_err(format!("Cannot parse: '{}' not found.", actions::PARSER));
         exit(1);
@@ -178,14 +178,14 @@ fn cmd_parse() {
     actions::parse_all(Path::new(&project_config::get().directories.source));
 }
 
-fn cmd_build() {
+fn cmd_build(cmd: &Command) {
     let mut target = "love";
 
     // TODO: All targets from lover.toml
     // TODO: Platform detection and building for that platform
 
-    let cmd = get_command_line_settings();
-    let arg_target_res = cmd.args.get(1);
+    let cmd_stgs = get_command_line_settings();
+    let arg_target_res = cmd_stgs.args.get(1);
 
     if arg_target_res.is_some() {
         target = arg_target_res.unwrap();
@@ -211,13 +211,13 @@ fn cmd_build() {
     } 
 }
 
-fn cmd_clean() {
+fn cmd_clean(cmd: &Command) {
     let build = &project_config::get().directories.build;
 
     print_significant("Removing", build.to_string());
     actions::clean(Path::new(build));
 }
 
-fn cmd_new() {
+fn cmd_new(cmd: &Command) {
     todo!("New");
 }
