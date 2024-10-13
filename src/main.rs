@@ -107,7 +107,9 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             description: "Runs the game.".to_string(),
             function: cmd_run,
             args: vec![],
-            flags: vec![]
+            flags: vec![
+                CommandFlag::new_only_full("no-parse", "Skips the parsing process")
+            ]
         },
         Command {
             alias: "parse".to_string(),
