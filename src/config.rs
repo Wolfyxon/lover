@@ -55,6 +55,9 @@ impl Build {
 
 #[derive(Deserialize)]
 pub struct Software {
+    #[serde(default = "Software::default_love")]
+    pub love: String,
+
     #[serde(default = "Software::default_luac")]
     pub luac: String,
 
@@ -88,6 +91,10 @@ impl Software {
             threedsxtool: Software::default_3dsxtool(),
             threedslink: Software::default_3dslink()
         }
+    }
+
+    fn default_love() -> String {
+        "love".to_string()
     }
 
     fn default_luac() -> String {
