@@ -1,4 +1,4 @@
-use std::{fs, path::Path, process::exit};
+use std::{env, fs, path::Path, process::exit};
 
 mod console;
 use console::{get_command_line_settings, print_err, print_success, print_significant, CommandLineSettings};
@@ -163,7 +163,10 @@ fn cmd_run() {
         actions::parse_all(Path::new(&src));
     }
 
-    actions::execute("love", vec![project_config::get().directories.source], false);
+    let mut args = vec![project_config::get().directories.source];
+    args.append(&mut std::env::args().skip(2).into_iter().collect());
+    
+    actions::execute("love", args, false);
 }
 
 fn cmd_parse() {
