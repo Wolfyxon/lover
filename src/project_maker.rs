@@ -1,5 +1,5 @@
 use std::{fs::{self, read_dir, File}, io::Write, path::Path, process::exit};
-use crate::console::{print_err, print_success, print_significant};
+use crate::{console::{print_err, print_significant, print_success}, project_config};
 
 struct ComponentFile<'a> {
     path: &'a Path,
@@ -80,4 +80,22 @@ pub fn create(name: String, path: &Path) {
     }
 
     /* Generating project config */
+
+    let config_path = path.join(project_config::PATH);
+    let config_string: String = format!(r#"
+[package]
+name = "{}"
+author = "Cool person"
+version = "1.0"
+    "#, name);
+
+    let write_res = fs::write(config_path, config_string);
+
+    if write_res.is_err() {
+        print_err(format!("Failed to create project config: {}", write_res.err().unwrap()));
+        exit(1);
+    }
+
+    print_success(format!("Successfully initialized new project '{}' in {}", name, path.to_str().unwrap()));
+
 }
