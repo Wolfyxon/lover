@@ -11,6 +11,8 @@ use project_config::ProjectConfig;
 mod files;
 mod actions;
 
+mod config;
+
 struct Command<'a> {
     alias: String,
     description: String,
