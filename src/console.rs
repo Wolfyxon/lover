@@ -16,6 +16,26 @@ impl CommandLineSettings {
     }
 }
 
+pub struct ProgressBar {
+    pub max: usize
+}
+
+impl ProgressBar {
+    pub fn new(max: usize) -> Self {
+        ProgressBar {
+            max: max
+        }
+    }
+
+    pub fn update(&self, progress: usize) {
+        let perc = (progress / self.max) * 100;
+        let hashes = "#".repeat( perc );
+        let dashes = "-".repeat( 100 - perc );
+
+        print!("\r[{}{}] {}/{}", hashes, dashes, progress, self.max);
+    }
+}
+
 pub fn get_command_line_settings() -> CommandLineSettings {
     let mut args: Vec<String> = Vec::new();
     let mut flags: Vec<String> = Vec::new();
