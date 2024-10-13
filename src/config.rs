@@ -122,3 +122,7 @@ impl Software {
 pub fn get_dir() -> PathBuf {
     dirs::data_dir().unwrap().join("lover")
 }
+
+pub fn get_config_path() -> PathBuf {
+    get_dir().join("config.toml")
+}
