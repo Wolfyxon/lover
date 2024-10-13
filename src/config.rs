@@ -8,10 +8,10 @@ const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 #[derive(Deserialize)]
 pub struct Config {
     #[serde(default = "Build::default")]
-    build: Build,
+    pub build: Build,
 
     #[serde(default = "Software::default")]
-    software: Software
+    pub software: Software
 }
 
 impl Config {
@@ -30,10 +30,10 @@ impl Config {
 #[derive(Deserialize)]
 pub struct Build {
     #[serde(default = "Build::default_zip")]
-    zip: bool,
+    pub zip: bool,
 
     #[serde(default = "Build::default_sign")]
-    sign: bool
+    pub sign: bool
 }
 
 impl Build {
@@ -56,25 +56,25 @@ impl Build {
 #[derive(Deserialize)]
 pub struct Software {
     #[serde(default = "Software::default_luac")]
-    luac: String,
+    pub luac: String,
 
     #[serde(default = "Software::default_appimagetool")]
-    appimagetool: String,
+    pub appimagetool: String,
 
     #[serde(default = "Software::default_wine")]
-    wine: String,
+    pub wine: String,
 
     #[serde(default = "Software::default_rcedit")]
-    rcedit: String,
+    pub rcedit: String,
 
     #[serde(default = "Software::default_smdhtool")]
-    smdhtool: String,
+    pub smdhtool: String,
 
     #[serde(default = "Software::default_3dsxtool")]
-    threedsxtool: String, // 3dsxtool
+    pub threedsxtool: String, // 3dsxtool
 
     #[serde(default = "Software::default_3dslink")]
-    threedslink: String, // 3dslink
+    pub threedslink: String, // 3dslink
 }
 
 impl Software {
