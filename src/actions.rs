@@ -11,6 +11,7 @@ use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
 
+use crate::console::ProgressBar;
 use crate::console::{print_err, print_warn, print_success};
 use crate::files;
 use crate::files::get_file_tree;
@@ -164,14 +165,17 @@ pub fn archive(source: &Path, output: &Path) {
         exit(1);
     }
 
+    let tree = tree_res.unwrap();
     let output_file = output_file_res.unwrap();
     let options = SimpleFileOptions::default();
     let mut zip = zip::ZipWriter::new(output_file);
     let mut buffer: Vec<u8> = Vec::new();
-    
-    println!("Archiving {}...", output.to_str().unwrap());
+    let mut progress: usize = 0;
+    let bar = ProgressBar::new(tree.len());
 
-    for path in tree_res.unwrap() {
+    println!("Archiving {}...", output.to_str().unwrap());
+    
+    for path in tree {
         let out_path = PathBuf::from_iter(path.components().skip(1));
         let mut file = File::open(path).unwrap();
             
@@ -180,5 +184,10 @@ pub fn archive(source: &Path, output: &Path) {
         zip.write_all(&buffer).unwrap();
 
         buffer.clear();
+
+        progress += 1;
+        bar.update(progress);
     }
+
+    bar.finish();
 }
