@@ -1,4 +1,6 @@
 use std::{env, fs, path::Path, process::exit};
+use ansi_term::Style;
+use ansi_term::Color::Blue;
 
 mod console;
 use console::{get_command_line_settings, print_err, print_success, print_significant, CommandLineSettings};
@@ -169,7 +171,13 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
 }
 
 fn show_help() {
-    println!("Lover");
+    println!("Available commands: \n");
+
+    for cmd in get_commands() {
+        let colored_alias = Style::new().bold().fg(Blue).paint(cmd.alias);
+        println!("  {}: {}", colored_alias, cmd.description);
+    }
+    println!("\nUse `lover help <command>` to see the usage of a specific command.");
 }
 
 fn cmd_help(cmd: &Command) {
