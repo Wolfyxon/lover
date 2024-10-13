@@ -9,10 +9,12 @@ use project_config::ProjectConfig;
 mod files;
 mod actions;
 
-struct Command {
+struct Command<'a> {
     alias: String,
     description: String,
-    function: fn()
+    function: fn(),
+    args: Vec<CommandFlag<'a>>,
+    flags: Vec<CommandFlag<'a>>,
 }
 
 struct CommandArg<'a> {
@@ -89,37 +91,49 @@ fn get_working_dir() -> String {
     std::env::current_dir().unwrap().to_str().unwrap().to_string()
 }
 
-fn get_commands() -> Vec<Command> {
+fn get_commands<'a>() -> Vec<Command<'a>> {
     vec![
         Command {
             alias: "help".to_string(),
             description: "Shows help.".to_string(),
-            function: cmd_help
+            function: cmd_help,
+            args: vec![],
+            flags: vec![]
         },
         Command {
             alias: "run".to_string(),
             description: "Runs the game.".to_string(),
-            function: cmd_run
+            function: cmd_run,
+            args: vec![],
+            flags: vec![]
         },
         Command {
             alias: "parse".to_string(),
             description: "Checks the validity of Lua scripts..".to_string(),
-            function: cmd_parse
+            function: cmd_parse,
+            args: vec![],
+            flags: vec![]
         },
         Command {
             alias: "build".to_string(),
             description: "Packages the game.".to_string(),
-            function: cmd_build
+            function: cmd_build,
+            args: vec![],
+            flags: vec![]
         },
         Command {
             alias: "clean".to_string(),
             description: "Removes compiled build files.".to_string(),
-            function: cmd_clean
+            function: cmd_clean,
+            args: vec![],
+            flags: vec![]
         },
         Command {
             alias: "new".to_string(),
             description: "Initializes a new Love2D project.".to_string(),
-            function: cmd_new
+            function: cmd_new,
+            args: vec![],
+            flags: vec![]
         }
     ]
 }
