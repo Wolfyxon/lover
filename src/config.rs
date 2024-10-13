@@ -11,6 +11,15 @@ pub struct Config {
     software: Software
 }
 
+impl Config {
+    pub fn default() -> Self {
+        Config {
+            build: Build::default(),
+            software: Software::default()
+        }
+    }
+}
+
 #[derive(Deserialize)]
 pub struct Build {
     #[serde(default = "Build::default_zip")]
