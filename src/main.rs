@@ -97,7 +97,9 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             alias: "help".to_string(),
             description: "Shows help.".to_string(),
             function: cmd_help,
-            args: vec![],
+            args: vec![
+                CommandArg::opt("command", "Command to check the usage of")
+            ],
             flags: vec![]
         },
         Command {
