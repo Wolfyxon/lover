@@ -136,6 +136,14 @@ fn main() {
 
     for command in get_commands() {
         if &command.alias == alias {
+
+            if cl_settings.args.len() - 1 < command.get_required_arg_amount() {
+                print_err(format!("Not enough arguments for '{}'\n", alias));
+                
+                println!("Usage: {} {}", alias, command.get_string_usage());
+                exit(1);
+            }
+
             (command.function)(&command);
             return;
         }
