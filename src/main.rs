@@ -109,6 +109,7 @@ fn main() {
     }
 
     print_err(format!("Unknown command: '{}'", &alias));
+    println!("Use `lover help` to see available commands");
 }
 
 fn get_working_dir() -> String {
