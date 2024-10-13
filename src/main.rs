@@ -201,13 +201,12 @@ fn cmd_parse(cmd: &Command) {
 }
 
 fn cmd_build(cmd: &Command) {
-    let mut target = "love";
+    let mut target = "love".to_string();
 
     // TODO: All targets from lover.toml
     // TODO: Platform detection and building for that platform
 
-    let cmd_stgs = get_command_line_settings();
-    let arg_target_res = cmd_stgs.args.get(1);
+    let arg_target_res = cmd.get_arg("target");
 
     if arg_target_res.is_some() {
         target = arg_target_res.unwrap();
@@ -215,7 +214,7 @@ fn cmd_build(cmd: &Command) {
 
     print_significant("Building target", target.to_string());   
 
-    match target {
+    match target.as_str() {
         "love" => {
             let config = project_config::get();
             let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
