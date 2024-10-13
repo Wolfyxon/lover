@@ -15,6 +15,30 @@ struct Command {
     function: fn()
 }
 
+struct CommandArg<'a> {
+    name: &'a str,
+    description: &'a str,
+    required: bool
+}
+
+impl<'a> CommandArg<'a> {
+    pub fn opt(name: &'a str, description: &'a str) -> Self {
+        CommandArg { 
+            name: name, 
+            description: description, 
+            required: false 
+        }
+    }
+
+    pub fn req(name: &'a str, description: &'a str) -> Self {
+        CommandArg { 
+            name: name, 
+            description: description, 
+            required: true 
+        }
+    }
+}
+
 fn main() {
     let cl_settings = get_command_line_settings();
     let alias_res = cl_settings.get_command_alias();
