@@ -60,6 +60,18 @@ impl<'a> Command<'a> {
 
         res
     }
+
+    pub fn get_required_arg_amount(&self) -> usize {
+        let mut res = 0;
+
+        for arg in &self.args {
+            if arg.required {
+                res += 1;
+            }
+        }
+
+        res
+    }
 }
 
 struct CommandArg<'a> {
