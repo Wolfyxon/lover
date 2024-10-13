@@ -1,6 +1,7 @@
 use std::path::{Path, PathBuf};
-
+use std::process::exit;
 use serde::Deserialize;
+use crate::console::{print_err};
 
 const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 
@@ -129,4 +130,27 @@ pub fn get_config_path() -> PathBuf {
 
 pub fn exists() -> bool {
     return get_config_path().exists();
+}
+
+pub fn get() -> Config {
+    if !exists() {
+        return Config::default();
+    }
+
+    let path = get_config_path();
+    let string_res = std::fs::read_to_string(&path);
+
+    if string_res.is_err() {
+        print_err(format!("Failed to open config at '{}': {}", &path.display(), string_res.as_ref().err().unwrap().to_string()));
+        exit(1);
+    }
+
+    let parse_res = Config::parse_str(string_res.unwrap().as_str());
+
+    if parse_res.is_err() {
+        print_err(format!("Config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
+        exit(1);
+    }
+
+    parse_res.unwrap()
 }
