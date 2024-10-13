@@ -11,12 +11,11 @@ use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
 
+use crate::config;
 use crate::console::ProgressBar;
 use crate::console::{print_err, print_warn, print_success};
 use crate::files;
 use crate::files::get_file_tree;
-
-pub const PARSER: &str = "luac";
 
 pub fn command_exists(command: &str) -> bool {
     let path_env_res = std::env::var_os("PATH");
@@ -97,8 +96,10 @@ pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatu
 
 
 pub fn parse_all(root: &Path) {
-    if !command_exists(PARSER) {
-        print_warn(format!("'{}' not found. Skipping parse.", PARSER));
+    let parser = config::get().software.luac;
+
+    if !command_exists(&parser) {
+        print_warn(format!("'{}' not found. Skipping parse.", &parser));
         return;
     }
 
@@ -112,7 +113,7 @@ pub fn parse_all(root: &Path) {
     }
 
     for script in res.unwrap() {
-        execute(PARSER, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
+        execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
     }
 
     print_success("Parsing successful".to_string());
