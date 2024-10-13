@@ -1,6 +1,6 @@
 use std::{env, fs, path::Path, process::exit};
 use ansi_term::Style;
-use ansi_term::Color::Blue;
+use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
 use console::{get_command_line_settings, print_err, print_success, print_significant, CommandLineSettings};
@@ -181,7 +181,43 @@ fn show_help() {
 }
 
 fn cmd_help(cmd: &Command) {
-    show_help();
+    let alias_res = cmd.get_arg("command");
+
+    if alias_res.is_some() {
+        let alias = alias_res.unwrap();
+
+        for command in get_commands() {
+            if command.alias == alias {
+                println!("Arguments:");
+
+                for arg in command.args {
+                    let mut name_style = Style::new();
+
+                    if arg.required {
+                        name_style = name_style.fg(Yellow);
+                    } else {
+                        name_style = name_style.fg(Green);
+                    }
+
+                    println!("  {}: {}", name_style.paint(arg.name), arg.description);
+                }
+
+                println!("");
+                println!("Flags:");
+
+                for flag in command.flags {
+                    println!("  {}: {}", flag.full, flag.description);
+                }
+                
+                return;
+            }
+        }
+
+        exit(1);
+
+    } else {
+        show_help();
+    }
 }
 
 fn cmd_run(cmd: &Command) {
