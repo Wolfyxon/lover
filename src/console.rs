@@ -28,16 +28,16 @@ impl ProgressBar {
     }
 
     pub fn update(&self, progress: usize) {
-        let width = 50;
+        let width = 50.0;
 
-        let mut amt =  0;
+        let mut amt: f32 = 0.0;
 
         if progress != 0 {
-            amt = progress / self.max;
+            amt = progress as f32 / self.max as f32;
         }
 
-        let fill = "=".repeat( amt * width );
-        let spaces = " ".repeat( width - amt * width );
+        let fill = "=".repeat( (amt * width) as usize );
+        let spaces = " ".repeat( (width - amt * width) as usize );
 
         print!("\r[{}{}] {}/{}", fill, spaces, progress, self.max);
     }
