@@ -213,6 +213,7 @@ fn cmd_help(cmd: &Command) {
             }
         }
 
+        print_err(format!("help: Unknown command '{}'", alias));
         exit(1);
 
     } else {
