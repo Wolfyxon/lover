@@ -136,7 +136,9 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             alias: "new".to_string(),
             description: "Initializes a new Love2D project.".to_string(),
             function: cmd_new,
-            args: vec![],
+            args: vec![
+                CommandArg::opt("name", "Name of your new project.")
+            ],
             flags: vec![]
         }
     ]
