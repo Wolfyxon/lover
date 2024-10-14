@@ -11,10 +11,12 @@ pub struct GitHubRelease {
 }
 
 impl GitHubRelease {
-    pub fn get_asset_ending_with(&self, text: &str) -> Option<&GithubReleaseAsset> {
+    pub fn get_asset_matching(&self, pattern: &str) -> Option<&GithubReleaseAsset> {
+        let pattern = Regex::new(pattern).expect("Invalid Regex pattern");
+
         for asset in &self.assets {
-            if asset.name.ends_with(text) {
-                return Some(asset);
+            if asset.matches_pattern(pattern.to_owned()) {
+                return Some(&asset);
             }
         }
 
