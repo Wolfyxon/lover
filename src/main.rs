@@ -253,6 +253,9 @@ fn cmd_help(cmd: &Command) {
 
         for command in get_commands() {
             if command.alias == alias {
+                print_significant("Command", alias.to_owned());
+                println!("");
+
                 let styled_alias = Style::new().fg(Blue).paint(alias);
                 println!("Usage:");
                 println!("  {} {}", styled_alias, command.get_string_usage());
