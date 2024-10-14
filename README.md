@@ -23,4 +23,4 @@ I wanted to create a simple expandable and universal system for building, runnin
 This is a replacement for my previous project [Love2D Universal](https://github.com/Wolfyxon/love2d-universal) which utilized a single Makefile, however a global system-wide tool is a way better approach.
 Also a single script setup for a large project is not a good idea (ignore my mess). Also this tool does not require installing as much software as Love2D Universal and has a nice error handling and warnings.
 
-This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) for managing projects written in Rust.
+This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
