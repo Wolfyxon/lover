@@ -13,7 +13,7 @@ use zip::write::SimpleFileOptions;
 
 use crate::config;
 use crate::console::ProgressBar;
-use crate::console::{print_err, print_warn, print_success};
+use crate::console::{print_err, print_warn, print_success, print_stage};
 use crate::files;
 use crate::files::get_file_tree;
 
@@ -103,7 +103,7 @@ pub fn parse_all(root: &Path) {
         return;
     }
 
-    println!("Parsing Lua scripts...");
+    print_stage("Parsing Lua scripts...".to_string());
 
     let res = files::get_file_tree_of_type(root, "lua");
 
