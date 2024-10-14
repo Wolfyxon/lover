@@ -303,7 +303,13 @@ fn cmd_run(cmd: &Command) {
     let mut args = vec![project_config::get().directories.source];
     args.append(&mut std::env::args().skip(2).into_iter().collect());
     
-    actions::execute(&config::get().software.love, args, false);
+    let config = &config::get();
+
+    if config.run.prime {
+        actions::execute_prime(&config::get().software.love, args, false);
+    } else { 
+        actions::execute(&config::get().software.love, args, false);
+    }
 }
 
 fn cmd_parse(cmd: &Command) {
