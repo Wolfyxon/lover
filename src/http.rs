@@ -1,10 +1,10 @@
-use reqwest::{blocking::{Client, Response}, Error};
-use serde::{Deserialize};
+use reqwest::blocking::Client;
+use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use std::{fs::File, io::{Read, Write}, path::Path, process::exit};
 
 use crate::console::ProgressBar;
-use crate::console::{print_err, print_warn, print_success, print_stage};
+use crate::console::{print_err, print_success, print_stage};
 
 const USER_AGENT: &str = "Lover";
 
