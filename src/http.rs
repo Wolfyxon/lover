@@ -1,6 +1,7 @@
 use reqwest::{blocking::{Client, Response}, Error};
 use serde::{Deserialize};
 use serde::de::DeserializeOwned;
+use std::{io::Read, path::Path};
 
 const USER_AGENT: &str = "Lover";
 
@@ -27,7 +28,7 @@ pub fn fetch_text(url: &str) -> Result<String, Error> {
         return Err(res.err().unwrap());
     }
 
-    Ok(res.unwrap().text().unwrap())
+    res.unwrap().text()
 }
 
 pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
