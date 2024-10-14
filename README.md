@@ -8,14 +8,35 @@
 > 
 > [See the project's progress](https://github.com/Wolfyxon/lover/issues/1).
 
-## Example lover.toml
-```toml
-[package]
-name = "Epic game"
-description = "My cool game"
-author = "me"
-version = "1.0"
+## Features
+### Easy cross-platform building
+You can easily build your game for all supported platforms with a single command.
+
+### Automatic dependency management
+Love binaries required for building are downloaded automatically and can easily be managed by using Lover commands.
+
+### Finally a good `run` command
+When using `lover run` you can pass arguments to your game and even --flags.
+
+Most tools like **Makefile** and **Cargo** will complain when the user specifies an unknown flag.
+
+### Simple command line interface
+Lover has a simple and easy to use command syntax (at least I hope).
+
+## Compiling
+Lover is written in **Rust** and managed by **Cargo**. 
+
+Install Cargo on your system then open the terminal in the Lover's source directory and run:
 ```
+cargo build
+```
+or
+```
+cargo run
+```
+to just run it.
+
+Read [the documentation](https://doc.rust-lang.org/cargo/) for more info.
 
 ## Why?
 I wanted to create a simple expandable and universal system for building, running and managing Love2D projects.
