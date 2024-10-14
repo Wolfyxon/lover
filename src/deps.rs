@@ -122,6 +122,17 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
     ]
 }
 
+pub fn get_dep(name: &str) -> Dependency {
+    for dep in get_deps() {
+        if dep.name.to_lowercase() == name.to_lowercase() {
+            return dep;
+        }
+    }
+
+    print_err(format!("Unknown dependency '{}'", name));
+    exit(1);
+}
+
 pub fn get_dir() -> PathBuf {
     config::get_dir().join("deps")
 }
