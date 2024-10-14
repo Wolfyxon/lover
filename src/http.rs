@@ -14,6 +14,18 @@ pub struct GitHubRelease {
     pub assets: Vec<GithubReleaseAsset>
 }
 
+impl GitHubRelease {
+    pub fn get_asset_ending_with(&self, text: &str) -> Option<&GithubReleaseAsset> {
+        for asset in &self.assets {
+            if asset.name.ends_with(text) {
+                return Some(asset);
+            }
+        }
+
+        None
+    }
+}
+
 #[derive(Deserialize)]
 pub struct GithubReleaseAsset {
     pub url: String,
