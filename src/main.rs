@@ -256,6 +256,9 @@ fn cmd_help(cmd: &Command) {
                 print_significant("Command", alias.to_owned());
                 println!("");
 
+                println!("{}", Style::new().italic().paint(&command.description));
+                println!("");
+
                 let styled_alias = Style::new().fg(Blue).paint(alias);
                 println!("Usage:");
                 println!("  {} {}", styled_alias, command.get_string_usage());
