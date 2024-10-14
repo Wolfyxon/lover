@@ -33,7 +33,7 @@ impl Config {
 
 #[derive(Deserialize)]
 pub struct Run {
-    prime: bool
+    pub prime: bool
 }
 
 impl Run {
