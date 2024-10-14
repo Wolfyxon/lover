@@ -7,7 +7,11 @@ use crate::{config, console::{print_err, print_success}, http};
 #[derive(Deserialize)]
 pub struct GitHubRelease { 
     // Not all fields are needed. Add only those that are necessary.
-    pub assets: Vec<GithubReleaseAsset>
+    pub name: String,
+    pub tag_name: String,
+    pub html_url: String,
+    pub assets: Vec<GithubReleaseAsset>,
+    
 }
 
 impl GitHubRelease {
