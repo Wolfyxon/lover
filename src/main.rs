@@ -229,7 +229,7 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
         },
         Command {
             alias: "fetch".to_string(),
-            description: "Fetches a dependency. Mostly foe testing".to_string(),
+            description: "Fetches a dependency. Mostly for testing".to_string(),
             function: cmd_fetch,
             args: vec![
                 CommandArg::req("name", "Name of the dependency.")
