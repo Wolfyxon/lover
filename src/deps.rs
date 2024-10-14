@@ -1,4 +1,5 @@
 use std::{fs, path::PathBuf, process::exit};
+use regex::Regex;
 use serde::Deserialize;
 
 use crate::{config, console::print_success, http};
@@ -26,6 +27,12 @@ pub struct GithubReleaseAsset {
     pub url: String,
     pub name: String,
     pub size: u32
+}
+
+impl GithubReleaseAsset {
+    pub fn matches_pattern(&self, regex: Regex) -> bool {
+        regex.is_match(&self.name)
+    }
 }
 
 pub struct Dependency<'a> {
