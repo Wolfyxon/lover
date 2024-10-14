@@ -59,7 +59,7 @@ impl<'a> Dependency<'a> {
         fetch_gh_latest_release(&self.repo_owner, &self.repo)
     }
 
-    pub fn get_asset_from_release(&self, release: GitHubRelease) -> GithubReleaseAsset {
+    pub fn get_asset_from_release(&self, release: &GitHubRelease) -> GithubReleaseAsset {
         let asset_res = release.get_asset_matching(&self.pattern);
 
         if asset_res.is_none() {
@@ -71,7 +71,7 @@ impl<'a> Dependency<'a> {
     }
 
     pub fn fetch_asset(&self) -> GithubReleaseAsset {
-        self.get_asset_from_release(self.fetch_release())
+        self.get_asset_from_release(&self.fetch_release())
 
     }
 }
