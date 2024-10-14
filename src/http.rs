@@ -69,7 +69,6 @@ pub fn download(url: &str, path: &Path) {
     let mut bar = ProgressBar::new(len);
     let mut bytes: usize = 0;
     
-
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
         let read_res = req.read(&mut buf);
