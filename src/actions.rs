@@ -173,7 +173,7 @@ pub fn archive(source: &Path, output: &Path) {
     let mut progress: usize = 0;
     let bar = ProgressBar::new(tree.len());
 
-    print_stage(format!("Archiving {}...", output.to_str().unwrap()));
+    print_stage(format!("Archiving '{}' into '{}'...", source.to_str().unwrap(), output.to_str().unwrap()));
     
     for path in tree {
         let out_path = PathBuf::from_iter(path.components().skip(1));
