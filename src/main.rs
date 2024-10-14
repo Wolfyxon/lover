@@ -239,6 +239,7 @@ fn show_help() {
         println!("  {}: {}", colored_alias, cmd.description);
     }
     println!("\nUse `lover help <command>` to see the usage of a specific command.");
+    println!("For additional help see the wiki: https://github.com/Wolfyxon/lover/wiki");
 }
 
 fn show_version() {
