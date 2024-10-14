@@ -255,17 +255,14 @@ fn cmd_help(cmd: &Command) {
         for command in get_commands() {
             if command.alias == alias {
                 print_significant("Command", alias.to_owned());
-                println!("");
 
-                println!("{}", Style::new().italic().paint(&command.description));
-                println!("");
+                println!("{}\n", Style::new().italic().paint(&command.description));
 
                 let styled_alias = Style::new().fg(Blue).paint(alias);
                 println!("Usage:");
                 println!("  {} {}", styled_alias, command.get_string_usage());
 
-                println!("");
-                println!("Arguments:");
+                println!("\nArguments:");
 
                 for arg in command.args {
                     let mut name_style = Style::new();
@@ -279,8 +276,7 @@ fn cmd_help(cmd: &Command) {
                     println!("  {}: {}", name_style.paint(arg.name), arg.description);
                 }
 
-                println!("");
-                println!("Flags:");
+                println!("\nFlags:");
 
                 for flag in command.flags {
                     println!("  --{}: {}", flag.full, flag.description);
