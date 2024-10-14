@@ -33,19 +33,36 @@ pub struct GithubReleaseAsset {
     pub size: u32
 }
 
-pub fn fetch_text(url: &str) -> Result<String, Error> {
+pub fn fetch_text(url: &str) -> String {
     let res = Client::new()
         .get(url)
         .header("User-Agent", USER_AGENT)
-        .send()?;
+        .send();
 
-    res.text()
+    if res.is_err() {
+        print_err(format!("Failed to request '{}': {}", url, res.err().unwrap()));
+        exit(1);
+    } 
+
+    let text_res = res.unwrap().text();
+
+    if text_res.is_err() {
+        print_err(format!("Failed to get text from '{}': {}", url, text_res.err().unwrap()));
+        exit(1);
+    }
+
+    text_res.unwrap()
 }
 
-pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
-    let res = fetch_text(url)?;
+pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> T {
+    let res = serde_json::from_str(fetch_text(url).as_str()); 
 
-    Ok(serde_json::from_str(res.as_str()).unwrap())
+    if res.is_err() {
+        print_err(format!("Struct parse error of '{}': {}", url, res.err().unwrap()));
+        exit(1);
+    }
+
+    res.unwrap()
 }
 
 pub fn download(url: &str, path: &Path) {
@@ -115,12 +132,12 @@ pub fn download(url: &str, path: &Path) {
     print_success(format!("Downloaded to: '{}'", path.to_str().unwrap()));
 }
 
-pub fn fetch_gh_release(owner: &str, repo: &str, release: &str) -> Result<GitHubRelease, Error> {
+pub fn fetch_gh_release(owner: &str, repo: &str, release: &str) -> GitHubRelease {
     let url = format!("https://api.github.com/repos/{}/{}/releases/{}", owner, repo, release);
     
     fetch_struct(url.as_str())
 }
 
-pub fn fetch_gh_latest_release(owner: &str, repo: &str) -> Result<GitHubRelease, Error> {
+pub fn fetch_gh_latest_release(owner: &str, repo: &str) -> GitHubRelease {
     fetch_gh_release(owner, repo, "latest")
 }
