@@ -22,13 +22,9 @@ pub fn fetch_text(url: &str) -> Result<String, Error> {
     let res = Client::new()
         .get(url)
         .header("User-Agent", USER_AGENT)
-        .send();
+        .send()?;
 
-    if res.is_err() {
-        return Err(res.err().unwrap());
-    }
-
-    res.unwrap().text()
+    res.text()
 }
 
 pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
