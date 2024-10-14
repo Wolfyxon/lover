@@ -282,7 +282,7 @@ fn cmd_help(cmd: &Command) {
                 println!("Flags:");
 
                 for flag in command.flags {
-                    println!("  {}: {}", flag.full, flag.description);
+                    println!("  --{}: {}", flag.full, flag.description);
                 }
                 
                 return;
