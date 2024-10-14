@@ -1,6 +1,32 @@
 use std::{fs, path::PathBuf, process::exit};
+use serde::Deserialize;
 
 use crate::{config, console::print_success, http};
+
+#[derive(Deserialize)]
+pub struct GitHubRelease { 
+    // Not all fields are needed. Add only those that are necessary.
+    pub assets: Vec<GithubReleaseAsset>
+}
+
+impl GitHubRelease {
+    pub fn get_asset_ending_with(&self, text: &str) -> Option<&GithubReleaseAsset> {
+        for asset in &self.assets {
+            if asset.name.ends_with(text) {
+                return Some(asset);
+            }
+        }
+
+        None
+    }
+}
+
+#[derive(Deserialize)]
+pub struct GithubReleaseAsset {
+    pub url: String,
+    pub name: String,
+    pub size: u32
+}
 
 pub struct Dependency<'a> {
     name: &'a str,
@@ -77,4 +103,14 @@ pub fn create_dir() {
             exit(1);
         }
     }
+}
+
+pub fn fetch_gh_release(owner: &str, repo: &str, release: &str) -> GitHubRelease {
+    let url = format!("https://api.github.com/repos/{}/{}/releases/{}", owner, repo, release);
+    
+    http::fetch_struct(url.as_str())
+}
+
+pub fn fetch_gh_latest_release(owner: &str, repo: &str) -> GitHubRelease {
+    fetch_gh_release(owner, repo, "latest")
 }

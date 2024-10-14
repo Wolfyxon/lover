@@ -1,5 +1,4 @@
 use reqwest::blocking::Client;
-use serde::Deserialize;
 use serde::de::DeserializeOwned;
 use std::{fs::File, io::{Read, Write}, path::Path, process::exit};
 
@@ -7,31 +6,6 @@ use crate::console::ProgressBar;
 use crate::console::{print_err, print_success, print_stage};
 
 const USER_AGENT: &str = "Lover";
-
-#[derive(Deserialize)]
-pub struct GitHubRelease { 
-    // Not all fields are needed. Add only those that are necessary.
-    pub assets: Vec<GithubReleaseAsset>
-}
-
-impl GitHubRelease {
-    pub fn get_asset_ending_with(&self, text: &str) -> Option<&GithubReleaseAsset> {
-        for asset in &self.assets {
-            if asset.name.ends_with(text) {
-                return Some(asset);
-            }
-        }
-
-        None
-    }
-}
-
-#[derive(Deserialize)]
-pub struct GithubReleaseAsset {
-    pub url: String,
-    pub name: String,
-    pub size: u32
-}
 
 pub fn fetch_text(url: &str) -> String {
     let res = Client::new()
@@ -130,14 +104,4 @@ pub fn download(url: &str, path: &Path) {
     
     bar.finish();
     print_success(format!("Downloaded to: '{}'", path.to_str().unwrap()));
-}
-
-pub fn fetch_gh_release(owner: &str, repo: &str, release: &str) -> GitHubRelease {
-    let url = format!("https://api.github.com/repos/{}/{}/releases/{}", owner, repo, release);
-    
-    fetch_struct(url.as_str())
-}
-
-pub fn fetch_gh_latest_release(owner: &str, repo: &str) -> GitHubRelease {
-    fetch_gh_release(owner, repo, "latest")
 }
