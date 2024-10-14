@@ -1,6 +1,7 @@
 [package]
 name = "lover"
 version = "0.1.0"
+authors = ["Wolfyxon"]
 edition = "2021"
 
 [dependencies]
