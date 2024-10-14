@@ -186,7 +186,9 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             alias: "run".to_string(),
             description: "Runs the game.".to_string(),
             function: cmd_run,
-            args: vec![],
+            args: vec![
+                CommandArg::opt("arguments...", "Arguments handled by your game.")
+            ],
             flags: vec![
                 CommandFlag::new_only_full("no-parse", "Skips the parsing process"),
                 CommandFlag::new_only_full("prime", "Runs the game on the dedicated GPU")
