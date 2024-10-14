@@ -3,7 +3,7 @@ use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
-use console::{get_command_line_settings, print_err, print_success, print_significant};
+use console::{get_command_line_settings, print_err, print_significant, print_stage, print_success};
 
 mod project_config;
 
@@ -226,6 +226,15 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
                 CommandArg::req("name", "Name of your new project.")
             ],
             flags: vec![]
+        },
+        Command {
+            alias: "fetch".to_string(),
+            description: "Fetches a dependency. Mostly foe testing".to_string(),
+            function: cmd_fetch,
+            args: vec![
+                CommandArg::req("name", "Name of the dependency.")
+            ],
+            flags: vec![]
         }
     ]
 }
@@ -389,4 +398,24 @@ fn cmd_new(cmd: &Command) {
     }
     
     project_maker::create(name.to_owned(), path);
+}
+
+fn cmd_fetch(cmd: &Command) {
+    let name = cmd.get_arg("name").unwrap();
+    let dep = deps::get_dep(&name);
+
+    print_significant("Data of dependency", name.to_owned());
+    
+    print_stage("Release data".to_string());
+    let release = dep.fetch_release();
+
+    println!("Name: {}", release.name);
+    println!("Tag (version): {}", release.tag_name);
+    println!("Page: {}", release.html_url);
+    
+    print_stage("Asset data".to_string());
+    let asset = dep.get_asset_from_release(&release);
+
+    println!("Name: {}", asset.name);
+    println!("Download URL: {}", asset.url);
 }
