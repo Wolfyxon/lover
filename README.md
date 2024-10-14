@@ -1,5 +1,5 @@
 # Lover
-[Love2D](https://love2d.org/) command-line runner and cross platform builder inspired by Cargo.
+[Love2D](https://love2d.org/) is a open source command line build system and runner for Love2D projects inspired by Cargo.
 
 [See the wiki](https://github.com/Wolfyxon/lover/wiki).
 
