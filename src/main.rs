@@ -164,10 +164,6 @@ fn main() {
     exit(1);
 }
 
-fn get_working_dir() -> String {
-    std::env::current_dir().unwrap().to_str().unwrap().to_string()
-}
-
 fn get_commands<'a>() -> Vec<Command<'a>> {
     vec![
         Command {
