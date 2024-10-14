@@ -4,7 +4,7 @@
 [See the wiki](https://github.com/Wolfyxon/lover/wiki).
 
 > [!NOTE]
-> This tool is in early development, some of the described features may not work yet.
+> This tool is in early development. Ssome of the described features may not work yet.
 > 
 > [See the project's progress](https://github.com/Wolfyxon/lover/issues/1).
 
@@ -18,7 +18,7 @@ Love binaries required for building are downloaded automatically and can easily 
 ### Finally a good `run` command
 When using `lover run` you can pass arguments to your game and even --flags.
 
-Most tools like **Makefile** and **Cargo** will complain when the user specifies an unknown flag.
+Most tools like **Makefile** and **Cargo** will treat all flags as their own and not allow such things.
 
 ### Simple command line interface
 Lover has a simple and easy to use command syntax (at least I hope).
