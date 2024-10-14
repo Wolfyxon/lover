@@ -4,7 +4,8 @@
 [See the wiki](https://github.com/Wolfyxon/lover/wiki).
 
 > [!NOTE]
-> This tool is in early development, most of the described features may not work yet.
+> This tool is in early development, some of the described features may not work yet.
+> [See the project's progress](https://github.com/Wolfyxon/lover/issues/1).
 
 ## Example lover.toml
 ```toml
