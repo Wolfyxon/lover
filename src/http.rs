@@ -17,7 +17,7 @@ pub struct GithubReleaseAsset {
     pub size: u32
 }
 
-pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
+pub fn fetch_text(url: &str) -> Result<String, Error> {
     let res = Client::new()
         .get(url)
         .header("User-Agent", USER_AGENT)
@@ -27,7 +27,13 @@ pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
         return Err(res.err().unwrap());
     }
 
-    Ok(serde_json::from_str(res.unwrap().text().unwrap().as_str()).unwrap())
+    Ok(res.unwrap().text().unwrap())
+}
+
+pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
+    let res = fetch_text(url)?;
+
+    Ok(serde_json::from_str(res.as_str()).unwrap())
 }
 
 pub fn fetch_gh_release(owner: &str, repo: &str, release: &str) -> Result<GitHubRelease, Error> {
