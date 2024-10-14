@@ -55,8 +55,11 @@ impl<'a> Dependency<'a> {
         get_dir().join(self.file_name).exists()
     }
 
-    pub fn fetch_asset(&self) -> GithubReleaseAsset {
-        let release = fetch_gh_latest_release(&self.repo_owner, &self.repo);
+    pub fn fetch_release(&self) -> GitHubRelease {
+        fetch_gh_latest_release(&self.repo_owner, &self.repo)
+    }
+
+    pub fn get_asset_from_release(&self, release: GitHubRelease) -> GithubReleaseAsset {
         let asset_res = release.get_asset_matching(&self.pattern);
 
         if asset_res.is_none() {
@@ -65,6 +68,11 @@ impl<'a> Dependency<'a> {
         }
 
         asset_res.unwrap().clone()
+    }
+
+    pub fn fetch_asset(&self) -> GithubReleaseAsset {
+        self.get_asset_from_release(self.fetch_release())
+
     }
 }
 
