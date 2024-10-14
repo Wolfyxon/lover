@@ -258,26 +258,30 @@ fn cmd_help(cmd: &Command) {
                 println!("Usage:");
                 println!("  {} {}", styled_alias, command.get_string_usage());
 
-                println!("\nArguments:");
+                if !command.args.is_empty() {
+                    println!("\nArguments:");
 
-                for arg in command.args {
-                    let mut name_style = Style::new();
-
-                    if arg.required {
-                        name_style = name_style.fg(Yellow);
-                    } else {
-                        name_style = name_style.fg(Green);
+                    for arg in command.args {
+                        let mut name_style = Style::new();
+    
+                        if arg.required {
+                            name_style = name_style.fg(Yellow);
+                        } else {
+                            name_style = name_style.fg(Green);
+                        }
+    
+                        println!("  {}: {}", name_style.paint(arg.name), arg.description);
                     }
-
-                    println!("  {}: {}", name_style.paint(arg.name), arg.description);
                 }
 
-                println!("\nFlags:");
+                if !command.flags.is_empty() {
+                    println!("\nFlags:");
 
-                for flag in command.flags {
-                    println!("  --{}: {}", flag.full, flag.description);
+                    for flag in command.flags {
+                        println!("  --{}: {}", flag.full, flag.description);
+                    }    
                 }
-                
+
                 return;
             }
         }
