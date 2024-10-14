@@ -10,6 +10,9 @@ pub struct Config {
     #[serde(default = "Build::default")]
     pub build: Build,
 
+    #[serde(default = "Run::default")]
+    pub run: Run,
+
     #[serde(default = "Software::default")]
     pub software: Software
 }
@@ -18,12 +21,30 @@ impl Config {
     pub fn default() -> Self {
         Config {
             build: Build::default(),
+            run: Run::default(),
             software: Software::default()
         }
     }
 
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(string)
+    }
+}
+
+#[derive(Deserialize)]
+pub struct Run {
+    prime: bool
+}
+
+impl Run {
+    pub fn default() -> Self {
+        Self {
+            prime: Run::default_prime()
+        }
+    }
+
+    fn default_prime() -> bool {
+        false
     }
 }
 
