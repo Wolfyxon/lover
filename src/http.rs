@@ -13,7 +13,8 @@ pub struct GitHubRelease {
 #[derive(Deserialize)]
 pub struct GithubReleaseAsset {
     pub url: String,
-    pub name: String
+    pub name: String,
+    pub size: u32
 }
 
 pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> Result<T, Error> {
