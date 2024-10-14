@@ -192,7 +192,8 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             function: cmd_run,
             args: vec![],
             flags: vec![
-                CommandFlag::new_only_full("no-parse", "Skips the parsing process")
+                CommandFlag::new_only_full("no-parse", "Skips the parsing process"),
+                CommandFlag::new_only_full("prime", "Runs the game on the dedicated GPU")
             ]
         },
         Command {
@@ -294,10 +295,11 @@ fn cmd_version(cmd: &Command) {
 
 fn cmd_run(cmd: &Command) {
     let src = project_config::get().directories.source;
+    let cmd_settings = get_command_line_settings();
 
     print_significant("Running", src.clone());
 
-    if !get_command_line_settings().has_flag("no-parse") {
+    if !cmd_settings.has_flag("no-parse") {
         actions::parse_all(Path::new(&src));
     }
 
@@ -306,7 +308,7 @@ fn cmd_run(cmd: &Command) {
     
     let config = &config::get();
 
-    if config.run.prime {
+    if config.run.prime || cmd_settings.has_flag("prime") {
         actions::execute_prime(&config::get().software.love, args, false);
     } else { 
         actions::execute(&config::get().software.love, args, false);
