@@ -13,6 +13,7 @@ mod actions;
 
 mod http;
 mod config;
+mod deps;
 
 struct Command<'a> {
     alias: String,
