@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf, process::exit};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::print_success, http};
+use crate::{config, console::{print_err, print_success}, http};
 
 #[derive(Deserialize)]
 pub struct GitHubRelease { 
@@ -25,6 +25,7 @@ impl GitHubRelease {
 }
 
 #[derive(Deserialize)]
+#[derive(Clone)]
 pub struct GithubReleaseAsset {
     pub url: String,
     pub name: String,
@@ -48,6 +49,18 @@ pub struct Dependency<'a> {
 impl<'a> Dependency<'a> {
     pub fn is_installed(&self) -> bool {
         get_dir().join(self.file_name).exists()
+    }
+
+    pub fn fetch_asset(&self) -> GithubReleaseAsset {
+        let release = fetch_gh_latest_release(&self.repo_owner, &self.repo);
+        let asset_res = release.get_asset_matching(&self.pattern);
+
+        if asset_res.is_none() {
+            print_err(format!("No file matches pattern '{}' in release. This is a bug!", &self.pattern));
+            exit(1);
+        }
+
+        asset_res.unwrap().clone()
     }
 }
 
