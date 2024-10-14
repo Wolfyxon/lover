@@ -230,6 +230,9 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
 }
 
 fn show_help() {
+    println!("Lover is a open source cross-platform build system for Love2D projects.");
+    println!("https://github.com/Wolfyxon/lover \n");
+
     println!("Available commands: \n");
 
     for cmd in get_commands() {
