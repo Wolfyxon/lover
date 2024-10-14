@@ -11,6 +11,7 @@ mod files;
 mod project_maker;
 mod actions;
 
+mod http;
 mod config;
 
 struct Command<'a> {
