@@ -195,6 +195,17 @@ pub fn install(names: Vec<String>) {
     println!("\nTotal size: {} MB", total as f32 / (1024 * 1024) as f32);
 
     confirm_or_exit("Proceed with the installation?");
+
+    print_stage("Installing...".to_string());
+
+    for i in 0..assets.len() {
+        let dep = deps.get(i).unwrap();
+        let asset = assets.get(i).unwrap();
+
+        http::download(&asset.url, &dep.get_path());
+    }
+
+    print_success("All dependencies successfully installed.".to_string());
 }
 
 pub fn get_dir() -> PathBuf {
