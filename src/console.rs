@@ -1,4 +1,5 @@
 use std::io::{stdin, stdout, Read, Write};
+use std::process::exit;
 use ansi_term::Style;
 use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue};
 
@@ -84,6 +85,13 @@ pub fn confirm(message: &str) -> bool {
     handle.read_exact(&mut ch).expect("Failed to read stdin");
 
     String::from_utf8_lossy(&ch) == "y"
+}
+
+pub fn confirm_or_exit(message: &str) {
+    if !confirm(message) {
+        println!("Cancelled");
+        exit(1);
+    }
 }
 
 pub fn print_err(message: String) {
