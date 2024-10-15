@@ -113,6 +113,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
         Dependency {
             name: "3ds",
             file_name: "lovepotion_3ds.zip",
+            description: "LovePotion binaries for the 3DS.",
             pattern: r"Nintendo\.3DS.*.zip",
             repo: "lovepotion",
             repo_owner: "lovebrew"
@@ -120,6 +121,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
 
         Dependency {
             name: "lovepotion_assets",
+            description: "Love2D code and assets for various consoles.",
             file_name: "lovepotion_assets.zip",
             pattern: "resources.zip",
             repo: "bundler",
