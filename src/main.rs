@@ -232,6 +232,15 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "dep".to_string(),
+            description: "Lists or shows info of available dependencies.".to_string(),
+            function: cmd_dep,
+            args: vec![
+                CommandArg::opt("dependency", "Name of the dependency to check")
+            ],
+            flags: vec![]
+        },
+        Command {
             alias: "install".to_string(),
             description: "Installs dependencies.".to_string(),
             function: cmd_install,
@@ -420,6 +429,35 @@ fn cmd_new(cmd: &Command) {
     }
     
     project_maker::create(name.to_owned(), path);
+}
+
+fn cmd_dep(cmd: &Command) {
+    let name_res = cmd.get_arg("dependency");
+    
+    if name_res.is_some() {
+        todo!("Dep info");
+    } else {
+        print_significant("Available dependencies", "\n".to_string());
+
+        let installed_style = Style::new().fg(Green);
+
+        for dep in deps::get_deps() {
+            let mut styled_name = dep.name.to_string();
+            let mut suffix = "";
+
+            if dep.is_installed() {
+                styled_name = installed_style.paint(styled_name).to_string();
+                suffix = "(installed)";
+            }
+
+            println!("  {} {}", styled_name, suffix);
+        }
+
+        println!();
+
+        println!("`lover install <name>` to install.");
+        println!("`lover uninstall <name>` to remove.");
+    }
 }
 
 fn cmd_install(cmd: &Command) {
