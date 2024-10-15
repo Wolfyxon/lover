@@ -340,11 +340,11 @@ fn cmd_help(command: &Command) {
     }
 }
 
-fn cmd_version(command: &Command) {
+fn cmd_version(_command: &Command) {
     show_version();
 }
 
-fn cmd_run(command: &Command) {
+fn cmd_run(_command: &Command) {
     let src = project_config::get().directories.source;
     let cmd_settings = get_command_line_settings();
 
@@ -366,7 +366,7 @@ fn cmd_run(command: &Command) {
     }
 }
 
-fn cmd_parse(command: &Command) {
+fn cmd_parse(_command: &Command) {
     let parser = config::get().software.luac;
 
     if !actions::command_exists(&parser) {
@@ -409,7 +409,7 @@ fn cmd_build(command: &Command) {
     } 
 }
 
-fn cmd_clean(command: &Command) {
+fn cmd_clean(_command: &Command) {
     let build = &project_config::get().directories.build;
 
     print_significant("Removing", build.to_string());
