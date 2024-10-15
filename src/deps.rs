@@ -31,7 +31,7 @@ impl GitHubRelease {
 #[derive(Deserialize)]
 #[derive(Clone)]
 pub struct GithubReleaseAsset {
-    pub url: String,
+    pub browser_download_url: String,
     pub name: String,
     pub size: u32
 }
@@ -80,7 +80,7 @@ impl<'a> Dependency<'a> {
 
     pub fn download(&self) {
         let asset = self.fetch_asset();
-        http::download(&asset.url, &self.get_path());
+        http::download(&asset.browser_download_url, &self.get_path());
     }
 }
 
@@ -204,7 +204,7 @@ pub fn install(names: Vec<String>) {
         let dep = deps.get(i).unwrap();
         let asset = assets.get(i).unwrap();
 
-        http::download(&asset.url, &dep.get_path());
+        http::download(&asset.browser_download_url, &dep.get_path());
     }
 
     print_success("All dependencies successfully installed.".to_string());

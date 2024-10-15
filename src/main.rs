@@ -417,5 +417,5 @@ fn cmd_fetch(cmd: &Command) {
     let asset = dep.get_asset_from_release(&release);
 
     println!("Name: {}", asset.name);
-    println!("Download URL: {}", asset.url);
+    println!("Download URL: {}", asset.browser_download_url);
 }
