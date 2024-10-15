@@ -196,6 +196,8 @@ pub fn install(names: Vec<String>) {
 
     confirm_or_exit("Proceed with the installation?");
 
+    create_dir();
+
     print_stage("Installing...".to_string());
 
     for i in 0..assets.len() {
