@@ -179,12 +179,17 @@ pub fn install(names: Vec<String>) {
     let mut total: u32 = 0;
 
     for i in 0..assets.len() {
+        let mut re = "";
         let dep = deps.get(i).unwrap();
         let asset = assets.get(i).unwrap();
+
+        if dep.is_installed() {
+            re = "(reinstall)";
+        }
         
         total += asset.size;
 
-        println!("  {}: {} MB", dep.name, asset.size as f32 / (1024 * 1024) as f32);
+        println!("  {}: {} MB {}", dep.name, asset.size as f32 / (1024 * 1024) as f32, re);
     }
 
     println!("\nTotal size: {} MB", total as f32 / (1024 * 1024) as f32);
