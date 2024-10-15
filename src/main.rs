@@ -232,6 +232,15 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "install".to_string(),
+            description: "Installs dependencies.".to_string(),
+            function: cmd_install,
+            args: vec![
+                CommandArg::req("dependencies...", "Names of the dependencies to install.")
+            ],
+            flags: vec![]
+        },
+        Command {
             alias: "fetch".to_string(),
             description: "Fetches a dependency. Mostly for testing".to_string(),
             function: cmd_fetch,
@@ -402,6 +411,10 @@ fn cmd_new(cmd: &Command) {
     }
     
     project_maker::create(name.to_owned(), path);
+}
+
+fn cmd_install(cmd: &Command) {
+    deps::install(cmd.get_args());
 }
 
 fn cmd_fetch(cmd: &Command) {
