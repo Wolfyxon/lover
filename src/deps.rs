@@ -44,6 +44,7 @@ impl GithubReleaseAsset {
 
 pub struct Dependency<'a> {
     name: &'a str,
+    description: &'a str,
     file_name: &'a str,
     pattern: &'a str,
     repo: &'a str,
