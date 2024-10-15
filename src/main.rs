@@ -3,7 +3,7 @@ use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
-use console::{get_command_line_settings, print_err, print_significant, print_stage, print_success};
+use console::{confirm_or_exit, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
 
 mod project_config;
 
@@ -241,6 +241,15 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "uninstall".to_string(),
+            description: "Removes installed dependencies.".to_string(),
+            function: cmd_uninstall,
+            args: vec![
+                CommandArg::req("dependencies...", "Names of the dependencies to remove.")
+            ],
+            flags: vec![]
+        },
+        Command {
             alias: "fetch".to_string(),
             description: "Fetches a dependency. Mostly for testing".to_string(),
             function: cmd_fetch,
@@ -415,6 +424,54 @@ fn cmd_new(cmd: &Command) {
 
 fn cmd_install(cmd: &Command) {
     deps::install(cmd.get_args());
+}
+
+fn cmd_uninstall(cmd: &Command) {
+    let dependencies = deps::get_deps_by_strings(cmd.get_args());
+    let mut amt = 0;
+
+    for dep in &dependencies {
+        if dep.is_installed() {
+            amt += 1;
+        } else {
+            print_warn(format!("'{}' is not installed, ignoring.", dep.name));
+        }
+    }
+
+    if amt == 0 {
+        print_err("None of the specified packages are installed.".to_string());
+        exit(1);
+    }
+
+    print_stage("The following dependencies will be removed:".to_string());
+
+    for dep in &dependencies {
+        if dep.is_installed() {
+            println!("  {}", dep.name);
+        }
+    }
+
+    confirm_or_exit("\nProceed with the removal?");
+
+    let mut fail = false;
+
+    for dep in &dependencies {
+        if dep.is_installed() {
+            let path = dep.get_path();
+            let res = std::fs::remove_file(&path);
+
+            if res.is_err() {
+                print_err(format!("Failed to delete '{}': {}", &path.to_str().unwrap(), res.err().unwrap()));
+                fail = true;
+            }
+        }
+    }
+
+    if fail {
+        exit(1);
+    } else {
+        print_success("Removed successfully.".to_string());
+    }
 }
 
 fn cmd_fetch(cmd: &Command) {
