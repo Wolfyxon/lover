@@ -1,3 +1,4 @@
+use std::io::{stdin, stdout, Read, Write};
 use ansi_term::Style;
 use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue};
 
@@ -70,6 +71,19 @@ pub fn get_command_line_settings() -> CommandLineSettings {
         args: args,
         flags: flags
     }
+}
+
+pub fn confirm(message: &str) -> bool {
+    print!("{} [Y/N]: ", message);
+
+    stdout().flush().expect("Failed to flush stdout.");
+
+    let mut handle = stdin().lock();  
+    let mut ch = [0_u8];
+
+    handle.read_exact(&mut ch).expect("Failed to read stdin");
+
+    String::from_utf8_lossy(&ch) == "y"
 }
 
 pub fn print_err(message: String) {
