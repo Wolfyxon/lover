@@ -45,3 +45,14 @@ This is a replacement for my previous project [Love2D Universal](https://github.
 Also a single script setup for a large project is not a good idea (ignore my mess). Also this tool does not require installing as much software as Love2D Universal and has a nice error handling and warnings.
 
 This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
+
+## Used crates
+- `editpe`: Editing Windows EXE files
+- `reqwest`: Sending HTTP request and downloading files
+- `serde`: Serializing structs
+- `serde_json`: JSON parsing and serde support
+- `toml`: TOML parsing and serde support
+- `zip`: Managing ZIP archives
+- `dirs`: Finding system directories on various platforms
+- `regex`: Using regular expressions on strings
+- `ansi_term`: Styling terminal output
