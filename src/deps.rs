@@ -145,6 +145,16 @@ pub fn get_dep_by_string<'a>(name: String) -> Dependency<'a> {
     exit(1);
 }
 
+pub fn get_deps_by_strings<'a>(names: Vec<String>) -> Vec<Dependency<'a>> {
+    let mut res: Vec<Dependency<'a>> = Vec::new();
+
+    for name in names {
+        res.push(get_dep_by_string(name));
+    }
+
+    res
+}
+
 pub fn get_dir() -> PathBuf {
     config::get_dir().join("deps")
 }
