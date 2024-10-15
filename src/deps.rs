@@ -90,7 +90,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
         // PC deps
         Dependency {
             name: "linux",
-            description: "Linux AppImage containing Love2D binaries and required libraries.",
+            description: "Linux AppImage with embedded Love2D binaries and required libraries.",
             file_name: "love_linux.AppImage",
             pattern: ".*x86_64.AppImage",
             repo: "love",
