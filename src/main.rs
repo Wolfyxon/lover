@@ -24,14 +24,18 @@ struct Command<'a> {
 }
 
 impl<'a> Command<'a> {
+    pub fn get_args(&self) -> Vec<String> {
+        get_command_line_settings().args.iter().cloned().skip(1).collect()
+    }
+
     pub fn get_arg(&self, name: &str) -> Option<String> {
+        let args = self.get_args();
 
         for i in 0..self.args.len() {
             let arg = &self.args[i];
             
             if arg.name == name {
-                let stgs = get_command_line_settings();
-                let res = stgs.args.get(i + 1);
+                let res = args.get(i);
                 
                 if res.is_none() {
                     return None;
