@@ -77,6 +77,11 @@ impl<'a> Dependency<'a> {
     pub fn fetch_asset(&self) -> GithubReleaseAsset {
         self.get_asset_from_release(&self.fetch_release())
     }
+
+    pub fn download(&self) {
+        let asset = self.fetch_asset();
+        http::download(&asset.url, &self.get_path());
+    }
 }
 
 pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
