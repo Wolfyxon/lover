@@ -288,26 +288,26 @@ fn show_version() {
     println!("Lover {}", env!("CARGO_PKG_VERSION"));
 }
 
-fn cmd_help(cmd: &Command) {
-    let alias_res = cmd.get_arg("command");
+fn cmd_help(command: &Command) {
+    let alias_res = command.get_arg("command");
 
     if alias_res.is_some() {
         let alias = alias_res.unwrap();
 
-        for command in get_commands() {
-            if command.alias == alias {
+        for cmd in get_commands() {
+            if cmd.alias == alias {
                 print_significant("Command", alias.to_owned());
 
-                println!("{}\n", Style::new().italic().paint(&command.description));
+                println!("{}\n", Style::new().italic().paint(&cmd.description));
 
                 let styled_alias = Style::new().fg(Blue).paint(alias);
                 println!("Usage:");
-                println!("  {} {}", styled_alias, command.get_string_usage());
+                println!("  {} {}", styled_alias, cmd.get_string_usage());
 
-                if !command.args.is_empty() {
+                if !cmd.args.is_empty() {
                     println!("\nArguments:");
 
-                    for arg in command.args {
+                    for arg in cmd.args {
                         let mut name_style = Style::new();
     
                         if arg.required {
@@ -320,10 +320,10 @@ fn cmd_help(cmd: &Command) {
                     }
                 }
 
-                if !command.flags.is_empty() {
+                if !cmd.flags.is_empty() {
                     println!("\nFlags:");
 
-                    for flag in command.flags {
+                    for flag in cmd.flags {
                         println!("  --{}: {}", flag.full, flag.description);
                     }    
                 }
@@ -340,11 +340,11 @@ fn cmd_help(cmd: &Command) {
     }
 }
 
-fn cmd_version(cmd: &Command) {
+fn cmd_version(command: &Command) {
     show_version();
 }
 
-fn cmd_run(cmd: &Command) {
+fn cmd_run(command: &Command) {
     let src = project_config::get().directories.source;
     let cmd_settings = get_command_line_settings();
 
@@ -366,7 +366,7 @@ fn cmd_run(cmd: &Command) {
     }
 }
 
-fn cmd_parse(cmd: &Command) {
+fn cmd_parse(command: &Command) {
     let parser = config::get().software.luac;
 
     if !actions::command_exists(&parser) {
@@ -377,13 +377,13 @@ fn cmd_parse(cmd: &Command) {
     actions::parse_all(Path::new(&project_config::get().directories.source));
 }
 
-fn cmd_build(cmd: &Command) {
+fn cmd_build(command: &Command) {
     let mut target = "love".to_string();
 
     // TODO: All targets from lover.toml
     // TODO: Platform detection and building for that platform
 
-    let arg_target_res = cmd.get_arg("target");
+    let arg_target_res = command.get_arg("target");
 
     if arg_target_res.is_some() {
         target = arg_target_res.unwrap();
@@ -409,16 +409,16 @@ fn cmd_build(cmd: &Command) {
     } 
 }
 
-fn cmd_clean(cmd: &Command) {
+fn cmd_clean(command: &Command) {
     let build = &project_config::get().directories.build;
 
     print_significant("Removing", build.to_string());
     actions::clean(Path::new(build));
 }
 
-fn cmd_new(cmd: &Command) {
+fn cmd_new(command: &Command) {
     let char_blacklist = vec!["..", "/", "\\", "\""];
-    let name = cmd.get_arg("name").unwrap();
+    let name = command.get_arg("name").unwrap();
     let path = Path::new(&name);
 
     for blacklisted in &char_blacklist {
@@ -431,8 +431,8 @@ fn cmd_new(cmd: &Command) {
     project_maker::create(name.to_owned(), path);
 }
 
-fn cmd_dep(cmd: &Command) {
-    let name_res = cmd.get_arg("dependency");
+fn cmd_dep(command: &Command) {
+    let name_res = command.get_arg("dependency");
     
     if name_res.is_some() {
         let name = name_res.unwrap();
@@ -481,12 +481,12 @@ fn cmd_dep(cmd: &Command) {
     }
 }
 
-fn cmd_install(cmd: &Command) {
-    deps::install(cmd.get_args());
+fn cmd_install(command: &Command) {
+    deps::install(command.get_args());
 }
 
-fn cmd_uninstall(cmd: &Command) {
-    let dependencies = deps::get_deps_by_strings(cmd.get_args());
+fn cmd_uninstall(command: &Command) {
+    let dependencies = deps::get_deps_by_strings(command.get_args());
     let mut amt = 0;
 
     for dep in &dependencies {
@@ -533,8 +533,8 @@ fn cmd_uninstall(cmd: &Command) {
     }
 }
 
-fn cmd_fetch(cmd: &Command) {
-    let name = cmd.get_arg("name").unwrap();
+fn cmd_fetch(command: &Command) {
+    let name = command.get_arg("name").unwrap();
     let dep = deps::get_dep(&name);
 
     print_significant("Data of dependency", name.to_owned());
