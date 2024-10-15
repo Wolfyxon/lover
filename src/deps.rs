@@ -90,6 +90,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
         // PC deps
         Dependency {
             name: "linux",
+            description: "Linux AppImage containing Love2D binaries and required libraries.",
             file_name: "love_linux.AppImage",
             pattern: ".*x86_64.AppImage",
             repo: "love",
@@ -97,6 +98,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
         },
         Dependency {
             name: "win32",
+            description: "Zipped Love2D binaries and libraries for Windows x86_32",
             file_name: "love_win32.zip",
             pattern: ".*win32.zip",
             repo: "love",
@@ -104,6 +106,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
         },
         Dependency {
             name: "win64",
+            description: "Zipped Love2D binaries and libraries for Windows x86_64",
             file_name: "love_win64.zip",
             pattern: ".*win64.zip",
             repo: "love",
