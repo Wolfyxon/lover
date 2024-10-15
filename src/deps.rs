@@ -51,12 +51,12 @@ pub struct Dependency<'a> {
 }
 
 impl<'a> Dependency<'a> {
-    pub fn is_installed(&self) -> bool {
-        get_dir().join(self.file_name).exists()
-    }
-
     pub fn get_path(&self) -> PathBuf {
         get_dir().join(self.file_name)
+    }
+
+    pub fn is_installed(&self) -> bool {
+        self.get_path().exists()
     }
 
     pub fn fetch_release(&self) -> GitHubRelease {
