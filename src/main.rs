@@ -188,6 +188,15 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "new".to_string(),
+            description: "Initializes a new Love2D project.".to_string(),
+            function: cmd_new,
+            args: vec![
+                CommandArg::req("name", "Name of your new project.")
+            ],
+            flags: vec![]
+        },
+        Command {
             alias: "run".to_string(),
             description: "Runs the game.".to_string(),
             function: cmd_run,
@@ -220,15 +229,6 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             description: "Removes compiled build files.".to_string(),
             function: cmd_clean,
             args: vec![],
-            flags: vec![]
-        },
-        Command {
-            alias: "new".to_string(),
-            description: "Initializes a new Love2D project.".to_string(),
-            function: cmd_new,
-            args: vec![
-                CommandArg::req("name", "Name of your new project.")
-            ],
             flags: vec![]
         },
         Command {
