@@ -69,7 +69,7 @@ pub fn download(url: &str, path: &Path) {
     }
 
     let len = len_res.unwrap() as usize;
-    let mut bar = ProgressBar::new(len);
+    let bar = ProgressBar::new(len);
     let mut bytes: usize = 0;
     
     loop {
