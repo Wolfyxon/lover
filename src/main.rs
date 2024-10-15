@@ -435,7 +435,28 @@ fn cmd_dep(cmd: &Command) {
     let name_res = cmd.get_arg("dependency");
     
     if name_res.is_some() {
-        todo!("Dep info");
+        let name = name_res.unwrap();
+        let dep = deps::get_dep(name.as_str());
+        let mut status = "not installed";
+
+        if dep.is_installed() {
+            status = "installed";
+        }
+
+        print_significant("Details of", dep.name.to_string());
+
+        println!("Description: \n  {}\n", Style::new().italic().paint(dep.description));
+
+        println!("Status: {}", status);
+        println!("Location: {}", dep.get_path().to_str().unwrap());
+        println!("Repository: https://github.com/{}/{}", dep.repo_owner, dep.repo);
+
+        println!();
+        print_stage("Actions:".to_string());
+
+        println!("`lover install {}` to install or update.", dep.name);
+        println!("`lover uninstall {}` to remove.", dep.name);
+        
     } else {
         print_significant("Available dependencies", "\n".to_string());
 
