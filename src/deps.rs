@@ -131,6 +131,10 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
 }
 
 pub fn get_dep(name: &str) -> Dependency {
+    get_dep_by_string(name.to_string())
+}
+
+pub fn get_dep_by_string<'a>(name: String) -> Dependency<'a> {
     for dep in get_deps() {
         if dep.name.to_lowercase() == name.to_lowercase() {
             return dep;
