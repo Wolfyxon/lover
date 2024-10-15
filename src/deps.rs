@@ -55,6 +55,10 @@ impl<'a> Dependency<'a> {
         get_dir().join(self.file_name).exists()
     }
 
+    pub fn get_path(&self) -> PathBuf {
+        get_dir().join(self.file_name)
+    }
+
     pub fn fetch_release(&self) -> GitHubRelease {
         fetch_gh_latest_release(&self.repo_owner, &self.repo)
     }
