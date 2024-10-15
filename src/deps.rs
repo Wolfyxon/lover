@@ -72,7 +72,6 @@ impl<'a> Dependency<'a> {
 
     pub fn fetch_asset(&self) -> GithubReleaseAsset {
         self.get_asset_from_release(&self.fetch_release())
-
     }
 }
 
