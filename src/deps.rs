@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf, process::exit};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{print_err, print_success}, http};
+use crate::{config, console::{confirm_or_exit, print_err, print_stage, print_success, ProgressBar}, http};
 
 #[derive(Deserialize)]
 pub struct GitHubRelease { 
@@ -153,6 +153,43 @@ pub fn get_deps_by_strings<'a>(names: Vec<String>) -> Vec<Dependency<'a>> {
     }
 
     res
+}
+
+pub fn install(names: Vec<String>) {
+    let deps = get_deps_by_strings(names);
+    let mut assets: Vec<GithubReleaseAsset> = Vec::new();
+
+    print_stage("Fetching dependencies".to_string());
+
+    let fetch_bar = ProgressBar::new(deps.len());
+    let mut fetch_progress: usize = 0;
+
+    fetch_bar.update(fetch_progress);
+
+    for dep in &deps {        
+        assets.push(dep.fetch_asset());
+
+        fetch_progress += 1;
+        fetch_bar.update(fetch_progress);
+    }
+
+    fetch_bar.finish();
+    print_stage("The following dependencies will be installed:".to_string());
+
+    let mut total: u32 = 0;
+
+    for i in 0..assets.len() {
+        let dep = deps.get(i).unwrap();
+        let asset = assets.get(i).unwrap();
+        
+        total += asset.size;
+
+        println!("  {}: {} MB", dep.name, asset.size as f32 / (1024 * 1024) as f32);
+    }
+
+    println!("\nTotal size: {} MB", total as f32 / (1024 * 1024) as f32);
+
+    confirm_or_exit("Proceed with the installation?");
 }
 
 pub fn get_dir() -> PathBuf {
