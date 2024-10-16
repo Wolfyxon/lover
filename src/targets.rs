@@ -43,3 +43,13 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
         }
     ]
 }
+
+pub fn get_target_by_string<'a>(name: String) -> Option<BuildTarget<'a>> {
+    for target in get_targets() {
+        if target.name == name {
+            return Some(target);
+        }
+    }
+
+    None
+}
