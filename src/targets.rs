@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use crate::actions;
+use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
 
@@ -23,6 +24,10 @@ impl<'a> BuildTarget<'a> {
         }
 
         res
+    }
+
+    pub fn get_deps(&self) -> Vec<Dependency> {
+        deps::get_deps_by_strings(self.get_all_dep_names())
     }
 
     pub fn build(&self) {
