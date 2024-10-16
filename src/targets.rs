@@ -24,6 +24,10 @@ impl<'a> BuildTarget<'a> {
 
         res
     }
+
+    pub fn build(&self) {
+        (self.builder)();
+    }
 }
 
 pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
