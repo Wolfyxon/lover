@@ -14,6 +14,7 @@ mod actions;
 mod http;
 mod config;
 mod deps;
+mod targets;
 
 struct Command<'a> {
     alias: String,

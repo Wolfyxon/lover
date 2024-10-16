@@ -17,24 +17,6 @@ use crate::console::{print_err, print_warn, print_success, print_stage};
 use crate::files;
 use crate::files::get_file_tree;
 
-pub struct BuildTarget<'a> {
-    pub name: &'a str,
-    pub description: &'a str,
-    pub deps: Vec<&'a str>,
-    pub previous: Vec<&'a str>
-}
-
-pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
-    vec![
-        BuildTarget {
-            name: "love",
-            description: "Game's code packaged in the Love format.",
-            deps: Vec::new(),
-            previous: Vec::new()
-        }
-    ]
-}
-
 pub fn command_exists(command: &str) -> bool {
     let path_env_res = std::env::var_os("PATH");
 
