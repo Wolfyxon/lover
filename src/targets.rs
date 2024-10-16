@@ -13,7 +13,7 @@ pub struct BuildTarget<'a> {
 }
 
 impl<'a> BuildTarget<'a> {
-    pub fn get_deps(&self) -> Vec<String> {
+    pub fn get_all_dep_names(&self) -> Vec<String> {
         let mut res:Vec<String> = Vec::new();
 
         for name in &self.previous {
