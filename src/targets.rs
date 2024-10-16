@@ -1,6 +1,8 @@
 use std::path::Path;
+
 use crate::actions;
 use crate::project_config;
+use crate::deps;
 
 pub struct BuildTarget<'a> {
     pub name: &'a str,
@@ -8,6 +10,20 @@ pub struct BuildTarget<'a> {
     pub deps: Vec<&'a str>,
     pub previous: Vec<&'a str>,
     builder: fn()
+}
+
+impl<'a> BuildTarget<'a> {
+    pub fn get_deps(&self) -> Vec<String> {
+        let mut res:Vec<String> = Vec::new();
+
+        for name in &self.previous {
+            let prev = deps::get_dep(name);
+
+            res.push(prev.name.to_string());
+        }
+
+        res
+    }
 }
 
 pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
