@@ -60,13 +60,6 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             builder: |_target| {
                 print_stage("Extracting Love2D AppImage contents".to_string());
 
-                let current_dir_res = std::env::current_dir();
-
-                if current_dir_res.is_err() {
-                    print_err(format!("Failed to get the current working directory: {}", current_dir_res.err().unwrap()));
-                    exit(1);
-                }
-
                 let project_conf = project_config::get();
                 let build_dir = Path::new(&project_conf.directories.build);
 
