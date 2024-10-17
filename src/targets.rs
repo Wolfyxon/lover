@@ -1,6 +1,8 @@
 use std::path::Path;
+use std::process::exit;
 
 use crate::actions;
+use crate::console::{print_err, print_warn, print_stage};
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
@@ -48,6 +50,47 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             
                 actions::parse_all(Path::new(&project_config::get().directories.source));
                 actions::archive(Path::new(config.directories.source.as_str()), &output);
+            }
+        },
+        BuildTarget {
+            name: "linux",
+            description: "Linux AppImage",
+            deps: vec!["linux"],
+            previous: vec!["love"],
+            builder: |_target| {
+                print_stage("Extracting Love2D AppImage contents".to_string());
+
+                let current_dir_res = std::env::current_dir();
+
+                if current_dir_res.is_err() {
+                    print_err(format!("Failed to get the current working directory: {}", current_dir_res.err().unwrap()));
+                    exit(1);
+                }
+
+                let project_conf = project_config::get();
+                let build_dir = Path::new(&project_conf.directories.build);
+
+                let love_app_img = deps::get_dep("linux").get_path();
+                let squashfs_root = build_dir.join("squashfs-root");
+
+                if squashfs_root.exists() {
+                    print_warn("squashfs-root already exists and will be re-extracted.".to_string());
+
+                    let res = std::fs::remove_dir_all(&squashfs_root);
+                    
+                    if res.is_err() {
+                        print_err(format!("Failed to delete '{}': {}", &squashfs_root.to_str().unwrap(), res.err().unwrap()));
+                    }
+                }
+
+                let cd_res = std::env::set_current_dir(&build_dir);
+
+                if cd_res.is_err() {
+                    print_err(format!("Failed to change directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
+                    exit(1);
+                }
+
+                actions::execute(love_app_img.to_str().unwrap(), vec!["--appimage-extract".to_string()], true);
             }
         }
     ]
