@@ -98,6 +98,11 @@ pub fn print_err(message: String) {
     println!("{} {}", Style::new().fg(Red).bold().paint("Error:"), message);
 }
 
+pub fn exit_err(message: String) -> ! {
+    print_err(message);
+    exit(1);
+}
+
 pub fn print_warn(message: String) {
     println!("{} {}", Style::new().fg(Yellow).bold().paint("Warning:"), message);
 }
