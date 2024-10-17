@@ -67,9 +67,10 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                     exit(1);
                 }
 
-                let current_dir = current_dir_res.unwrap();
-
                 let project_conf = project_config::get();
+
+                // Paths
+                let current_dir = current_dir_res.unwrap();
                 let build_dir = Path::new(&project_conf.directories.build);
                 let love = Path::new(project_conf.directories.build.as_str()).join(project_conf.package.name + ".love");
 
@@ -77,6 +78,8 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                 
                 let squashfs_root = build_dir.join("squashfs-root");
                 let love_bin = squashfs_root.join("bin/love");
+
+                // Path checks
 
                 if squashfs_root.exists() {
                     print_warn("squashfs-root already exists and will be re-extracted.".to_string());
@@ -88,6 +91,9 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                     }
                 }
 
+                // cd into the build directory
+                // (appimagetool always unpacks to the current directory and seems like this can't be changed)
+
                 let cd_res = std::env::set_current_dir(&build_dir);
 
                 if cd_res.is_err() {
@@ -95,9 +101,12 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                     exit(1);
                 }
 
+                // Extracting squashfs-root
                 actions::execute(love_app_img.to_str().unwrap(), vec!["--appimage-extract".to_string()], true);
 
                 print_stage("Embedding the game's code into the executable".to_string());
+
+                // Reverting the directory change
 
                 let cd_back_res = std::env::set_current_dir(&current_dir);
 
@@ -106,6 +115,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                     exit(1);
                 }
 
+                // Appending .love to the love binary
                 actions::append_file(love.as_path(), love_bin.as_path());
             }
         }
