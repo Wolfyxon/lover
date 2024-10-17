@@ -11,7 +11,6 @@ use std::process::ExitStatus;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
-use zip::read;
 use zip::write::SimpleFileOptions;
 
 use crate::config;
