@@ -92,7 +92,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                 }
 
                 // cd into the build directory
-                // (appimagetool always unpacks to the current directory and seems like this can't be changed)
+                // (AppImages always unpacks to the current directory and seems like this can't be changed)
 
                 let cd_res = std::env::set_current_dir(&build_dir);
 
