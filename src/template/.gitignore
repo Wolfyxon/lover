@@ -6,6 +6,7 @@
 *.luac
 *.exe
 *.so
+*.so.*
 *.dll
 *.zip
 *.love
