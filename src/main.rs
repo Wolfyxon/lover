@@ -3,7 +3,7 @@ use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
-use console::{confirm_or_exit, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
+use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
 
 mod project_config;
 
@@ -333,9 +333,7 @@ fn cmd_help(command: &Command) {
             }
         }
 
-        print_err(format!("help: Unknown command '{}'", alias));
-        exit(1);
-
+        exit_err(format!("help: Unknown command '{}'", alias));
     } else {
         show_help();
     }
@@ -371,8 +369,7 @@ fn cmd_parse(_command: &Command) {
     let parser = config::get().software.luac;
 
     if !actions::command_exists(&parser) {
-        print_err(format!("Cannot parse: '{}' not found.", parser));
-        exit(1);
+        exit_err(format!("Cannot parse: '{}' not found.", parser));
     }
 
     actions::parse_all(Path::new(&project_config::get().directories.source));
@@ -393,8 +390,7 @@ fn cmd_build(command: &Command) {
     let target_res = targets::get_target_by_string(target_name.to_owned());
 
     if target_res.is_none() {
-        print_err(format!("Unknown target: '{}'", target_name));
-        exit(1);
+        exit_err(format!("Unknown target: '{}'", target_name));
     }
 
     let target = target_res.unwrap();
@@ -439,8 +435,7 @@ fn cmd_new(command: &Command) {
 
     for blacklisted in &char_blacklist {
         if name.contains(blacklisted) {
-            print_err(format!("Project name cannot contain: {}", &char_blacklist.join(" ")));
-            exit(1);
+            exit_err(format!("Project name cannot contain: {}", &char_blacklist.join(" ")));
         }
     }
     
@@ -514,8 +509,7 @@ fn cmd_uninstall(command: &Command) {
     }
 
     if amt == 0 {
-        print_err("None of the specified packages are installed.".to_string());
-        exit(1);
+        exit_err("None of the specified packages are installed.".to_string());
     }
 
     print_stage("The following dependencies will be removed:".to_string());

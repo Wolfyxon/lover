@@ -2,7 +2,7 @@ use std::path::Path;
 use std::process::exit;
 
 use crate::{actions, config};
-use crate::console::{print_err, print_warn, print_stage};
+use crate::console::{exit_err, print_err, print_stage, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
@@ -63,8 +63,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                 let current_dir_res = std::env::current_dir();
 
                 if current_dir_res.is_err() {
-                    print_err(format!("Failed to get current working directory: {}", current_dir_res.err().unwrap()));
-                    exit(1);
+                    exit_err(format!("Failed to get current working directory: {}", current_dir_res.err().unwrap()));
                 }
 
                 let project_conf = project_config::get();
@@ -100,8 +99,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                 let cd_res = std::env::set_current_dir(&build_dir);
 
                 if cd_res.is_err() {
-                    print_err(format!("Failed to change directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
-                    exit(1);
+                    exit_err(format!("Failed to change directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
                 }
 
                 // Extracting squashfs-root
@@ -114,8 +112,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                 let cd_back_res = std::env::set_current_dir(&current_dir);
 
                 if cd_back_res.is_err() {
-                    print_err(format!("Failed to revert directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
-                    exit(1);
+                    exit_err(format!("Failed to revert directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
                 }
 
                 // Appending .love to the love binary

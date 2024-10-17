@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf, process::exit};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, print_err, print_stage, print_success, ProgressBar}, http};
+use crate::{config, console::{confirm_or_exit, exit_err, print_err, print_stage, print_success, ProgressBar}, http};
 
 #[derive(Deserialize)]
 pub struct GitHubRelease { 
@@ -68,8 +68,7 @@ impl<'a> Dependency<'a> {
         let asset_res = release.get_asset_matching(&self.pattern);
 
         if asset_res.is_none() {
-            print_err(format!("No file matches pattern '{}' in release. This is a bug!", &self.pattern));
-            exit(1);
+            exit_err(format!("No file matches pattern '{}' in release. This is a bug!", &self.pattern));
         }
 
         asset_res.unwrap().clone()
@@ -142,8 +141,7 @@ pub fn get_dep_by_string<'a>(name: String) -> Dependency<'a> {
         }
     }
 
-    print_err(format!("Unknown dependency '{}'", name));
-    exit(1);
+    exit_err(format!("Unknown dependency '{}'", name));
 }
 
 pub fn get_deps_by_strings<'a>(names: Vec<String>) -> Vec<Dependency<'a>> {
@@ -222,8 +220,7 @@ pub fn create_dir() {
         let err = fs::create_dir_all(&dir);
 
         if err.is_err() {
-            println!("Can't create dependency directory at '{}': {}", &dir.to_str().unwrap(), err.err().unwrap());
-            exit(1);
+            exit_err(format!("Can't create dependency directory at '{}': {}", &dir.to_str().unwrap(), err.err().unwrap()));
         }
     }
 }

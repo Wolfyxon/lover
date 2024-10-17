@@ -1,7 +1,7 @@
 use std::path::Path;
 use serde::Deserialize;
 use std::process::exit;
-use crate::console::print_err;
+use crate::console::{exit_err, print_err};
 
 pub const PATH: &str = "lover.toml";
 
@@ -49,8 +49,7 @@ impl ProjectConfig {
         }
 
         if !errors.is_empty() {
-            print_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
-            exit(1);
+            exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
         }
     }
 }
@@ -65,22 +64,19 @@ pub fn get() -> ProjectConfig {
     let path = Path::new(PATH);
 
     if !path.exists() {
-        print_err(format!("Project config '{}' doesn't exist in the current directory.", path.display()));
-        exit(1);
+        exit_err(format!("Project config '{}' doesn't exist in the current directory.", path.display()));
     }
 
     let string_res = std::fs::read_to_string(path);
 
     if string_res.is_err() {
-        print_err(format!("Failed to open '{}': {}", path.display(), string_res.as_ref().err().unwrap().to_string() ));
-        exit(1);
+        exit_err(format!("Failed to open '{}': {}", path.display(), string_res.as_ref().err().unwrap().to_string() ));
     }
 
     let parse_res = ProjectConfig::parse_str(string_res.unwrap().as_str());
 
     if parse_res.is_err() {
-        print_err(format!("Project config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
-        exit(1);
+        exit_err(format!("Project config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
     }
 
     let conf = parse_res.unwrap();

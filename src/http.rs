@@ -2,7 +2,7 @@ use reqwest::blocking::Client;
 use serde::de::DeserializeOwned;
 use std::{fs::File, io::{Read, Write}, path::Path, process::exit};
 
-use crate::console::ProgressBar;
+use crate::console::{exit_err, ProgressBar};
 use crate::console::{print_err, print_success, print_stage};
 
 const USER_AGENT: &str = "Lover";
@@ -14,15 +14,13 @@ pub fn fetch_text(url: &str) -> String {
         .send();
 
     if res.is_err() {
-        print_err(format!("Failed to request '{}': {}", url, res.err().unwrap()));
-        exit(1);
+        exit_err(format!("Failed to request '{}': {}", url, res.err().unwrap()));
     } 
 
     let text_res = res.unwrap().text();
 
     if text_res.is_err() {
-        print_err(format!("Failed to get text from '{}': {}", url, text_res.err().unwrap()));
-        exit(1);
+        exit_err(format!("Failed to get text from '{}': {}", url, text_res.err().unwrap()));
     }
 
     text_res.unwrap()
@@ -32,8 +30,7 @@ pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> T {
     let res = serde_json::from_str(fetch_text(url).as_str()); 
 
     if res.is_err() {
-        print_err(format!("Struct parse error of '{}': {}", url, res.err().unwrap()));
-        exit(1);
+        exit_err(format!("Struct parse error of '{}': {}", url, res.err().unwrap()));
     }
 
     res.unwrap()
@@ -45,8 +42,7 @@ pub fn download(url: &str, path: &Path) {
     let file_res = File::create(path);
 
     if file_res.is_err() {
-        print_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), file_res.err().unwrap()));
-        exit(1);
+        exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), file_res.err().unwrap()));
     }
 
     let req_res = Client::new()
@@ -55,8 +51,7 @@ pub fn download(url: &str, path: &Path) {
         .send();
 
     if req_res.is_err() {
-        print_err(format!("Request failed: {}", req_res.err().unwrap()));
-        exit(1);
+        exit_err(format!("Request failed: {}", req_res.err().unwrap()));
     }
 
     let mut req = req_res.unwrap();
@@ -64,8 +59,7 @@ pub fn download(url: &str, path: &Path) {
     let len_res = req.content_length();
 
     if len_res.is_none() {
-        print_err("Failed to get content length".to_string());
-        exit(1);
+        exit_err("Failed to get content length".to_string());
     }
 
     let len = len_res.unwrap() as usize;
@@ -77,8 +71,7 @@ pub fn download(url: &str, path: &Path) {
         let read_res = req.read(&mut buf);
 
         if read_res.is_err() {
-            print_err(format!("Read failed: {}", read_res.err().unwrap()));
-            exit(1);
+            exit_err(format!("Read failed: {}", read_res.err().unwrap()));
         }
 
         let bytes_read = read_res.unwrap();
@@ -87,10 +80,8 @@ pub fn download(url: &str, path: &Path) {
         let write_res = file.write_all(&buf[..bytes_read]);
 
         if write_res.is_err() {
-            print_err(format!("Write failed: {}", write_res.err().unwrap()));
-
             bar.finish();
-            exit(1);
+            exit_err(format!("Write failed: {}", write_res.err().unwrap()));
         }
 
         bytes += bytes_read;

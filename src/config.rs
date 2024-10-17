@@ -1,7 +1,7 @@
 use std::path::PathBuf;
 use std::process::exit;
 use serde::Deserialize;
-use crate::console::print_err;
+use crate::console::{exit_err, print_err};
 
 const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 
@@ -154,15 +154,13 @@ pub fn get() -> Config {
     let string_res = std::fs::read_to_string(&path);
 
     if string_res.is_err() {
-        print_err(format!("Failed to open config at '{}': {}", &path.display(), string_res.as_ref().err().unwrap().to_string()));
-        exit(1);
+        exit_err(format!("Failed to open config at '{}': {}", &path.display(), string_res.as_ref().err().unwrap().to_string()));
     }
 
     let parse_res = Config::parse_str(string_res.unwrap().as_str());
 
     if parse_res.is_err() {
-        print_err(format!("Config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
-        exit(1);
+        exit_err(format!("Config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
     }
 
     parse_res.unwrap()
