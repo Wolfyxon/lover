@@ -17,10 +17,10 @@ impl<'a> BuildTarget<'a> {
     pub fn get_all_dep_names(&self) -> Vec<String> {
         let mut res:Vec<String> = Vec::new();
 
-        for name in &self.previous {
-            let prev = deps::get_dep(name);
+        for name in &self.deps {
+            let dep = deps::get_dep(name);
 
-            res.push(prev.name.to_string());
+            res.push(dep.name.to_string());
         }
 
         res
