@@ -231,7 +231,7 @@ pub fn combine_files(paths: Vec<&Path>, target_path: &Path) {
             let bytes_read = read_res.unwrap();
             if bytes_read == 0 { break; }
 
-            let write_res = target.write_all(&buf);
+            let write_res = target.write_all(&buf[..bytes_read]);
 
             if write_res.is_err() {
                 print_err(format!("Write failed: {}", write_res.err().unwrap()));
