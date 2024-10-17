@@ -10,7 +10,7 @@ pub struct BuildTarget<'a> {
     pub description: &'a str,
     pub deps: Vec<&'a str>,
     pub previous: Vec<&'a str>,
-    builder: fn()
+    builder: fn(target: &BuildTarget)
 }
 
 impl<'a> BuildTarget<'a> {
@@ -31,7 +31,7 @@ impl<'a> BuildTarget<'a> {
     }
 
     pub fn build(&self) {
-        (self.builder)();
+        (self.builder)(&self);
     }
 }
 
@@ -42,7 +42,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             description: "Game's code packaged in the Love format.",
             deps: Vec::new(),
             previous: Vec::new(),
-            builder: || {
+            builder: |_target| {
                 let config = project_config::get();
                 let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
             
