@@ -1,3 +1,4 @@
+use std::borrow::BorrowMut;
 use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
@@ -9,6 +10,7 @@ use std::process::ExitStatus;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
+use zip::read;
 use zip::write::SimpleFileOptions;
 
 use crate::config;
@@ -190,4 +192,51 @@ pub fn archive(source: &Path, output: &Path) {
     }
 
     bar.finish();
+}
+
+pub fn combine_files(paths: Vec<&Path>, target_path: &Path) {
+    let mut files: Vec<File> = Vec::new();
+
+    for path in paths {
+        let res = File::open(path);
+
+        if res.is_err() {
+            print_err(format!("Failed to open file to read '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
+            exit(1);
+        }
+
+        files.push(res.unwrap());
+    }
+
+    let target_res = File::create(target_path);
+
+    if target_res.is_err() {
+        print_err(format!("Failed to open target file '{}': {}", target_path.to_str().unwrap(), target_res.err().unwrap()));
+        exit(1);
+    }
+
+    let mut target = target_res.unwrap();
+
+    for mut file in files {
+        loop {
+            let mut buf: [u8; 1024] = [0; 1024];
+            
+            let read_res = file.read(&mut buf);
+
+            if read_res.is_err() {
+                print_err(format!("Read failed: {}", read_res.err().unwrap()));
+                exit(1);
+            }
+
+            let bytes_read = read_res.unwrap();
+            if bytes_read == 0 { break; }
+
+            let write_res = target.write_all(&buf);
+
+            if write_res.is_err() {
+                print_err(format!("Write failed: {}", write_res.err().unwrap()));
+                exit(1);
+            }
+        }
+    }
 }
