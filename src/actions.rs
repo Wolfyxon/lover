@@ -21,6 +21,12 @@ use crate::files;
 use crate::files::get_file_tree;
 
 pub fn command_exists(command: &str) -> bool {
+    let as_path = Path::new(command);
+    
+    if as_path.is_file() {
+        return true;
+    }
+    
     let path_env_res = std::env::var_os("PATH");
 
     if path_env_res.is_none() {
