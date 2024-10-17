@@ -60,11 +60,23 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             builder: |_target| {
                 print_stage("Extracting Love2D AppImage contents".to_string());
 
+                let current_dir_res = std::env::current_dir();
+
+                if current_dir_res.is_err() {
+                    print_err(format!("Failed to get current working directory: {}", current_dir_res.err().unwrap()));
+                    exit(1);
+                }
+
+                let current_dir = current_dir_res.unwrap();
+
                 let project_conf = project_config::get();
                 let build_dir = Path::new(&project_conf.directories.build);
+                let love = Path::new(project_conf.directories.build.as_str()).join(project_conf.package.name + ".love");
 
                 let love_app_img = deps::get_dep("linux").get_path();
+                
                 let squashfs_root = build_dir.join("squashfs-root");
+                let love_bin = squashfs_root.join("bin/love");
 
                 if squashfs_root.exists() {
                     print_warn("squashfs-root already exists and will be re-extracted.".to_string());
@@ -84,6 +96,17 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                 }
 
                 actions::execute(love_app_img.to_str().unwrap(), vec!["--appimage-extract".to_string()], true);
+
+                print_stage("Embedding the game's code into the executable".to_string());
+
+                let cd_back_res = std::env::set_current_dir(&current_dir);
+
+                if cd_back_res.is_err() {
+                    print_err(format!("Failed to revert directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
+                    exit(1);
+                }
+
+                actions::append_file(love.as_path(), love_bin.as_path());
             }
         }
     ]
