@@ -5,6 +5,7 @@
 
 > [!NOTE]
 > This tool is in early development. Some of the described features may not work yet.
+> Downloads will be available as soon as the first version is complete, for now you can use the source code if you want to check it out.
 > 
 > [See the project's progress](https://github.com/Wolfyxon/lover/issues/1).
 
