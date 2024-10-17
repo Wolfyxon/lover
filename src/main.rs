@@ -379,7 +379,7 @@ fn cmd_parse(_command: &Command) {
 }
 
 fn cmd_build(command: &Command) {
-    let mut target = "love".to_string();
+    let mut target_name = "love".to_string();
 
     // TODO: All targets from lover.toml
     // TODO: Platform detection and building for that platform
@@ -387,27 +387,42 @@ fn cmd_build(command: &Command) {
     let arg_target_res = command.get_arg("target");
 
     if arg_target_res.is_some() {
-        target = arg_target_res.unwrap();
+        target_name = arg_target_res.unwrap();
     }
 
-    print_significant("Building target", target.to_string());   
+    let target_res = targets::get_target_by_string(target_name.to_owned());
 
-    match target.as_str() {
-        "love" => {
-            let config = project_config::get();
-            let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
-        
-            actions::parse_all(Path::new(&project_config::get().directories.source));
-            actions::archive(Path::new(config.directories.source.as_str()), &output);
-        
-            print_success(format!("Successfully built: {}", output.to_str().unwrap()));
-        }
+    if target_res.is_none() {
+        print_err(format!("Unknown target: '{}'", target_name));
+        exit(1);
+    }
 
-        _ => {
-            print_err(format!("Unknown target '{}'", target));
-            exit(1);
+    let target = target_res.unwrap();
+
+    print_significant("Building target", target.name.to_string());
+    
+
+    let mut to_install: Vec<String> = Vec::new();
+
+    for dep in &target.get_all_deps() {
+        if !dep.is_installed() {
+            to_install.push(dep.name.to_string());
         }
-    } 
+    }
+
+    if to_install.len() != 0 {
+        print_warn("Some dependencies are missing and need to be installed.".to_string());
+        deps::install(to_install);
+    } else {
+        print_success("All dependencies are installed.".to_string());
+    }
+
+    for name in &target.previous {
+        let previous = targets::get_target_by_string(name.to_string()).unwrap();
+        previous.build();
+    }
+
+    target.build();
 }
 
 fn cmd_clean(_command: &Command) {
