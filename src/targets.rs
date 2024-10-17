@@ -1,7 +1,7 @@
 use std::path::Path;
 use std::process::exit;
 
-use crate::actions;
+use crate::{actions, config};
 use crate::console::{print_err, print_warn, print_stage};
 use crate::deps::Dependency;
 use crate::project_config;
@@ -68,11 +68,14 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
                 }
 
                 let project_conf = project_config::get();
+                let conf = config::get();
+
+                let pkg_name = project_conf.package.name;
 
                 // Paths
                 let current_dir = current_dir_res.unwrap();
                 let build_dir = Path::new(&project_conf.directories.build);
-                let love = Path::new(project_conf.directories.build.as_str()).join(project_conf.package.name + ".love");
+                let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
 
                 let love_app_img = deps::get_dep("linux").get_path();
                 
@@ -117,6 +120,17 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
 
                 // Appending .love to the love binary
                 actions::append_file(love.as_path(), love_bin.as_path());
+
+                // Building .AppImage from squashfs-root
+
+                print_stage("Building .AppImage".to_string());
+
+                let appimage_path = build_dir.join(format!("{}.AppImage", &pkg_name));
+
+                actions::execute(conf.software.appimagetool.as_str(), vec![
+                    squashfs_root.to_str().unwrap().to_string(), 
+                    appimage_path.to_str().unwrap().to_string()
+                ], false);
             }
         }
     ]
