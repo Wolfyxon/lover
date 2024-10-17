@@ -1,5 +1,6 @@
 use std::borrow::BorrowMut;
 use std::collections::HashMap;
+use std::fs::OpenOptions;
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -194,49 +195,44 @@ pub fn archive(source: &Path, output: &Path) {
     bar.finish();
 }
 
-pub fn combine_files(paths: Vec<&Path>, target_path: &Path) {
-    let mut files: Vec<File> = Vec::new();
-
-    for path in paths {
-        let res = File::open(path);
-
-        if res.is_err() {
-            print_err(format!("Failed to open file to read '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
-            exit(1);
-        }
-
-        files.push(res.unwrap());
-    }
-
-    let target_res = File::create(target_path);
-
-    if target_res.is_err() {
-        print_err(format!("Failed to open target file '{}': {}", target_path.to_str().unwrap(), target_res.err().unwrap()));
+pub fn append_file(from: &Path, to: &Path) {
+    let from_file_res = File::open(from);
+    
+    if from_file_res.is_err() {
+        print_err(format!("Failed to open '{}': {}", from.to_str().unwrap(), from_file_res.err().unwrap()));
         exit(1);
     }
 
-    let mut target = target_res.unwrap();
+    let to_file_res = OpenOptions::new()
+        .append(true)
+        .open(to);
+    
+    if to_file_res.is_err() {
+        print_err(format!("Failed to open '{}': {}", to.to_str().unwrap(), to_file_res.err().unwrap()));
+        exit(1);
+    }
 
-    for mut file in files {
-        loop {
-            let mut buf: [u8; 1024] = [0; 1024];
-            
-            let read_res = file.read(&mut buf);
+    let mut to_file = to_file_res.unwrap();
+    let mut from_file = from_file_res.unwrap();
+    
+    loop {
+        let mut buf: [u8; 1024] = [0; 1024];
+        
+        let read_res = from_file.read(&mut buf);
 
-            if read_res.is_err() {
-                print_err(format!("Read failed: {}", read_res.err().unwrap()));
-                exit(1);
-            }
+        if read_res.is_err() {
+            print_err(format!("Read failed: {}", read_res.err().unwrap()));
+            exit(1);
+        }
 
-            let bytes_read = read_res.unwrap();
-            if bytes_read == 0 { break; }
+        let bytes_read = read_res.unwrap();
+        if bytes_read == 0 { break; }
 
-            let write_res = target.write_all(&buf[..bytes_read]);
+        let write_res = to_file.write_all(&buf[..bytes_read]);
 
-            if write_res.is_err() {
-                print_err(format!("Write failed: {}", write_res.err().unwrap()));
-                exit(1);
-            }
+        if write_res.is_err() {
+            print_err(format!("Write failed: {}", write_res.err().unwrap()));
+            exit(1);
         }
     }
 }
