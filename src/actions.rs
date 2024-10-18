@@ -66,7 +66,7 @@ pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<&str, &st
     let res = pre_run.status();
     
     if res.is_err() {
-        exit_err("Failed to execute command".to_string());    
+        exit_err(format!("Failed to execute command: {}", res.err().unwrap()));    
     }
 
     let status: std::process::ExitStatus = res.unwrap();
