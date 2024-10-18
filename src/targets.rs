@@ -77,19 +77,17 @@ fn build_love(_target: &BuildTarget) {
 }
 
 fn build_linux(_target: &BuildTarget) {
-    let current_dir_res = std::env::current_dir();
-
-    if current_dir_res.is_err() {
-        exit_err(format!("Failed to get current working directory: {}", current_dir_res.err().unwrap()));
-    }
-
     let project_conf = project_config::get();
     let conf = config::get();
 
     let pkg_name = project_conf.package.name;
 
     // Paths
-    let current_dir = current_dir_res.unwrap();
+    let current_dir = match std::env::current_dir() {
+        Ok(dir) => dir,
+        Err(err) => exit_err(format!("Failed to get current working directory: {}", err))
+    };
+
     let build_dir = Path::new(&project_conf.directories.build);
     let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
 
@@ -123,13 +121,12 @@ fn build_linux(_target: &BuildTarget) {
     if std::env::consts::FAMILY == "unix" {
         print_stage("Applying execution permission to the Love AppImage".to_string());
 
-        let meta_res = std::fs::metadata(&love_app_img);
-        
-        if meta_res.is_err() {
-            exit_err(format!("Failed to get file metadata: {}", meta_res.err().unwrap()));
-        }
-    
-        let mut perms = meta_res.unwrap().permissions();
+        let meta = match std::fs::metadata(&love_app_img) {
+            Ok(meta) => meta,
+            Err(err) => exit_err(format!("Failed to get file metadata: {}", err))
+        };
+
+        let mut perms = meta.permissions();
         perms.set_mode(perms.mode() | 0o755);
 
         let update_res = std::fs::set_permissions(&love_app_img, perms);

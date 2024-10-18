@@ -150,18 +150,15 @@ pub fn get() -> Config {
         return Config::default();
     }
 
-    let path = get_config_path();
-    let string_res = std::fs::read_to_string(&path);
+    let path: PathBuf = get_config_path();
+    
+    let string = match std::fs::read_to_string(&path) {
+        Ok(string) => string,
+        Err(err) => exit_err(format!("Failed to open config at '{}': {}", &path.display(), err))
+    };
 
-    if string_res.is_err() {
-        exit_err(format!("Failed to open config at '{}': {}", &path.display(), string_res.as_ref().err().unwrap().to_string()));
+    match Config::parse_str(string.as_str()) {
+        Ok(parsed) => parsed,
+        Err(err) =>  exit_err(format!("Config parse error: {}", err))
     }
-
-    let parse_res = Config::parse_str(string_res.unwrap().as_str());
-
-    if parse_res.is_err() {
-        exit_err(format!("Config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
-    }
-
-    parse_res.unwrap()
 }

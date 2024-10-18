@@ -17,33 +17,21 @@ pub fn fetch_text(url: &str) -> String {
         exit_err(format!("Failed to request '{}': {}", url, res.err().unwrap()));
     } 
 
-    let text_res = res.unwrap().text();
-
-    if text_res.is_err() {
-        exit_err(format!("Failed to get text from '{}': {}", url, text_res.err().unwrap()));
+    match res.unwrap().text() {
+        Ok(text) => text,
+        Err(err) => exit_err(format!("Failed to get text from '{}': {}", url, err))
     }
-
-    text_res.unwrap()
 }
 
 pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> T {
-    let res = serde_json::from_str(fetch_text(url).as_str()); 
-
-    if res.is_err() {
-        exit_err(format!("Struct parse error of '{}': {}", url, res.err().unwrap()));
+    match serde_json::from_str(fetch_text(url).as_str()) {
+        Ok(parsed) => parsed,
+        Err(err) => exit_err(format!("Struct parse error of '{}': {}", url, err))
     }
-
-    res.unwrap()
 }
 
 pub fn download(url: &str, path: &Path) {
     print_stage(format!("Downloading '{}'...", url));
-
-    let file_res = File::create(path);
-
-    if file_res.is_err() {
-        exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), file_res.err().unwrap()));
-    }
 
     let req_res = Client::new()
         .get(url)
@@ -55,26 +43,28 @@ pub fn download(url: &str, path: &Path) {
     }
 
     let mut req = req_res.unwrap();
-    let mut file = file_res.unwrap();
-    let len_res = req.content_length();
+    
+    let mut file = match File::create(path) {
+        Ok(file) => file,
+        Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)) 
+    };
 
-    if len_res.is_none() {
-        exit_err("Failed to get content length".to_string());
-    }
+    let len = match req.content_length() {
+        Some(len) => len as usize,
+        None => exit_err("Failed to get content length".to_string()) 
+    };
 
-    let len = len_res.unwrap() as usize;
     let bar = ProgressBar::new(len);
     let mut bytes: usize = 0;
     
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
-        let read_res = req.read(&mut buf);
 
-        if read_res.is_err() {
-            exit_err(format!("Read failed: {}", read_res.err().unwrap()));
-        }
+        let bytes_read = match req.read(&mut buf) {
+            Ok(bytes) => bytes,
+            Err(err) => exit_err(format!("Read failed: {}", err)) 
+        };
 
-        let bytes_read = read_res.unwrap();
         if bytes_read == 0 { break; }
 
         let write_res = file.write_all(&buf[..bytes_read]);

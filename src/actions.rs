@@ -12,6 +12,7 @@ use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
+use zip::ZipArchive;
 
 use crate::config;
 use crate::console::exit_err;
@@ -63,13 +64,11 @@ pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<&str, &st
         pre_run.stdout(Stdio::null());
     }
 
-    let res = pre_run.status();
+    let status = match pre_run.status() {
+        Ok(status) => status,
+        Err(err) =>  exit_err(format!("Failed to execute command: {}", err)) 
+    };
     
-    if res.is_err() {
-        exit_err(format!("Failed to execute command: {}", res.err().unwrap()));    
-    }
-
-    let status: std::process::ExitStatus = res.unwrap();
     let exit_code = status.code().unwrap();
 
     if status.success() {
@@ -111,13 +110,12 @@ pub fn parse_all(root: &Path) {
 
     print_stage("Parsing Lua scripts...".to_string());
 
-    let res = files::get_file_tree_of_type(root, "lua");
+    let scripts = match files::get_file_tree_of_type(root, "lua") {
+        Ok(scripts) => scripts,
+        Err(err) => exit_err(format!("Failed to get scripts: {}", err)) 
+    };
 
-    if res.is_err() {
-        exit_err(format!("Failed to get scripts: {}", res.err().unwrap().to_string()));
-    }
-
-    for script in res.unwrap() {
+    for script in scripts {
         execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
     }
 
@@ -134,13 +132,10 @@ pub fn clean(path: &Path) {
         exit_err(format!("'{}' is not a directory!", path.to_str().unwrap()));
     }
 
-    let res = std::fs::remove_dir_all(path);
-    
-    if res.is_err() {
-        exit_err(format!("Failed to delete '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
-    }
-
-    print_success("Clean successful".to_string());
+    match std::fs::remove_dir_all(path) {
+        Ok(()) => print_success("Clean successful".to_string()),
+        Err(err) => exit_err(format!("Failed to delete '{}': {}", path.to_str().unwrap(), err))
+    };
 }
 
 pub fn create_dir(path: &Path) {
@@ -154,19 +149,16 @@ pub fn create_dir(path: &Path) {
 pub fn archive(source: &Path, output: &Path) {
     create_dir(output.parent().unwrap());
 
-    let output_file_res = File::create(output);
-    let tree_res = get_file_tree(source);
+    let output_file = match File::create(output) {
+        Ok(file) => file,
+        Err(err) => exit_err(format!("Cannot open '{}': {}", output.to_str().unwrap(), err))
+    };
 
-    if output_file_res.is_err() {
-        exit_err(format!("Cannot open '{}': {}", output.to_str().unwrap(), output_file_res.err().unwrap()));
-    }
+    let tree = match get_file_tree(source) {
+        Ok(tree) => tree,
+        Err(err) => exit_err(format!("Cannot get source tree: {}", err))
+    };
 
-    if tree_res.is_err() {
-        exit_err(format!("Cannot get source tree: {}", tree_res.err().unwrap()));
-    }
-
-    let tree = tree_res.unwrap();
-    let output_file = output_file_res.unwrap();
     let options = SimpleFileOptions::default();
     let mut zip = zip::ZipWriter::new(output_file);
     let mut buffer: Vec<u8> = Vec::new();
@@ -193,12 +185,11 @@ pub fn archive(source: &Path, output: &Path) {
 }
 
 pub fn append_file(from: &Path, to: &Path) {
-    let from_file_res = File::open(from);
+    let mut from_file = match File::open(from) {
+        Ok(file) => file,
+        Err(err) => exit_err(format!("Failed to open '{}': {}", from.to_str().unwrap(), err))
+    };
     
-    if from_file_res.is_err() {
-        exit_err(format!("Failed to open '{}': {}", from.to_str().unwrap(), from_file_res.err().unwrap()));
-    }
-
     let to_file_res = OpenOptions::new()
         .append(true)
         .open(to);
@@ -208,18 +199,15 @@ pub fn append_file(from: &Path, to: &Path) {
     }
 
     let mut to_file = to_file_res.unwrap();
-    let mut from_file = from_file_res.unwrap();
-    
+
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
         
-        let read_res = from_file.read(&mut buf);
+        let bytes_read = match from_file.read(&mut buf) {
+            Ok(bytes_read) => bytes_read,
+            Err(err) =>  exit_err(format!("Read failed: {}", err))
+        };
 
-        if read_res.is_err() {
-            exit_err(format!("Read failed: {}", read_res.err().unwrap()));
-        }
-
-        let bytes_read = read_res.unwrap();
         if bytes_read == 0 { break; }
 
         let write_res = to_file.write_all(&buf[..bytes_read]);

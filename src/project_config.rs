@@ -67,22 +67,18 @@ pub fn get() -> ProjectConfig {
         exit_err(format!("Project config '{}' doesn't exist in the current directory.", path.display()));
     }
 
-    let string_res = std::fs::read_to_string(path);
+    let string = match std::fs::read_to_string(path) {
+        Ok(string) => string,
+        Err(err) => exit_err(format!("Failed to open '{}': {}", path.display(), err)) 
+    };
 
-    if string_res.is_err() {
-        exit_err(format!("Failed to open '{}': {}", path.display(), string_res.as_ref().err().unwrap().to_string() ));
-    }
+    let parsed = match ProjectConfig::parse_str(string.as_str()) {
+        Ok(parsed) => parsed,
+        Err(err) => exit_err(format!("Project config parse error: {}", err)) 
+    };
 
-    let parse_res = ProjectConfig::parse_str(string_res.unwrap().as_str());
-
-    if parse_res.is_err() {
-        exit_err(format!("Project config parse error: {}", parse_res.as_ref().err().unwrap().to_string() ));
-    }
-
-    let conf = parse_res.unwrap();
-    conf.validate();
-
-    conf
+    parsed.validate();
+    parsed
 }
 
 fn def_directories() -> Directories {

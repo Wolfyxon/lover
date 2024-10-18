@@ -32,13 +32,10 @@ pub fn create(name: String, path: &Path) {
         }
     }
 
-    let dir_res = path.read_dir();
-
-    if dir_res.is_err() {
-        exit_err(format!("Failed to read directory: {}", dir_res.err().unwrap()));
-    }
-
-    let mut dir = dir_res.unwrap();
+    let mut dir = match path.read_dir() {
+        Ok(dir) => dir,
+        Err(err) =>  exit_err(format!("Failed to read directory: {}", err))
+    };
 
     if dir.next().is_some() {
         exit_err(format!("Directory '{}' must be empty", name));
@@ -58,13 +55,11 @@ pub fn create(name: String, path: &Path) {
             }
         }
 
-        let file_res = File::create(&target_path);
-        
-        if file_res.is_err() {
-            exit_err(format!("Failed to create file {}: {}", &target_path.to_str().unwrap(), file_res.err().unwrap()));
-        }
+        let mut file = match  File::create(&target_path) {
+            Ok(file) => file,
+            Err(err) => exit_err(format!("Failed to create file {}: {}", &target_path.to_str().unwrap(), err))
+        };
 
-        let mut file = file_res.unwrap();
         let write_res = file.write_all(component.buffer);
 
         if write_res.is_err() {
