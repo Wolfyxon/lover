@@ -44,13 +44,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             description: "Game's code packaged in the Love format.",
             deps: Vec::new(),
             previous: Vec::new(),
-            builder: |_target| {
-                let config = project_config::get();
-                let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
-            
-                actions::parse_all(Path::new(&project_config::get().directories.source));
-                actions::archive(Path::new(config.directories.source.as_str()), &output);
-            }
+            builder: build_love
         },
         BuildTarget {
             name: "linux",
@@ -70,6 +64,14 @@ pub fn get_target_by_string<'a>(name: String) -> Option<BuildTarget<'a>> {
     }
 
     None
+}
+
+fn build_love(_target: &BuildTarget) {
+    let config = project_config::get();
+    let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
+
+    actions::parse_all(Path::new(&project_config::get().directories.source));
+    actions::archive(Path::new(config.directories.source.as_str()), &output);
 }
 
 fn build_linux(_target: &BuildTarget) {
