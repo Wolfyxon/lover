@@ -211,7 +211,7 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
         },
         Command {
             alias: "parse".to_string(),
-            description: "Checks the validity of Lua scripts..".to_string(),
+            description: "Checks the validity of Lua scripts.".to_string(),
             function: cmd_parse,
             args: vec![],
             flags: vec![]
