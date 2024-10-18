@@ -1,3 +1,5 @@
+use std::fs::Permissions;
+use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 use std::process::exit;
 
@@ -117,6 +119,26 @@ fn build_linux(_target: &BuildTarget) {
 
     if cd_res.is_err() {
         exit_err(format!("Failed to change directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
+    }
+
+    // Adding execution perms
+    if std::env::consts::FAMILY == "unix" {
+        print_stage("Applying execution permission to the Love AppImage".to_string());
+
+        let meta_res = std::fs::metadata(&love_app_img);
+        
+        if meta_res.is_err() {
+            exit_err(format!("Failed to get file metadata: {}", meta_res.err().unwrap()));
+        }
+    
+        let mut perms = meta_res.unwrap().permissions();
+        perms.set_mode(perms.mode() | 0o755);
+
+        let update_res = std::fs::set_permissions(&love_app_img, perms);
+
+        if update_res.is_err() {
+            exit_err(format!("Failed to update permissions: {}", update_res.err().unwrap()));
+        }
     }
 
     // Extracting squashfs-root
