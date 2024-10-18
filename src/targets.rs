@@ -77,8 +77,6 @@ fn build_love(_target: &BuildTarget) {
 }
 
 fn build_linux(_target: &BuildTarget) {
-    print_stage("Extracting Love2D AppImage contents".to_string());
-
     let current_dir_res = std::env::current_dir();
 
     if current_dir_res.is_err() {
@@ -142,6 +140,8 @@ fn build_linux(_target: &BuildTarget) {
     }
 
     // Extracting squashfs-root
+    print_stage("Extracting Love2D AppImage contents".to_string());
+
     actions::execute(love_app_img.to_str().unwrap(), vec!["--appimage-extract".to_string()], true);
 
     print_stage("Embedding the game's code into the executable".to_string());
