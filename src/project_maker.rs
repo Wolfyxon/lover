@@ -1,4 +1,4 @@
-use std::{fs::{self, File}, io::Write, path::Path};
+use std::{fs, io::Write, path::Path};
 use crate::{console::{exit_err, print_success}, files, project_config};
 
 struct ComponentFile<'a> {

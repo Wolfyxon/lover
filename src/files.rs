@@ -1,7 +1,5 @@
 use std::{fs::{File, OpenOptions}, path::{Path, PathBuf}};
 
-use zip::write::FileOptions;
-
 use crate::console::exit_err;
 
 pub fn get_file_tree(root: &Path) -> Vec<PathBuf> {
