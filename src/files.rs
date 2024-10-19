@@ -1,4 +1,4 @@
-use std::path::{PathBuf, Path};
+use std::{fs::File, path::{Path, PathBuf}};
 
 use crate::console::exit_err;
 
@@ -46,4 +46,11 @@ pub fn get_file_tree_of_type(root: &Path, extension: &str) -> Vec<PathBuf> {
     }
 
     res
+}
+
+pub fn create(path: &Path) -> File {
+    match File::create(path) {
+        Ok(file) => file,
+        Err(err) => exit_err(format!("Failed to create '{}': {}", path.to_str().unwrap(), err))
+    }
 }
