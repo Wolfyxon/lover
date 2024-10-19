@@ -49,7 +49,6 @@ Also this tool does not require installing as much software as Love2D Universal 
 This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
 
 ## Used crates
-- `editpe`: Editing Windows EXE files
 - `reqwest`: Sending HTTP request and downloading files
 - `serde`: Serializing structs
 - `serde_json`: JSON parsing and serde support
