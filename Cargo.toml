@@ -1,6 +1,6 @@
 [package]
 name = "lover"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Wolfyxon"]
 repository = "https://github.com/wolfyxon/lover"
 documentation = "https://github.com/Wolfyxon/lover/wiki"
