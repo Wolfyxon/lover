@@ -65,7 +65,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             description: "Windows x86_32 EXE",
             deps: vec!["win32"],
             previous: vec!["love"],
-            builder: build_win64
+            builder: build_win32
         }
     ]
 }
