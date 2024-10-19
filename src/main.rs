@@ -548,7 +548,7 @@ fn cmd_dep(command: &Command) {
                 suffix = "(installed)";
             }
 
-            println!("  {} {}", styled_name, suffix);
+            println!("  {} {}: {}", styled_name, suffix, dep.description);
         }
 
         println!();
