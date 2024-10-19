@@ -230,7 +230,7 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             description: "Packages the game.".to_string(),
             function: cmd_build,
             args: vec![
-                CommandArg::opt("target", "Build target.")
+                CommandArg::opt("targets...", "Names of the targets to build.")
             ],
             flags: vec![]
         },
