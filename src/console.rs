@@ -42,6 +42,12 @@ impl ProgressBar {
         let spaces = " ".repeat( (width - amt * width) as usize );
 
         print!("\r[{}{}] {}/{}", fill, spaces, progress, self.max);
+
+        let flush_res = stdout().flush();
+
+        if flush_res.is_err() {
+            print_warn(format!("Failed to flush stdout: {}", flush_res.err().unwrap()));
+        }
     }
 
     pub fn finish(&self) {
