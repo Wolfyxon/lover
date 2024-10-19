@@ -3,7 +3,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
 use crate::{actions, config};
-use crate::console::{exit_err, print_err, print_stage, print_success, print_warn};
+use crate::console::{exit_err, print_err, print_significant, print_stage, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
@@ -34,6 +34,7 @@ impl<'a> BuildTarget<'a> {
     }
 
     pub fn build(&self) {
+        print_significant("Building target", self.name.to_string());
         (self.builder)();
     }
 }
