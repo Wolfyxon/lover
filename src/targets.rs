@@ -1,6 +1,8 @@
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
-use crate::{actions, config};
+use zip::ZipArchive;
+
+use crate::{actions, config, files};
 use crate::console::{exit_err, print_err, print_stage, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
@@ -63,6 +65,27 @@ pub fn get_target_by_string<'a>(name: String) -> Option<BuildTarget<'a>> {
     }
 
     None
+}
+
+// for windows targets
+pub fn build_windows_zip(windows_zip: &Path, output_build_dir: &Path) {
+    let project_conf = project_config::get();
+    let pkg_name = project_conf.package.name;
+
+    let build_dir = Path::new(&project_conf.directories.build);
+    let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
+    
+    actions::extract(windows_zip, build_dir.join(output_build_dir).as_path());
+
+    let exe_src = output_build_dir.join("love.exe");
+
+    if !exe_src.exists() {
+        exit_err(format!("'{}' could not be found.", &exe_src.to_str().unwrap()));
+    }
+
+    print_stage("Embedding the game's code into the executable".to_string());
+
+    actions::append_file(love.as_path(), &exe_src);
 }
 
 fn build_love(_target: &BuildTarget) {
