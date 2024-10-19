@@ -1,3 +1,4 @@
+use std::fs;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
@@ -102,6 +103,14 @@ pub fn build_windows_zip(name: &str) {
     print_stage("Embedding the game's code into the executable".to_string());
 
     actions::append_file(love.as_path(), &exe_src);
+
+    print_stage("Renaming the EXE".to_string());
+
+    let rename_res = fs::rename(&exe_src, path.join(pkg_name + ".exe"));
+
+    if rename_res.is_err() {
+        exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
+    }
 }
 
 fn build_love() {
