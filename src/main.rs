@@ -106,23 +106,23 @@ impl<'a> CommandArg<'a> {
 
 struct CommandFlag<'a> {
     full: &'a str,
-    short: Option<&'a str>,
+    //short: Option<&'a str>,
     description: &'a str
 }
 
 impl<'a> CommandFlag<'a> {
-    pub fn new(full: &'a str, short: &'a str, description: &'a str) -> Self {
+    /*pub fn new(full: &'a str, short: &'a str, description: &'a str) -> Self {
         CommandFlag {
             full: full,
             short: Some(short),
             description
         }
-    }
+    }*/
 
     pub fn new_only_full(full: &'a str, description: &'a str) -> Self {
         CommandFlag {
             full: full,
-            short: None,
+            //short: None,
             description
         }
     }
