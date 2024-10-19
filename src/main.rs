@@ -509,52 +509,51 @@ fn cmd_target(command: &Command) {
 }
 
 fn cmd_dep(command: &Command) {
-    let name_res = command.get_arg("dependency");
+    match command.get_arg("dependency") {
+        Some(name) => {
+            let dep = deps::get_dep(name.as_str());
+            let mut status = "not installed";
     
-    if name_res.is_some() {
-        let name = name_res.unwrap();
-        let dep = deps::get_dep(name.as_str());
-        let mut status = "not installed";
-
-        if dep.is_installed() {
-            status = "installed";
-        }
-
-        print_significant("Details of", dep.name.to_string());
-
-        println!("{}\n", Style::new().italic().paint(dep.description));
-
-        println!("Status: {}", status);
-        println!("Location: {}", dep.get_path().to_str().unwrap());
-        println!("Repository: https://github.com/{}/{}", dep.repo_owner, dep.repo);
-
-        println!();
-        print_stage("Actions:".to_string());
-
-        println!("`lover install {}` to install or update.", dep.name);
-        println!("`lover uninstall {}` to remove.", dep.name);
-        
-    } else {
-        print_significant("Available dependencies", "\n".to_string());
-
-        let installed_style = Style::new().fg(Green);
-
-        for dep in deps::get_deps() {
-            let mut styled_name = dep.name.to_string();
-            let mut suffix = "";
-
             if dep.is_installed() {
-                styled_name = installed_style.paint(styled_name).to_string();
-                suffix = "(installed)";
+                status = "installed";
             }
+    
+            print_significant("Details of", dep.name.to_string());
+    
+            println!("{}\n", Style::new().italic().paint(dep.description));
+    
+            println!("Status: {}", status);
+            println!("Location: {}", dep.get_path().to_str().unwrap());
+            println!("Repository: https://github.com/{}/{}", dep.repo_owner, dep.repo);
+    
+            println!();
+            print_stage("Actions:".to_string());
+    
+            println!("`lover install {}` to install or update.", dep.name);
+            println!("`lover uninstall {}` to remove.", dep.name);
+        },
+        None => {
+            print_significant("Available dependencies", "\n".to_string());
 
-            println!("- {} {}: {}", styled_name, suffix, dep.description);
+            let installed_style = Style::new().fg(Green);
+    
+            for dep in deps::get_deps() {
+                let mut styled_name = dep.name.to_string();
+                let mut suffix = "";
+    
+                if dep.is_installed() {
+                    styled_name = installed_style.paint(styled_name).to_string();
+                    suffix = "(installed)";
+                }
+    
+                println!("- {} {}: {}", styled_name, suffix, dep.description);
+            }
+    
+            println!();
+    
+            println!("`lover install <name>` to install.");
+            println!("`lover uninstall <name>` to remove.");
         }
-
-        println!();
-
-        println!("`lover install <name>` to install.");
-        println!("`lover uninstall <name>` to remove.");
     }
 }
 
