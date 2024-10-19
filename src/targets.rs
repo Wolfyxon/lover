@@ -3,7 +3,7 @@ use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
 use crate::{actions, config};
-use crate::console::{exit_err, print_err, print_stage, print_warn};
+use crate::console::{exit_err, print_err, print_stage, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
@@ -111,6 +111,8 @@ pub fn build_windows_zip(name: &str) {
     if rename_res.is_err() {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
     }
+
+    print_success("Windows target built successfully".to_string());
 }
 
 fn build_love() {
