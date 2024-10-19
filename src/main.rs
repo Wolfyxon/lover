@@ -4,6 +4,7 @@ use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
 use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
+use targets::get_targets;
 
 mod project_config;
 
@@ -242,6 +243,15 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "target".to_string(),
+            description: "Lists or shows info of available build targets.".to_string(),
+            function: cmd_target,
+            args: vec![
+                CommandArg::opt("target", "Name of the target to check.")
+            ],
+            flags: vec![]
+        },
+        Command {
             alias: "dep".to_string(),
             description: "Lists or shows info of available dependencies.".to_string(),
             function: cmd_dep,
@@ -452,6 +462,50 @@ fn cmd_new(command: &Command) {
     }
     
     project_maker::create(name.to_owned(), path);
+}
+
+fn cmd_target(command: &Command) {
+    match command.get_arg("target") {
+        Some(name) => {
+            let target = targets::get_target_by_string(name);
+
+            print_significant("Details of target", target.name.to_string());
+            println!("{}\n", Style::new().italic().paint(target.description));
+
+            print_stage("Previous targets:".to_string());
+            for prev in target.previous {
+                println!(" {}", prev);
+            }
+
+            println!();
+
+            print_stage("Dependencies:".to_string());
+            for name in target.deps {
+                let dep = deps::get_dep(name);
+                
+                let mut suffix = "";
+                let mut style = Style::new();
+
+                if dep.is_installed() {
+                    suffix = "(installed)";
+                    style = style.fg(Green);
+                }
+
+                println!(" {} {}", style.paint(dep.name), suffix);
+            }
+        },
+        None => {
+            print_significant("Available build targets", "\n".to_string());
+
+            for target in get_targets() {
+                println!("  {}: {}", Style::new().fg(Green).paint(target.name), target.description)
+            }
+
+            println!();
+            println!("Use `lover build [name]` to build a target");
+            println!("You can also use `lover build [target1] [target2] ...`");
+        }
+    }
 }
 
 fn cmd_dep(command: &Command) {
