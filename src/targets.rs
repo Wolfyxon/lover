@@ -140,8 +140,6 @@ pub fn build_windows_zip(name: &str) {
     if rename_res.is_err() {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
     }
-
-    print_success("Windows target built successfully".to_string());
 }
 
 fn build_love() {
