@@ -107,11 +107,8 @@ pub fn parse_all(root: &Path) {
 
     print_stage("Parsing Lua scripts...".to_string());
 
-    let scripts = match files::get_file_tree_of_type(root, "lua") {
-        Ok(scripts) => scripts,
-        Err(err) => exit_err(format!("Failed to get scripts: {}", err)) 
-    };
-
+    let scripts = files::get_file_tree_of_type(root, "lua");
+    
     for script in scripts {
         execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
     }
@@ -151,11 +148,7 @@ pub fn archive(source: &Path, output: &Path) {
         Err(err) => exit_err(format!("Cannot open '{}': {}", output.to_str().unwrap(), err))
     };
 
-    let tree = match get_file_tree(source) {
-        Ok(tree) => tree,
-        Err(err) => exit_err(format!("Cannot get source tree: {}", err))
-    };
-
+    let tree = get_file_tree(source);
     let options = SimpleFileOptions::default();
     let mut zip = zip::ZipWriter::new(output_file);
     let mut buffer: Vec<u8> = Vec::new();
