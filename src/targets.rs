@@ -81,6 +81,31 @@ pub fn get_target_by_string<'a>(name: String) -> BuildTarget<'a> {
     exit_err(format!("Unknown target '{}'", name));
 }
 
+pub fn get_targets_by_strings<'a>(names: Vec<String>) {
+    let mut not_found: Vec<String> = Vec::new();
+    let mut res: Vec<BuildTarget<'a>> = Vec::new();
+
+    for name in names {
+        let mut found = false;
+
+        for target in get_targets() {
+            if target.name == name {
+                res.push(target);
+                found = true;
+                break;
+            }
+        }
+
+        if !found {
+            not_found.push(name);
+        }
+    }
+
+    if not_found.len() != 0 {
+        exit_err(format!("Unknown targets: {}", not_found.join(", ")));
+    }
+} 
+
 // for windows targets
 pub fn build_windows_zip(name: &str) {
     let project_conf = project_config::get();
