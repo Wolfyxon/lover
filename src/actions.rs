@@ -174,7 +174,7 @@ pub fn extract(from_zip: &Path, to_dir: &Path) {
 
     print_stage(format!("Extracting '{}' to '{}'...", from_zip.to_str().unwrap(), to_dir.to_str().unwrap()));
 
-    let mut bar = ProgressBar::new(archive_len);
+    let bar = ProgressBar::new(archive_len);
     bar.update(0);
 
     for i in 0..archive_len {
