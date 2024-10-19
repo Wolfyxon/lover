@@ -388,7 +388,6 @@ fn cmd_build(command: &Command) {
     let mut target_name = "love".to_string();
 
     // TODO: All targets from lover.toml
-    // TODO: Platform detection and building for that platform
 
     let arg_target_res = command.get_arg("target");
 
