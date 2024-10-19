@@ -53,6 +53,13 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             deps: vec!["linux"],
             previous: vec!["love"],
             builder: build_linux
+        },
+        BuildTarget {
+            name: "win64",
+            description: "Windows x86_64 EXE",
+            deps: vec!["win64"],
+            previous: vec!["love"],
+            builder: build_win64
         }
     ]
 }
@@ -185,4 +192,10 @@ fn build_linux(_target: &BuildTarget) {
         squashfs_root.to_str().unwrap().to_string(), 
         appimage_path.to_str().unwrap().to_string()
     ], false);
+}
+
+fn build_win64(_target: &BuildTarget) {
+    let conf = config::get();
+
+    build_windows_zip(&deps::get_dep("win64").get_path(), Path::new("win64"));
 }
