@@ -1,11 +1,9 @@
-use std::collections::HashMap;
 use std::{path::Path, process::exit};
 use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
 use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
-use targets::BuildTarget;
 
 mod project_config;
 
