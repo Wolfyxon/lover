@@ -148,8 +148,9 @@ fn main() {
     }
 
     let alias = alias_res.unwrap();
+    let commands = get_commands();
 
-    for command in get_commands() {
+    for command in &commands {
         if &command.alias == alias {
 
             if cl_settings.args.len() - 1 < command.get_required_arg_amount() {
@@ -165,6 +166,14 @@ fn main() {
     }
 
     print_err(format!("Unknown command: '{}'", &alias));
+
+    for command in &commands {
+        if command.alias.starts_with(alias) || alias.starts_with(&command.alias) {
+            println!("\nDid you mean `lover {} ...`? \n", command.alias);
+            break;
+        }
+    }
+
     println!("Use `lover help` to see available commands");
 
     exit(1);
