@@ -1,9 +1,11 @@
+use std::collections::HashMap;
 use std::{path::Path, process::exit};
 use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
 use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
+use targets::BuildTarget;
 
 mod project_config;
 
@@ -385,48 +387,52 @@ fn cmd_parse(_command: &Command) {
 }
 
 fn cmd_build(command: &Command) {
-    let mut target_name = "love".to_string();
-
     // TODO: All targets from lover.toml
 
-    let arg_target_res = command.get_arg("target");
+    let mut target_names = vec!["love".to_string()];
 
-    if arg_target_res.is_some() {
-        target_name = arg_target_res.unwrap();
-    }
-
-    let target_res = targets::get_target_by_string(target_name.to_owned());
-
-    if target_res.is_none() {
-        exit_err(format!("Unknown target: '{}'", target_name));
-    }
-
-    let target = target_res.unwrap();
-
-    print_significant("Building target", target.name.to_string());
+    let args = command.get_args();
     
+    if args.len() != 0 {
+        target_names = args;
+    }
 
+    let targets = targets::get_targets_by_strings(target_names.to_owned());
     let mut to_install: Vec<String> = Vec::new();
 
-    for dep in &target.get_all_deps() {
-        if !dep.is_installed() {
-            to_install.push(dep.name.to_string());
+    print_significant("Initializing build of", target_names.join(", "));
+
+    for target in &targets {
+        for dep in target.get_all_deps() {
+            if !dep.is_installed() && !to_install.contains(&dep.name.to_string()) {
+                to_install.push(dep.name.to_string());
+            }
         }
     }
 
     if to_install.len() != 0 {
-        print_warn("Some dependencies are missing and need to be installed.".to_string());
+        print_warn("Some dependencies are missing and must be installed.".to_string());
         deps::install(to_install);
     } else {
         print_success("All dependencies are installed.".to_string());
     }
 
-    for name in &target.previous {
-        let previous = targets::get_target_by_string(name.to_string()).unwrap();
-        previous.build();
-    }
+    let mut already_built: Vec<&str> = Vec::new();
 
-    target.build();
+    for target in &targets {
+        if already_built.contains(&target.name) { continue; }
+        already_built.push(target.name);
+        
+        for dep_name in &target.previous {
+            if already_built.contains(dep_name) { continue; }
+            already_built.push(dep_name);
+
+            let dep_target = targets::get_target_by_string(dep_name.to_string());
+            dep_target.build();
+        }
+
+        target.build();
+    }
 }
 
 fn cmd_clean(_command: &Command) {
