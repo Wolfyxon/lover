@@ -522,7 +522,7 @@ fn cmd_dep(command: &Command) {
 
         print_significant("Details of", dep.name.to_string());
 
-        println!("Description: \n  {}\n", Style::new().italic().paint(dep.description));
+        println!("{}\n", Style::new().italic().paint(dep.description));
 
         println!("Status: {}", status);
         println!("Location: {}", dep.get_path().to_str().unwrap());
