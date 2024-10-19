@@ -474,7 +474,7 @@ fn cmd_target(command: &Command) {
 
             print_stage("Previous targets:".to_string());
             for prev in target.previous {
-                println!(" {}", prev);
+                println!("- {}", prev);
             }
 
             println!();
@@ -491,14 +491,14 @@ fn cmd_target(command: &Command) {
                     style = style.fg(Green);
                 }
 
-                println!(" {} {}", style.paint(dep.name), suffix);
+                println!("- {} {}", style.paint(dep.name), suffix);
             }
         },
         None => {
             print_significant("Available build targets", "\n".to_string());
 
             for target in get_targets() {
-                println!("  {}: {}", Style::new().fg(Green).paint(target.name), target.description)
+                println!("- {}: {}", Style::new().fg(Green).paint(target.name), target.description)
             }
 
             println!();
@@ -548,7 +548,7 @@ fn cmd_dep(command: &Command) {
                 suffix = "(installed)";
             }
 
-            println!("  {} {}: {}", styled_name, suffix, dep.description);
+            println!("- {} {}: {}", styled_name, suffix, dep.description);
         }
 
         println!();
