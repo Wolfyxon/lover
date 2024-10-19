@@ -1,4 +1,6 @@
-use std::{fs::File, path::{Path, PathBuf}};
+use std::{fs::{File, OpenOptions}, path::{Path, PathBuf}};
+
+use zip::write::FileOptions;
 
 use crate::console::exit_err;
 
@@ -59,5 +61,14 @@ pub fn open(path: &Path) -> File {
     match File::open(path) {
         Ok(file) => file,
         Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err))
+    }
+}
+
+pub fn open_append(path: &Path) -> File {
+    let mut options = OpenOptions::new();
+
+    match options.append(true).open(path) {
+        Ok(file) => file,
+        Err(err) => exit_err(format!("Failed to open '{}' for appending: {}", path.to_str().unwrap(), err))
     }
 }
