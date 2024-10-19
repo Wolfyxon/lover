@@ -163,6 +163,8 @@ pub fn archive(source: &Path, output: &Path) {
 }
 
 pub fn extract(from_zip: &Path, to_dir: &Path) {
+    files::create_dir(to_dir);
+
     let zip_file = files::open(from_zip);
 
     let mut archive = match ZipArchive::new(zip_file) {
