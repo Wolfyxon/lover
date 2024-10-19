@@ -75,15 +75,17 @@ pub fn get_target_by_string<'a>(name: String) -> Option<BuildTarget<'a>> {
 }
 
 // for windows targets
-pub fn build_windows_zip(windows_zip: &Path, output_build_dir: &Path) {
+pub fn build_windows_zip(name: &str) {
     let project_conf = project_config::get();
     let pkg_name = project_conf.package.name;
 
     let build_dir = Path::new(&project_conf.directories.build);
-    let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
-    let path = build_dir.join(output_build_dir);
+    let zip_path = &deps::get_dep(name).get_path();
+    let path = build_dir.join(name);
 
-    actions::extract(windows_zip, path.as_path());
+    let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
+
+    actions::extract(zip_path, path.as_path());
 
     let exe_src = path.join("love.exe");
 
@@ -195,7 +197,5 @@ fn build_linux(_target: &BuildTarget) {
 }
 
 fn build_win64(_target: &BuildTarget) {
-    let conf = config::get();
-
-    build_windows_zip(&deps::get_dep("win64").get_path(), Path::new("win64"));
+    build_windows_zip("win64");
 }
