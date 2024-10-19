@@ -1,5 +1,5 @@
 use std::{fs::{self, File}, io::Write, path::Path};
-use crate::{console::{exit_err, print_success}, project_config};
+use crate::{console::{exit_err, print_success}, files, project_config};
 
 struct ComponentFile<'a> {
     path: &'a Path,
@@ -55,11 +55,7 @@ pub fn create(name: String, path: &Path) {
             }
         }
 
-        let mut file = match  File::create(&target_path) {
-            Ok(file) => file,
-            Err(err) => exit_err(format!("Failed to create file {}: {}", &target_path.to_str().unwrap(), err))
-        };
-
+        let mut file = files::create(&target_path);
         let write_res = file.write_all(component.buffer);
 
         if write_res.is_err() {

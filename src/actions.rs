@@ -143,11 +143,7 @@ pub fn create_dir(path: &Path) {
 pub fn archive(source: &Path, output: &Path) {
     create_dir(output.parent().unwrap());
 
-    let output_file = match File::create(output) {
-        Ok(file) => file,
-        Err(err) => exit_err(format!("Cannot open '{}': {}", output.to_str().unwrap(), err))
-    };
-
+    let output_file = files::create(output);
     let tree = get_file_tree(source);
     let options = SimpleFileOptions::default();
     let mut zip = zip::ZipWriter::new(output_file);
@@ -175,20 +171,8 @@ pub fn archive(source: &Path, output: &Path) {
 }
 
 pub fn append_file(from: &Path, to: &Path) {
-    let mut from_file = match File::open(from) {
-        Ok(file) => file,
-        Err(err) => exit_err(format!("Failed to open '{}': {}", from.to_str().unwrap(), err))
-    };
-    
-    let to_file_res = OpenOptions::new()
-        .append(true)
-        .open(to);
-    
-    if to_file_res.is_err() {
-        exit_err(format!("Failed to open '{}': {}", to.to_str().unwrap(), to_file_res.err().unwrap()));
-    }
-
-    let mut to_file = to_file_res.unwrap();
+    let mut from_file = files::open(from);
+    let mut to_file = files::open_append(to);
 
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
