@@ -1,8 +1,7 @@
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
-use zip::ZipArchive;
 
-use crate::{actions, config, files};
+use crate::{actions, config};
 use crate::console::{exit_err, print_err, print_stage, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
