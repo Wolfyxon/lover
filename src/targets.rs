@@ -81,7 +81,7 @@ pub fn get_target_by_string<'a>(name: String) -> BuildTarget<'a> {
     exit_err(format!("Unknown target '{}'", name));
 }
 
-pub fn get_targets_by_strings<'a>(names: Vec<String>) {
+pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
     let mut not_found: Vec<String> = Vec::new();
     let mut res: Vec<BuildTarget<'a>> = Vec::new();
 
@@ -104,6 +104,8 @@ pub fn get_targets_by_strings<'a>(names: Vec<String>) {
     if not_found.len() != 0 {
         exit_err(format!("Unknown targets: {}", not_found.join(", ")));
     }
+
+    res
 } 
 
 // for windows targets
