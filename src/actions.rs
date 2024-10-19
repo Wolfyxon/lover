@@ -237,6 +237,8 @@ pub fn extract(from_zip: &Path, to_dir: &Path) {
 
         bar.update(i + 1);
     }
+
+    bar.finish();
 }
 
 pub fn append_file(from: &Path, to: &Path) {
