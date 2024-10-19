@@ -10,6 +10,7 @@ use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
+use zip::ZipArchive;
 use crate::config;
 use crate::console::exit_err;
 use crate::console::ProgressBar;
@@ -159,6 +160,81 @@ pub fn archive(source: &Path, output: &Path) {
     }
 
     bar.finish();
+}
+
+pub fn extract(from_zip: &Path, to_dir: &Path) {
+    let zip_file = files::open(from_zip);
+
+    let mut archive = match ZipArchive::new(zip_file) {
+        Ok(archive) => archive,
+        Err(err) => exit_err(format!("ZIP failed for '{}': {}", from_zip.to_str().unwrap(), err))
+    };
+
+    let archive_len = archive.len();
+
+    print_stage(format!("Extracting '{}' to '{}'...", from_zip.to_str().unwrap(), to_dir.to_str().unwrap()));
+
+    let mut bar = ProgressBar::new(archive_len);
+    bar.update(0);
+
+    for i in 0..archive_len {
+        let mut file = match archive.by_index(i) {
+            Ok(file) => file,
+            Err(err) => exit_err(format!("Failed to get file at index {} of '{}': {}", i, from_zip.to_str().unwrap(), err))
+        };
+        
+        let path = match file.enclosed_name() {
+            Some(path) => {
+                PathBuf::from(path.file_name().unwrap())
+
+                // Enable if nested files are needed.
+                /*
+                let mut res = path.to_owned();
+                let components = path.components();
+                let cmp_len = components.to_owned().count();
+
+                if cmp_len > 1 {
+                    let mut new_path = PathBuf::new();
+                    let mut skipped = false;
+
+                    for cmp in components {
+                        if !skipped {
+                            skipped = true;
+                            continue;
+                        }
+
+                        new_path = new_path.join(cmp);
+                    }
+
+                    res = new_path;
+                }
+
+                res*/
+            },
+            None => exit_err(format!("Failed to get path of file at index {} of '{}'", i, from_zip.to_str().unwrap()))
+        };
+
+        let mut out_file = files::create(to_dir.join(path).as_path());
+        
+        loop {
+            let mut buf: [u8; 1024] = [0; 1024];
+            
+            let bytes_read = match file.read(&mut buf) {
+                Ok(bytes_read) => bytes_read,
+                Err(err) =>  exit_err(format!("Read failed: {}", err))
+            };
+    
+            if bytes_read == 0 { break; }
+    
+            let write_res = out_file.write_all(&buf[..bytes_read]);
+    
+            if write_res.is_err() {
+                exit_err(format!("Write failed: {}", write_res.err().unwrap()));
+            }
+        }
+
+        bar.update(i + 1);
+    }
 }
 
 pub fn append_file(from: &Path, to: &Path) {
