@@ -53,12 +53,6 @@ impl ProjectConfig {
     }
 }
 
-
-pub fn exists() -> bool {
-    let path = Path::new(PATH);
-    return path.exists();
-}
-
 pub fn get() -> ProjectConfig {
     let path = Path::new(PATH);
 
