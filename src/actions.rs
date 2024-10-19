@@ -132,16 +132,8 @@ pub fn clean(path: &Path) {
     };
 }
 
-pub fn create_dir(path: &Path) {
-    let res = std::fs::create_dir_all(path);
-
-    if res.is_err() {
-        exit_err(format!("Failed to create '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
-    }
-}
-
 pub fn archive(source: &Path, output: &Path) {
-    create_dir(output.parent().unwrap());
+    files::create_dir(output.parent().unwrap());
 
     let output_file = files::create(output);
     let tree = get_file_tree(source);

@@ -50,6 +50,14 @@ pub fn get_file_tree_of_type(root: &Path, extension: &str) -> Vec<PathBuf> {
     res
 }
 
+pub fn create_dir(path: &Path) {
+    let res = std::fs::create_dir_all(path);
+
+    if res.is_err() {
+        exit_err(format!("Failed to create directory '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
+    }
+}
+
 pub fn create(path: &Path) -> File {
     match File::create(path) {
         Ok(file) => file,
