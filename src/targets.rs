@@ -36,6 +36,7 @@ impl<'a> BuildTarget<'a> {
     pub fn build(&self) {
         print_significant("Building target", self.name.to_string());
         (self.builder)();
+        print_success(format!("Successfully built '{}'", self.name));
     }
 }
 
