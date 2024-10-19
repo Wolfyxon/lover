@@ -60,6 +60,13 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             deps: vec!["win64"],
             previous: vec!["love"],
             builder: build_win64
+        },
+        BuildTarget {
+            name: "win32",
+            description: "Windows x86_32 EXE",
+            deps: vec!["win32"],
+            previous: vec!["love"],
+            builder: build_win64
         }
     ]
 }
@@ -198,4 +205,8 @@ fn build_linux(_target: &BuildTarget) {
 
 fn build_win64(_target: &BuildTarget) {
     build_windows_zip("win64");
+}
+
+fn build_win32(_target: &BuildTarget) {
+    build_windows_zip("win32");
 }
