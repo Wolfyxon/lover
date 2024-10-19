@@ -12,7 +12,7 @@ pub struct BuildTarget<'a> {
     pub description: &'a str,
     pub deps: Vec<&'a str>,
     pub previous: Vec<&'a str>,
-    builder: fn(target: &BuildTarget)
+    builder: fn()
 }
 
 impl<'a> BuildTarget<'a> {
@@ -33,7 +33,7 @@ impl<'a> BuildTarget<'a> {
     }
 
     pub fn build(&self) {
-        (self.builder)(&self);
+        (self.builder)();
     }
 }
 
@@ -104,7 +104,7 @@ pub fn build_windows_zip(name: &str) {
     actions::append_file(love.as_path(), &exe_src);
 }
 
-fn build_love(_target: &BuildTarget) {
+fn build_love() {
     let config = project_config::get();
     let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
 
@@ -112,7 +112,7 @@ fn build_love(_target: &BuildTarget) {
     actions::archive(Path::new(config.directories.source.as_str()), &output);
 }
 
-fn build_linux(_target: &BuildTarget) {
+fn build_linux() {
     let project_conf = project_config::get();
     let conf = config::get();
 
@@ -202,10 +202,10 @@ fn build_linux(_target: &BuildTarget) {
     ], false);
 }
 
-fn build_win64(_target: &BuildTarget) {
+fn build_win64() {
     build_windows_zip("win64");
 }
 
-fn build_win32(_target: &BuildTarget) {
+fn build_win32() {
     build_windows_zip("win32");
 }
