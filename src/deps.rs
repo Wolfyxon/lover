@@ -1,8 +1,8 @@
-use std::{fs, path::PathBuf, process::exit};
+use std::{fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, exit_err, print_err, print_stage, print_success, ProgressBar}, http};
+use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http};
 
 #[derive(Deserialize)]
 pub struct GitHubRelease { 

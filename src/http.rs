@@ -1,9 +1,9 @@
 use reqwest::blocking::Client;
 use serde::de::DeserializeOwned;
-use std::{fs::File, io::{Read, Write}, path::Path, process::exit};
+use std::{fs::File, io::{Read, Write}, path::Path};
 
 use crate::console::{exit_err, ProgressBar};
-use crate::console::{print_err, print_success, print_stage};
+use crate::console::{print_success, print_stage};
 
 const USER_AGENT: &str = "Lover";
 

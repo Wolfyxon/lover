@@ -1,8 +1,5 @@
-use std::fs::Permissions;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
-use std::process::exit;
-
 use crate::{actions, config};
 use crate::console::{exit_err, print_err, print_stage, print_warn};
 use crate::deps::Dependency;

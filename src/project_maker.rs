@@ -1,5 +1,5 @@
-use std::{fs::{self, File}, io::Write, path::Path, process::exit};
-use crate::{console::{exit_err, print_err, print_success}, project_config};
+use std::{fs::{self, File}, io::Write, path::Path};
+use crate::{console::{exit_err, print_success}, project_config};
 
 struct ComponentFile<'a> {
     path: &'a Path,

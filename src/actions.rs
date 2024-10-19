@@ -1,4 +1,4 @@
-use std::borrow::BorrowMut;
+
 use std::collections::HashMap;
 use std::fs::OpenOptions;
 use std::io::Read;
@@ -6,18 +6,15 @@ use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::process::Command;
-use std::process::exit;
 use std::process::ExitStatus;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
-use zip::ZipArchive;
-
 use crate::config;
 use crate::console::exit_err;
 use crate::console::ProgressBar;
-use crate::console::{print_err, print_warn, print_success, print_stage};
+use crate::console::{print_warn, print_success, print_stage};
 use crate::files;
 use crate::files::get_file_tree;
 
