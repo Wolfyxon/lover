@@ -54,3 +54,10 @@ pub fn create(path: &Path) -> File {
         Err(err) => exit_err(format!("Failed to create '{}': {}", path.to_str().unwrap(), err))
     }
 }
+
+pub fn open(path: &Path) -> File {
+    match File::open(path) {
+        Ok(file) => file,
+        Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err))
+    }
+}
