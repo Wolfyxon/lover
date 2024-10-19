@@ -1,5 +1,4 @@
 use std::fs;
-use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
 use crate::{actions, config};
@@ -192,7 +191,9 @@ fn build_linux() {
     }
 
     // Adding execution perms
-    if std::env::consts::FAMILY == "unix" {
+    #[cfg(unix)] {
+        use std::os::unix::fs::PermissionsExt;
+
         print_stage("Applying execution permission to the Love AppImage".to_string());
 
         let meta = match std::fs::metadata(&love_app_img) {
@@ -209,7 +210,7 @@ fn build_linux() {
             exit_err(format!("Failed to update permissions: {}", update_res.err().unwrap()));
         }
     }
-
+    
     // Extracting squashfs-root
     print_stage("Extracting Love2D AppImage contents".to_string());
 
