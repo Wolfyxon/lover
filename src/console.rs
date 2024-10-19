@@ -105,6 +105,7 @@ pub fn print_err(message: String) {
 }
 
 pub fn exit_err(message: String) -> ! {
+    println!();
     print_err(message);
     exit(1);
 }
