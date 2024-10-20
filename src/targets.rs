@@ -80,7 +80,10 @@ pub fn gen_module_code() -> String {
     let pkg = project_conf.package;
 
     map.insert("LOVER_VERSION", pkg.version);
-
+    map.insert("LOVER_NAME", pkg.name);
+    map.insert("LOVER_AUTHOR", pkg.author);
+    map.insert("LOVER_DESCRIPTION", pkg.description);
+    
     let mut res = String::new();
 
     for (key, val) in map {
