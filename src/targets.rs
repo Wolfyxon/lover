@@ -73,7 +73,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
     ]
 }
 
-pub fn gen_module_code() -> String {
+pub fn get_module_code() -> String {
     let mut map: HashMap<&str, String> = HashMap::new();
 
     let project_conf = project_config::get();
