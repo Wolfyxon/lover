@@ -111,6 +111,7 @@ pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
 
 // for windows targets
 pub fn build_windows_zip(name: &str) {
+    let conf = config::get();
     let project_conf = project_config::get();
     let pkg_name = project_conf.package.name;
 
@@ -134,11 +135,16 @@ pub fn build_windows_zip(name: &str) {
 
     print_stage("Renaming the EXE".to_string());
 
-    let rename_res = fs::rename(&exe_src, path.join(pkg_name + ".exe"));
+    let rename_res = fs::rename(&exe_src, path.join(pkg_name.to_owned() + ".exe"));
 
     if rename_res.is_err() {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
     }
+
+    if conf.build.zip {
+        actions::archive(&path, &build_dir.join(format!("{}_{}.zip", pkg_name, name)));
+    }
+    
 }
 
 fn build_love() {
