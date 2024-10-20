@@ -1,6 +1,6 @@
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use serde::Deserialize;
-use crate::console::exit_err;
+use crate::{actions, console::exit_err};
 
 const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 
@@ -101,6 +101,26 @@ pub struct Software {
 }
 
 impl Software {
+    pub fn check_rcedit(&self) -> Result<(), String> {
+        if std::env::consts::FAMILY == "unix" {
+            if !actions::command_exists(&self.wine) {
+                return Err(format!("Wine is not installed or could not be found at path '{}'.", &self.wine));
+            }
+
+            let rcedit = Path::new(&self.rcedit);
+
+            if !rcedit.exists() {
+                return Err(format!("RCEdit could not be found at path '{}'.", &self.rcedit));
+            }
+        } else {
+            if !actions::command_exists(&self.rcedit) {
+                return Err(format!("RCEdit is not installed or could not be found at path '{}'", &self.rcedit));
+            }
+        }
+
+        Ok(())
+    }
+
     pub fn default() -> Self {
         Software {
             love: Software::default_love(),
