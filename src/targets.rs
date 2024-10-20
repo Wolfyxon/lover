@@ -1,3 +1,8 @@
+enum Arch {
+    X86_64,
+    X86_32
+}
+
 use std::fs;
 use std::path::Path;
 
