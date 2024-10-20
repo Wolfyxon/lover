@@ -395,9 +395,8 @@ fn cmd_parse(_command: &Command) {
 }
 
 fn cmd_build(command: &Command) {
-    // TODO: All targets from lover.toml
-
-    let mut target_names = vec!["love".to_string()];
+    let project_conf = project_config::get();
+    let mut target_names = project_conf.build.default;
 
     let args = command.get_args();
     
