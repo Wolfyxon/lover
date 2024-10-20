@@ -46,7 +46,20 @@ impl Directories {
 
 #[derive(Deserialize)]
 pub struct Build {
+    #[serde(default = "Build::default_default")]
     pub default: Vec<String>
+}
+
+impl Build {
+    fn default() -> Self {
+        Self {
+            default: Self::default_default()
+        }
+    }
+
+    fn default_default() -> Vec<String> {
+        vec!["love".to_string()]
+    }
 }
 
 #[derive(Deserialize)]
