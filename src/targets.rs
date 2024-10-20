@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
@@ -70,6 +71,21 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             builder: build_win32
         }
     ]
+}
+
+pub fn gen_module_code() -> String {
+    let mut map: HashMap<&str, String> = HashMap::new();
+    let project_conf = project_config::get();
+
+    map.insert("LOVER_VERSION", project_conf.package.version);
+
+    let mut res = String::new();
+
+    for (key, val) in map {
+        res += format!("{} = '{}'\n", key, val).as_str();
+    }
+
+    res
 }
 
 pub fn get_target_by_string<'a>(name: String) -> BuildTarget<'a> {
