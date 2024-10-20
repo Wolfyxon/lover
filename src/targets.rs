@@ -73,6 +73,8 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
     ]
 }
 
+// For future use
+/*
 pub fn get_module_code() -> String {
     let mut map: HashMap<&str, String> = HashMap::new();
 
@@ -102,7 +104,8 @@ pub fn get_target_by_string<'a>(name: String) -> BuildTarget<'a> {
     }
 
     exit_err(format!("Unknown target '{}'", name));
-}
+} 
+*/
 
 pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
     let mut not_found: Vec<String> = Vec::new();
