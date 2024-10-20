@@ -51,21 +51,21 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
         BuildTarget {
             name: "linux",
             description: "Linux AppImage",
-            deps: vec!["linux"],
+            deps: vec!["love-linux"],
             previous: vec!["love"],
             builder: build_linux
         },
         BuildTarget {
             name: "win64",
             description: "Windows x86_64 EXE",
-            deps: vec!["win64"],
+            deps: vec!["love-win64"],
             previous: vec!["love"],
             builder: build_win64
         },
         BuildTarget {
             name: "win32",
             description: "Windows x86_32 EXE",
-            deps: vec!["win32"],
+            deps: vec!["love-win32"],
             previous: vec!["love"],
             builder: build_win32
         }
@@ -140,7 +140,7 @@ pub fn build_windows_zip(name: &str) {
     let pkg_name = project_conf.package.name;
 
     let build_dir = Path::new(&project_conf.directories.build);
-    let zip_path = &deps::get_dep(name).get_path();
+    let zip_path = &deps::get_dep(("love-".to_string() + name).as_str()).get_path();
     let path = build_dir.join(name);
 
     let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
@@ -194,7 +194,7 @@ fn build_linux() {
     let build_dir = Path::new(&project_conf.directories.build);
     let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
 
-    let love_app_img = deps::get_dep("linux").get_path();
+    let love_app_img = deps::get_dep("love-linux").get_path();
     
     let squashfs_root = build_dir.join("squashfs-root");
     let love_bin = squashfs_root.join("bin/love");
