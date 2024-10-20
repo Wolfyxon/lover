@@ -34,6 +34,8 @@ Lover has a simple and easy to use command syntax (at least I hope).
 | Windows x86_64      | `win64` | ✅     |
 | Windows x86_32      | `win32` | ✅     |
 | MacOS               |         | ❗     |
+| Web                 |         | 📁     |
+| Android             |         | 📁     |
 | Nintendo 3DS `3DSX` |         | 📁     |
 | Nintendo 3DS `CIA`  |         | 📁     |
 | Nintendo Wii U      |         | ❗     |
