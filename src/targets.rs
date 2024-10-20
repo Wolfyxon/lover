@@ -181,6 +181,13 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
     }
 
+    match conf.software.check_rcedit() {
+        Ok(()) => {
+            
+        },
+        Err(err) => print_warn(format!("EXE info could not be applied: {}\nPlease check your {}", err, config::get_config_path().to_str().unwrap())),
+    };
+
     if conf.build.zip {
         actions::archive(&path, &build_dir.join(format!("{}_{}.zip", pkg_name, &name)));
     }
