@@ -67,7 +67,10 @@ pub struct ProjectConfig {
     pub package: Package,
 
     #[serde(default = "Directories::default")]
-    pub directories: Directories    
+    pub directories: Directories,
+
+    #[serde(default = "Build::default")]
+    pub build: Build
 }
 
 impl ProjectConfig {
