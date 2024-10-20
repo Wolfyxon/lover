@@ -20,11 +20,28 @@ pub struct Package {
 
 #[derive(Deserialize)]
 pub struct Directories {
-    #[serde(default = "def_directories_source")]
+    #[serde(default = "Directories::default_source")]
     pub source: String,
 
-    #[serde(default = "def_directories_build")]
+    #[serde(default = "Directories::default_build")]
     pub build: String,
+}
+
+impl Directories {
+    fn default() -> Self {
+        Self {
+            source: Self::default_source(),
+            build: Self::default_build()
+        }
+    }
+
+    fn default_source() -> String {
+        "src".to_string()
+    }
+
+    fn default_build() -> String {
+        "build".to_string()
+    }
 }
 
 #[derive(Deserialize)]
@@ -36,7 +53,7 @@ pub struct Build {
 pub struct ProjectConfig {
     pub package: Package,
 
-    #[serde(default = "def_directories")]
+    #[serde(default = "Directories::default")]
     pub directories: Directories    
 }
 
@@ -77,19 +94,4 @@ pub fn get() -> ProjectConfig {
 
     parsed.validate();
     parsed
-}
-
-fn def_directories() -> Directories {
-    Directories {
-        source: def_directories_source(),
-        build: def_directories_build()
-    }
-}
-
-fn def_directories_source() -> String {
-    "src".to_string()
-}
-
-fn def_directories_build() -> String {
-    "build".to_string()
 }
