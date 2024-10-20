@@ -28,6 +28,11 @@ pub struct Directories {
 }
 
 #[derive(Deserialize)]
+pub struct Build {
+    pub default: Vec<String>
+}
+
+#[derive(Deserialize)]
 pub struct ProjectConfig {
     pub package: Package,
 
