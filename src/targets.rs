@@ -148,14 +148,16 @@ pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
 } 
 
 // for windows targets
-pub fn build_windows_zip(name: &str) {
+pub fn build_windows_zip(arch: Arch) {
+    let name = format!("win{}", arch.get_num_suffix());
+
     let conf = config::get();
     let project_conf = project_config::get();
     let pkg_name = project_conf.package.name;
 
     let build_dir = Path::new(&project_conf.directories.build);
-    let zip_path = &deps::get_dep(("love-".to_string() + name).as_str()).get_path();
-    let path = build_dir.join(name);
+    let zip_path = &deps::get_dep(("love-".to_string() + &name).as_str()).get_path();
+    let path = build_dir.join(&name);
 
     let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
 
@@ -180,7 +182,7 @@ pub fn build_windows_zip(name: &str) {
     }
 
     if conf.build.zip {
-        actions::archive(&path, &build_dir.join(format!("{}_{}.zip", pkg_name, name)));
+        actions::archive(&path, &build_dir.join(format!("{}_{}.zip", pkg_name, &name)));
     }
     
 }
@@ -286,9 +288,9 @@ fn build_linux() {
 }
 
 fn build_win64() {
-    build_windows_zip("win64");
+    build_windows_zip(Arch::X86_64);
 }
 
 fn build_win32() {
-    build_windows_zip("win32");
+    build_windows_zip(Arch::X86_32);
 }
