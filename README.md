@@ -23,6 +23,31 @@ Most tools like **Makefile** and **Cargo** will treat all flags as their own and
 ### Simple command line interface
 Lover has a simple and easy to use command syntax (at least I hope).
 
+## Supported platforms
+✅ Full support | 📁 Planned | ❗ Testers/maintainers needed
+
+### Build targets
+| Name                | Alias   | Status |
+|---------------------|---------|--------|
+| Universal LOVE file | `love`  | ✅     |
+| Linux AppImage      | `linux` | ✅     |
+| Windows x86_64      | `win64` | ✅     |
+| Windows x86_32      | `win32` | ✅     |
+| MacOS               |         | ❗     |
+| Web                 |         | 📁     |
+| Android             |         | 📁     |
+| Nintendo 3DS `3DSX` |         | 📁     |
+| Nintendo 3DS `CIA`  |         | 📁     |
+| Nintendo Wii U      |         | ❗     |
+| Nintendo Switch     |         | ❗     |
+
+### Lover tool
+| Platform       | Status |
+|----------------|--------|
+| Linux x86_64   | ✅     |
+| Windows x86_64 | ✅     |
+| MacOS          | ❗     |
+
 ## Compiling
 Lover is written in **Rust** and managed by **Cargo**. 
 
