@@ -153,7 +153,8 @@ pub fn build_windows_zip(arch: Arch) {
 
     let conf = config::get();
     let project_conf = project_config::get();
-    let pkg_name = project_conf.package.name;
+    let pkg = project_conf.package;
+    let pkg_name = pkg.name;
 
     let build_dir = Path::new(&project_conf.directories.build);
     let zip_path = &deps::get_dep(("love-".to_string() + &name).as_str()).get_path();
@@ -175,7 +176,8 @@ pub fn build_windows_zip(arch: Arch) {
 
     print_stage("Renaming the EXE".to_string());
 
-    let rename_res = fs::rename(&exe_src, path.join(pkg_name.to_owned() + ".exe"));
+    let exe_out = path.join(pkg_name.to_owned() + ".exe");
+    let rename_res = fs::rename(&exe_src, &exe_out);
 
     if rename_res.is_err() {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
@@ -183,7 +185,22 @@ pub fn build_windows_zip(arch: Arch) {
 
     match conf.software.check_rcedit() {
         Ok(()) => {
-            
+            let rcedit = conf.software.rcedit;
+            let exe = exe_out.to_str().unwrap().to_string();
+
+            actions::execute_wine(&rcedit, vec![ // TODO: clean up this mess
+                exe.to_owned(), 
+                "--set-file-version".to_string(), pkg.version.to_owned(),
+                "--set-product-version".to_string(), pkg.version.to_owned(),
+
+                "--set-version-string".to_string(), "ProductName".to_string(), pkg_name.to_owned(),
+                "--set-version-string".to_string(), "CompanyName".to_string(), pkg.author,
+                "--set-version-string".to_string(), "FileDescription".to_string(), pkg.description
+                
+                
+            ], false);
+
+
         },
         Err(err) => print_warn(format!("EXE info could not be applied: {}\nPlease check your {}", err, config::get_config_path().to_str().unwrap())),
     };
