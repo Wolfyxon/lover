@@ -12,6 +12,15 @@ enum Arch {
     X86_32
 }
 
+impl Arch {
+    pub fn get_num_suffix(&self) -> String {
+        match &self {
+            Self::X86_64 => "64".to_string(),
+            Self::X86_32 => "32".to_string()
+        }
+    }
+}
+
 pub struct BuildTarget<'a> {
     pub name: &'a str,
     pub description: &'a str,
