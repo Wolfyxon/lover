@@ -154,7 +154,7 @@ pub fn build_windows_zip(arch: Arch) {
     let conf = config::get();
     let project_conf = project_config::get();
     let pkg = project_conf.package;
-    let pkg_name = pkg.name;
+    let pkg_name = &pkg.name;
 
     let build_dir = Path::new(&project_conf.directories.build);
     let zip_path = &deps::get_dep(("love-".to_string() + &name).as_str()).get_path();
@@ -188,19 +188,10 @@ pub fn build_windows_zip(arch: Arch) {
             let rcedit = conf.software.rcedit;
             let exe = exe_out.to_str().unwrap().to_string();
 
-            actions::execute_wine(&rcedit, vec![ // TODO: clean up this mess
-                exe.to_owned(), 
-                "--set-file-version".to_string(), pkg.version.to_owned(),
-                "--set-product-version".to_string(), pkg.version.to_owned(),
+            let mut args = vec![exe];
+            args.append(&mut pkg.get_rcedit_args());
 
-                "--set-version-string".to_string(), "ProductName".to_string(), pkg_name.to_owned(),
-                "--set-version-string".to_string(), "CompanyName".to_string(), pkg.author,
-                "--set-version-string".to_string(), "FileDescription".to_string(), pkg.description
-                
-                
-            ], false);
-
-
+            actions::execute_wine(&rcedit, args, false);
         },
         Err(err) => print_warn(format!("EXE info could not be applied: {}\nPlease check your {}", err, config::get_config_path().to_str().unwrap())),
     };
