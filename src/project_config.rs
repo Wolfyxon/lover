@@ -14,8 +14,14 @@ pub struct Package {
     #[serde(default)]
     pub author: String,
     
-    #[serde(default)]
+    #[serde(default = "Package::default_version")]
     pub version: String
+}
+
+impl Package {
+    fn default_version() -> String {
+        "1.0".to_string()
+    }
 }
 
 #[derive(Deserialize)]
