@@ -90,7 +90,10 @@ pub fn execute_wine(command: &str, mut args: Vec<String>, quiet: bool) -> ExitSt
         let mut all_args = vec![command.to_string()];
         all_args.append(&mut args);
 
-        execute(&config::get().software.wine, all_args, quiet)
+        let mut env: HashMap<&str, &str> = HashMap::new();
+        env.insert("WINEDEBUG", "-all");
+
+        execute_with_env(&config::get().software.wine, all_args, env, quiet)
     } else {
         execute(command, args, quiet)
     }
