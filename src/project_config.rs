@@ -1,4 +1,4 @@
-use std::path::Path;
+use std::{collections::HashMap, path::Path};
 use serde::Deserialize;
 use crate::console::exit_err;
 
@@ -19,6 +19,28 @@ pub struct Package {
 }
 
 impl Package {
+    pub fn get_rcedit_args(&self) -> Vec<String> {
+        let mut res: Vec<String> = Vec::new();
+        let mut map: HashMap<&str, String> = HashMap::new();
+
+        map.insert("ProductName", self.name.to_owned());    
+        map.insert("FileDescription", self.description.to_owned());
+        map.insert("CompanyName", self.author.to_owned());    
+        map.insert("FileVersion", self.version.to_owned());
+        map.insert("ProductVersion", self.version.to_owned());
+        
+
+        for (k, v) in map {
+            res.append(&mut vec![
+                "--set-version-string".to_string(),
+                k.to_string(),
+                v
+            ]);
+        }
+
+        res
+    }
+
     fn default_version() -> String {
         "1.0".to_string()
     }
