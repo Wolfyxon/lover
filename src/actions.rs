@@ -85,6 +85,17 @@ pub fn execute(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus{
     execute_with_env(command, args, HashMap::new(), quiet)
 }
 
+pub fn execute_wine(command: &str, mut args: Vec<String>, quiet: bool) -> ExitStatus {
+    if std::env::consts::FAMILY == "unix" {
+        let mut all_args = vec![command.to_string()];
+        all_args.append(&mut args);
+
+        execute(&config::get().software.wine, all_args, quiet)
+    } else {
+        execute(command, args, quiet)
+    }
+}
+
 pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus {
     let mut env = HashMap::new();
 
