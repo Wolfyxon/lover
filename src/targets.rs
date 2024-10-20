@@ -174,6 +174,8 @@ pub fn build_windows_zip(arch: Arch) {
 
     actions::append_file(love.as_path(), &exe_src);
 
+    print_success("The EXE should now be usable, even if something fails.".to_string());
+
     print_stage("Renaming the EXE".to_string());
 
     let exe_out = path.join(pkg_name.to_owned() + ".exe");
