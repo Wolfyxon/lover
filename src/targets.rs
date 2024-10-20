@@ -1,8 +1,3 @@
-enum Arch {
-    X86_64,
-    X86_32
-}
-
 use std::fs;
 use std::path::Path;
 
@@ -11,6 +6,11 @@ use crate::console::{exit_err, print_err, print_significant, print_stage, print_
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
+
+enum Arch {
+    X86_64,
+    X86_32
+}
 
 pub struct BuildTarget<'a> {
     pub name: &'a str,
