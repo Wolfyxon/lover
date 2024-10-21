@@ -1,12 +1,7 @@
 # Lover
 [Love2D](https://love2d.org/) is a open source command line build system and runner for Love2D projects inspired by Cargo.
 
-[See the wiki](https://github.com/Wolfyxon/lover/wiki).
-
-> [!NOTE]
-> This tool is in early development. Some of the described features may not fully work yet.
-> 
-> [See the project's progress](https://github.com/Wolfyxon/lover/issues/1).
+[Wiki](https://github.com/Wolfyxon/lover/wiki) | [CLI usage](https://github.com/Wolfyxon/lover/wiki/Using-Lover)
 
 ## Features
 ### Easy cross-platform building
