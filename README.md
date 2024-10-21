@@ -24,7 +24,10 @@ Most tools like **Makefile** and **Cargo** will treat all flags as their own and
 Lover has a simple and easy to use command syntax (at least I hope).
 
 ## Supported platforms
-✅ Full support | 📁 Planned | ❗ Testers/maintainers needed
+- ✅ **Full support**: The platform is fully supported and should work
+- 🟡 **Partial support**: The platform mostly works but you may encounter issues
+- 📁 **Planned**: Support will be implemented in future
+- ❗ **Testers/maintainers needed**: someone is needed to test and/or maintain the platform
 
 ### Build targets
 | Name                | Alias   | Status |
