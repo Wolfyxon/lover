@@ -2,7 +2,7 @@ use std::path::{Path, PathBuf};
 use serde::Deserialize;
 use crate::{actions, console::exit_err};
 
-const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
+//const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -52,15 +52,15 @@ pub struct Build {
     #[serde(default = "Build::default_zip")]
     pub zip: bool,
 
-    #[serde(default = "Build::default_sign")]
-    pub sign: bool
+    /*#[serde(default = "Build::default_sign")]
+    pub sign: bool*/
 }
 
 impl Build {
     pub fn default() -> Self {
         Build {
             zip: Build::default_zip(),
-            sign: Build::default_sign()
+            //sign: Build::default_sign()
         }
     }
 
@@ -68,9 +68,9 @@ impl Build {
         false
     }
 
-    fn default_sign() -> bool {
+    /*fn default_sign() -> bool {
         false
-    }
+    }*/
 }
 
 #[derive(Deserialize)]
@@ -89,7 +89,7 @@ pub struct Software {
 
     #[serde(default = "Software::default_appimagetool")]
     pub appimagetool: String,
-
+    /*
     #[serde(default = "Software::default_smdhtool")]
     pub smdhtool: String,
 
@@ -98,6 +98,7 @@ pub struct Software {
 
     #[serde(default = "Software::default_3dslink")]
     pub threedslink: String, // 3dslink
+    */
 }
 
 impl Software {
@@ -128,9 +129,9 @@ impl Software {
             wine: Software::default_wine(),
             rcedit: Software::default_rcedit(),
             appimagetool: Software::default_appimagetool(),
-            smdhtool: Software::default_smdhtool(),
+            /*smdhtool: Software::default_smdhtool(),
             threedsxtool: Software::default_3dsxtool(),
-            threedslink: Software::default_3dslink()
+            threedslink: Software::default_3dslink()*/
         }
     }
 
@@ -154,7 +155,7 @@ impl Software {
         "appimagetool".to_string()
     }
 
-    fn default_smdhtool() -> String {
+    /*fn default_smdhtool() -> String {
         DKP_TOOLS.to_owned() + "/smdhtool"
     }
 
@@ -164,7 +165,7 @@ impl Software {
 
     fn default_3dslink() -> String {
         DKP_TOOLS.to_owned() + "/3dslink"
-    }
+    }*/
         
 }
 
