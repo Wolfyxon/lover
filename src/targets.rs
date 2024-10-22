@@ -1,7 +1,11 @@
 use std::fs;
+use std::io::BufReader;
 use std::path::Path;
 
-use crate::{actions, config};
+use image::imageops::FilterType;
+use image::{GenericImageView, ImageFormat, ImageReader};
+
+use crate::{actions, config, files, util};
 use crate::console::{exit_err, print_err, print_significant, print_stage, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
@@ -192,6 +196,53 @@ pub fn build_windows_zip(arch: Arch) {
 
             let mut args = vec![exe];
             args.append(&mut pkg.get_rcedit_args());
+
+            let icon_str_path = &pkg.icon;
+            
+            if !icon_str_path.is_empty() { // TODO: maybe unnest this abomination
+                let icon_path = Path::new(icon_str_path);
+                let icon_out_path = path.join("game.ico");
+
+                if icon_path.exists() {
+                    if !icon_path.is_dir() {
+
+                        let file = files::open(icon_path);
+                        let reader = BufReader::new(file);
+                        
+                        match ImageReader::new(reader).with_guessed_format() {
+                            Ok(img_reader) => {
+                                match img_reader.decode() {
+                                    Ok(mut img) => {
+                                        
+                                        print_stage("Converting icon to the ICO format".to_string());
+
+                                        let (mut w, mut h) = img.dimensions();
+
+                                        w = util::clamp_u32(w, 16, 256);
+                                        h = util::clamp_u32(h, 16, 256);
+                                        
+                                        img = img.resize(w, h, FilterType::Nearest);
+
+                                        let save_res = img.save_with_format(icon_out_path, ImageFormat::Ico);
+
+                                        if save_res.is_err() {
+                                            print_warn(format!("Failed to save new icon: {}", save_res.err().unwrap()));
+                                        }
+
+                                    },
+                                    Err(err) => print_warn(format!("Failed to decode image: '{}': {}", icon_str_path, err)),
+                                }
+                            },
+                            Err(err) => print_warn(format!("Failed to read image '{}': {}", icon_str_path, err))
+                        };
+
+                    } else {
+                        print_warn(format!("Icon '{}' is a directory!", icon_str_path));
+                    }
+                } else {
+                    print_warn(format!("Icon at path '{}' not found.", icon_str_path));
+                }
+            }
 
             actions::execute_wine(&rcedit, args, false);
         },
