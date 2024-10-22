@@ -15,7 +15,10 @@ pub struct Package {
     pub author: String,
     
     #[serde(default = "Package::default_version")]
-    pub version: String
+    pub version: String,
+
+    #[serde(default = "Package::default_icon")]
+    pub icon: String
 }
 
 impl Package {
@@ -44,6 +47,11 @@ impl Package {
     fn default_version() -> String {
         "1.0".to_string()
     }
+
+    fn default_icon() -> String {
+        "icon.png".to_string()
+    }
+
 }
 
 #[derive(Deserialize)]
