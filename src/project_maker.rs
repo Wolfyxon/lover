@@ -66,12 +66,11 @@ pub fn create(name: String, path: &Path) {
     /* Generating project config */
 
     let config_path = path.join(project_config::PATH);
-    let config_string: String = format!(r#"
-[package]
+    let config_string: String = format!(r#"[package]
 name = "{}"
 author = "Cool person"
 version = "1.0"
-    "#, name);
+"#, name);
 
     let write_res = fs::write(config_path, config_string);
 
