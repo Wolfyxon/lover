@@ -1,12 +1,7 @@
 # Lover
 [Love2D](https://love2d.org/) is a open source command line build system and runner for Love2D projects inspired by Cargo.
 
-[See the wiki](https://github.com/Wolfyxon/lover/wiki).
-
-> [!NOTE]
-> This tool is in early development. Some of the described features may not fully work yet.
-> 
-> [See the project's progress](https://github.com/Wolfyxon/lover/issues/1).
+[Wiki](https://github.com/Wolfyxon/lover/wiki) | [CLI usage](https://github.com/Wolfyxon/lover/wiki/Using-Lover)
 
 ## Features
 ### Easy cross-platform building
@@ -24,7 +19,10 @@ Most tools like **Makefile** and **Cargo** will treat all flags as their own and
 Lover has a simple and easy to use command syntax (at least I hope).
 
 ## Supported platforms
-✅ Full support | 📁 Planned | ❗ Testers/maintainers needed
+- ✅ **Full support**: The platform is fully supported and should work
+- 🟡 **Partial support**: The platform mostly works but you may encounter issues
+- 📁 **Planned**: Support will be implemented in future
+- ❗ **Testers/maintainers needed**: someone is needed to test and/or maintain the platform
 
 ### Build targets
 | Name                | Alias   | Status |
@@ -73,7 +71,7 @@ Also this tool does not require installing as much software as Love2D Universal 
 This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
 
 ## Used crates
-- `reqwest`: Sending HTTP request and downloading files
+- `reqwest`: Sending HTTP requests and downloading files
 - `serde`: Serializing structs
 - `serde_json`: JSON parsing and serde support
 - `toml`: TOML parsing and serde support
