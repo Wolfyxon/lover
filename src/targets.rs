@@ -223,11 +223,13 @@ pub fn build_windows_zip(arch: Arch) {
                                         
                                         img = img.resize(w, h, FilterType::Nearest);
 
-                                        let save_res = img.save_with_format(icon_out_path, ImageFormat::Ico);
+                                        let save_res = img.save_with_format(&icon_out_path, ImageFormat::Ico);
 
                                         if save_res.is_err() {
                                             print_warn(format!("Failed to save new icon: {}", save_res.err().unwrap()));
                                         }
+
+                                        args.append(&mut vec!["--set-icon".to_string(), icon_out_path.to_str().unwrap().to_string()]);
 
                                     },
                                     Err(err) => print_warn(format!("Failed to decode image: '{}': {}", icon_str_path, err)),
