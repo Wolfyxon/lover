@@ -76,6 +76,7 @@ This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) w
 - `serde_json`: JSON parsing and serde support
 - `toml`: TOML parsing and serde support
 - `zip`: Managing ZIP archives
+- `image`: Handling image files
 - `dirs`: Finding system directories on various platforms
 - `regex`: Using regular expressions on strings
 - `ansi_term`: Styling terminal output
