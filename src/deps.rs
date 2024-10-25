@@ -4,6 +4,11 @@ use serde::Deserialize;
 
 use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http};
 
+pub enum RepoDownloadMode {
+    LatestRelease,
+    Source
+}
+
 #[derive(Deserialize)]
 pub struct GitHubRelease { 
     // Not all fields are needed. Add only those that are necessary.
