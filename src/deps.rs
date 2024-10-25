@@ -108,7 +108,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
         },
 
         // Console deps
-        /*
+        
         Dependency {
             name: "3ds",
             file_name: "lovepotion_3ds.zip",
@@ -126,7 +126,6 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             repo: "bundler",
             repo_owner: "lovebrew"
         }
-        */
     ]
 }
 
