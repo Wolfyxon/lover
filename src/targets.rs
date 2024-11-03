@@ -251,8 +251,10 @@ fn build_love() {
     let config = project_config::get();
     let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
 
+    let ignored = vec![Path::new("conf.lua")];
+
     actions::parse_all(Path::new(&project_config::get().directories.source));
-    actions::archive(Path::new(config.directories.source.as_str()), &output);
+    actions::archive_with_ignore(Path::new(config.directories.source.as_str()), &output, ignored);
 }
 
 fn build_linux() {
