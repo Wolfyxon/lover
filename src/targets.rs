@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use std::fs;
 use std::io::BufReader;
 use std::path::Path;
@@ -88,6 +89,20 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             builder: build_win32
         }
     ]
+}
+
+pub fn get_env_map() -> HashMap<&str, String> {
+    let mut map: HashMap<&str, String> = HashMap::new();
+
+    let project_conf = project_config::get();
+    let pkg = project_conf.package;
+
+    map.insert("LOVER_VERSION", pkg.version);
+    map.insert("LOVER_NAME", pkg.name);
+    map.insert("LOVER_AUTHOR", pkg.author);
+    map.insert("LOVER_DESCRIPTION", pkg.description);
+
+    return map;
 }
 
 // For future use
