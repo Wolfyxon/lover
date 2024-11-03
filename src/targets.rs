@@ -91,7 +91,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
     ]
 }
 
-pub fn get_env_map() -> HashMap<&str, String> {
+pub fn get_env_map<'a>() -> HashMap<&'a str, String> {
     let mut map: HashMap<&str, String> = HashMap::new();
 
     let project_conf = project_config::get();
