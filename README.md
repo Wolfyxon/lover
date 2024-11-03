@@ -15,6 +15,10 @@ When using `lover run` you can pass arguments to your game and even --flags.
 
 Most tools like **Makefile** and **Cargo** will treat all flags as their own and not allow such things.
 
+```
+lover run someArgument --someFlag --gameMode=survival
+```
+
 ### Simple command line interface
 Lover has a simple and easy to use command syntax (at least I hope).
 
