@@ -152,11 +152,10 @@ pub fn clean(path: &Path) {
 }
 
 pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) {
-    let archive_file = files::open(archive_path);
+    let archive_file = files::open_rw(archive_path);
     let mut file = files::open(file_path);
 
     let mut zip = zip::ZipWriter::new(archive_file);
-
 
     print_stage(format!("Adding {} to {}", file_path.to_str().unwrap(), archive_path.to_str().unwrap()));
 
