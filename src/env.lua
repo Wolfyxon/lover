@@ -1,4 +1,6 @@
-local originalGetEnv = os.getenv
+os = os or {}
+
+local originalGetEnv = os.getenv or function () end
 local consts = {}
 
 function os.getenv(varname)
