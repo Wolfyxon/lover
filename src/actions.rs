@@ -155,7 +155,10 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
     let archive_file = files::open_rw(archive_path);
     let mut file = files::open(file_path);
 
-    let mut zip = zip::ZipWriter::new(archive_file);
+    let mut zip = match zip::ZipWriter::new_append(archive_file) {
+        Ok(zip) => zip,
+        Err(err) => exit_err(format!("Failed to open zip: {}", err))
+    };
 
     print_stage(format!("Adding {} to {}", file_path.to_str().unwrap(), archive_path.to_str().unwrap()));
 
