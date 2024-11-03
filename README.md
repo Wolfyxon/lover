@@ -19,6 +19,13 @@ Most tools like **Makefile** and **Cargo** will treat all flags as their own and
 lover run someArgument --someFlag --gameMode=survival
 ```
 
+### Default environment variables
+You can access certain constants like the game's version by the use of `os.getenv()`.
+```lua
+local version = os.getenv("LOVER_VERSION")
+```
+[learn more](https://github.com/Wolfyxon/lover/wiki/Constants)
+
 ### Simple command line interface
 Lover has a simple and easy to use command syntax (at least I hope).
 
