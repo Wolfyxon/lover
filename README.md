@@ -1,5 +1,5 @@
 # Lover
-Lover is a open source command line build system and runner for Love2D projects inspired by Cargo.
+Lover is a open source command line build system and runner for [Love2D](https://love2d.org) projects inspired by Cargo.
 
 [Wiki](https://github.com/Wolfyxon/lover/wiki) | [CLI usage](https://github.com/Wolfyxon/lover/wiki/Using-Lover) | [Constants](https://github.com/Wolfyxon/lover/wiki/Constants)
 
