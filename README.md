@@ -22,6 +22,7 @@ Lover has a simple and easy to use command syntax (at least I hope).
 - ✅ **Full support**: The platform is fully supported and should work
 - 🟡 **Partial support**: The platform mostly works but you may encounter issues
 - 📁 **Planned**: Support will be implemented in future
+- ⭕ **Not yet needed**: The platform is not widely used. If you want support for it [you can open an issue](https://github.com/Wolfyxon/lover/issues/new) and it will be implemented.
 - ❗ **Testers/maintainers needed**: someone is needed to test and/or maintain the platform
 
 ### Build targets
@@ -40,11 +41,13 @@ Lover has a simple and easy to use command syntax (at least I hope).
 | Nintendo Switch     |         | ❗     |
 
 ### Lover tool
-| Platform       | Status |
-|----------------|--------|
-| Linux x86_64   | ✅     |
-| Windows x86_64 | ✅     |
-| MacOS          | ❗     |
+| Platform | Arch   | Status |
+|----------|--------|--------|
+| Linux    | x86_64 | ✅     |
+| Linux    | x86_32 | ⭕     |
+| Windows  | x86_64 | ✅     |
+| Windows  | x86_32 | ⭕     |
+| MacOS    |        | ❗     |
 
 ## Compiling
 Lover is written in **Rust** and managed by **Cargo**. 
