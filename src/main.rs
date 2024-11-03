@@ -376,11 +376,12 @@ fn cmd_run(_command: &Command) {
     args.append(&mut std::env::args().skip(2).into_iter().collect());
     
     let config = &config::get();
+    let env = actions::get_env_map();
 
     if config.run.prime || cmd_settings.has_flag("prime") {
-        actions::execute_prime(&config::get().software.love, args, false);
+        actions::execute_prime_with_env(&config::get().software.love, args, env, false);
     } else { 
-        actions::execute(&config::get().software.love, args, false);
+        actions::execute_prime_with_env(&config::get().software.love, args, env, false);
     }
 }
 
