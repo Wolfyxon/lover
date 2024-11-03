@@ -108,7 +108,7 @@ pub fn get_env_map<'a>() -> HashMap<&'a str, String> {
 
 pub fn get_module_code() -> String {
     let map = get_env_map();
-    let mut res = String::new();
+    let mut res = include_str!("env.lua").to_string();
 
     for (key, val) in map {
         res += format!("consts.{} = '{}'\n", key, val).as_str();
