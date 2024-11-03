@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-use std::fs;
-use std::io::BufReader;
+use std::fs::{self, File};
+use std::io::{BufReader, Read, Write};
 use std::path::Path;
 
 use image::imageops::FilterType;
@@ -255,6 +255,24 @@ fn build_love() {
 
     actions::parse_all(Path::new(&project_config::get().directories.source));
     actions::archive_with_ignore(Path::new(config.directories.source.as_str()), &output, ignored);
+
+    let in_conf_path = Path::new(&config.directories.source).join("conf.lua");
+    let out_conf_path = Path::new(&config.directories.build).join("conf.lua");
+
+    let mut buf: Vec<u8> = Vec::new();
+    let mut module = gen_module().as_bytes().to_vec();
+
+    buf.append(&mut module);
+
+    if in_conf_path.exists() {
+        let mut in_file = files::open(&in_conf_path);
+        in_file.read_to_end(&mut buf).unwrap();
+    }
+
+    let mut out_file = files::create(&out_conf_path);
+    out_file.write_all(&mut buf).unwrap();
+
+    actions::add_to_archive(&output, &out_conf_path, Path::new("conf.lua"));
 }
 
 fn build_linux() {
