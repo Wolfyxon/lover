@@ -70,6 +70,15 @@ pub fn open(path: &Path) -> File {
     }
 }
 
+pub fn open_rw(path: &Path) -> File {
+    let mut options = OpenOptions::new();
+
+    match options.read(true).write(true).open(path) {
+        Ok(file) => file,
+        Err(err) => exit_err(format!("Failed to open '{}' with read and write: {}", path.to_str().unwrap(), err))
+    }
+}
+
 pub fn open_append(path: &Path) -> File {
     let mut options = OpenOptions::new();
 
