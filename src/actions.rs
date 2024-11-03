@@ -163,8 +163,15 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
     let mut buf: Vec<u8> = Vec::new();
     file.read_to_end(&mut buf).unwrap();
 
-    zip.start_file_from_path(inner_path, SimpleFileOptions::default()).unwrap();
-    zip.write_all(&buf).unwrap();
+    match zip.start_file_from_path(&inner_path, SimpleFileOptions::default()) {
+        Ok(()) => {},
+        Err(err) => exit_err(format!("Failed to start file '{}': {}", &inner_path.to_str().unwrap(), err))
+    };
+
+    match zip.write_all(&buf) {
+        Ok(()) => {},
+        Err(err) => exit_err(format!("Failed to write to zip: {}", err))
+    };
 }
 
 pub fn archive_with_ignore(source: &Path, output: &Path, ignored: Vec<&Path>) {
