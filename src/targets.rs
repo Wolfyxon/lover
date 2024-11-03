@@ -91,23 +91,8 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
     ]
 }
 
-pub fn get_env_map<'a>() -> HashMap<&'a str, String> {
-    let mut map: HashMap<&str, String> = HashMap::new();
-
-    let project_conf = project_config::get();
-    let pkg = project_conf.package;
-
-    map.insert("LOVER_VERSION", pkg.version);
-    map.insert("LOVER_NAME", pkg.name);
-    map.insert("LOVER_AUTHOR", pkg.author);
-    map.insert("LOVER_DESCRIPTION", pkg.description);
-
-    return map;
-}
-
-
 pub fn gen_module() -> String {
-    let map = get_env_map();
+    let map = actions::get_env_map();
     let mut res = include_str!("env.lua").to_string();
 
     for (key, val) in map {

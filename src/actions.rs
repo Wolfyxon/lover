@@ -17,6 +17,7 @@ use crate::console::ProgressBar;
 use crate::console::{print_warn, print_success, print_stage};
 use crate::files;
 use crate::files::get_file_tree;
+use crate::project_config;
 
 pub fn command_exists(command: &str) -> bool {
     let as_path = Path::new(command);
@@ -275,4 +276,18 @@ pub fn append_file(from: &Path, to: &Path) {
             exit_err(format!("Write failed: {}", write_res.err().unwrap()));
         }
     }
+}
+
+pub fn get_env_map<'a>() -> HashMap<&'a str, String> {
+    let mut map: HashMap<&str, String> = HashMap::new();
+
+    let project_conf = project_config::get();
+    let pkg = project_conf.package;
+
+    map.insert("LOVER_VERSION", pkg.version);
+    map.insert("LOVER_NAME", pkg.name);
+    map.insert("LOVER_AUTHOR", pkg.author);
+    map.insert("LOVER_DESCRIPTION", pkg.description);
+
+    return map;
 }
