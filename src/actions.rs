@@ -41,7 +41,7 @@ pub fn command_exists(command: &str) -> bool {
     return false;
 }
 
-pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<&str, &str>, quiet: bool) -> ExitStatus {
+pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<&str, String>, quiet: bool) -> ExitStatus {
     if !command_exists(command) {
         exit_err(format!("Can't run '{}': not found.", command));
     }
@@ -91,8 +91,8 @@ pub fn execute_wine(command: &str, mut args: Vec<String>, quiet: bool) -> ExitSt
         let mut all_args = vec![command.to_string()];
         all_args.append(&mut args);
 
-        let mut env: HashMap<&str, &str> = HashMap::new();
-        env.insert("WINEDEBUG", "-all");
+        let mut env: HashMap<&str, String> = HashMap::new();
+        env.insert("WINEDEBUG", "-all".to_string());
 
         execute_with_env(&config::get().software.wine, all_args, env, quiet)
     } else {
@@ -103,10 +103,10 @@ pub fn execute_wine(command: &str, mut args: Vec<String>, quiet: bool) -> ExitSt
 pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus {
     let mut env = HashMap::new();
 
-    env.insert("__NV_PRIME_RENDER_OFFLOAD", "1");
-    env.insert("__GLX_VENDOR_LIBRARY_NAME", "nvidia");
-    env.insert("__VK_LAYER_NV_optimus", "NVIDIA_only");
-    env.insert("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/nvidia_icd.json");
+    env.insert("__NV_PRIME_RENDER_OFFLOAD", "1".to_string());
+    env.insert("__GLX_VENDOR_LIBRARY_NAME", "nvidia".to_string());
+    env.insert("__VK_LAYER_NV_optimus", "NVIDIA_only".to_string());
+    env.insert("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/nvidia_icd.json".to_string());
     
     execute_with_env(command, args, env, quiet)
 }
