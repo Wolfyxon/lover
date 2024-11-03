@@ -286,6 +286,13 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
                 CommandArg::req("name", "Name of the dependency.")
             ],
             flags: vec![]
+        },
+        Command {
+            alias: "module".to_string(),
+            description: "Generates the extra code injected into your game when building. Mostly for testing".to_string(),
+            function: cmd_module,
+            args: vec![],
+            flags: vec![]
         }
     ]
 }
@@ -626,4 +633,8 @@ fn cmd_fetch(command: &Command) {
 
     println!("Name: {}", asset.name);
     println!("Download URL: {}", asset.browser_download_url);
+}
+
+fn cmd_module(command: &Command) {
+    println!("{}", targets::gen_module());
 }
