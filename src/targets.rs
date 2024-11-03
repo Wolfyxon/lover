@@ -106,7 +106,7 @@ pub fn get_env_map<'a>() -> HashMap<&'a str, String> {
 }
 
 
-pub fn get_module_code() -> String {
+pub fn gen_module() -> String {
     let map = get_env_map();
     let mut res = include_str!("env.lua").to_string();
 
