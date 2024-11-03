@@ -1,6 +1,6 @@
 local originalGetEnv = os.getenv
-local loverConstants = {}
+local consts = {}
 
 function os.getenv(varname)
-    return loverConstants[varname] or originalGetEnv(varname)
+    return consts[varname] or originalGetEnv(varname)
 end
