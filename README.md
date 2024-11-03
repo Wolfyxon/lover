@@ -24,21 +24,23 @@ Lover has a simple and easy to use command syntax (at least I hope).
 - 📁 **Planned**: Support will be implemented in future
 - ⭕ **Not yet needed**: The platform is not widely used. If you want support for it [you can open an issue](https://github.com/Wolfyxon/lover/issues/new) and it will be implemented.
 - ❗ **Testers/maintainers needed**: someone is needed to test and/or maintain the platform
+- ❌ **Impossible**: The platform is currently impossible to implement
 
 ### Build targets
-| Name                | Alias   | Status |
-|---------------------|---------|--------|
-| Universal LOVE file | `love`  | ✅     |
-| Linux AppImage      | `linux` | ✅     |
-| Windows x86_64      | `win64` | ✅     |
-| Windows x86_32      | `win32` | ✅     |
-| MacOS               |         | ❗     |
-| Web                 |         | 📁     |
-| Android             |         | 📁     |
-| Nintendo 3DS `3DSX` |         | 📁     |
-| Nintendo 3DS `CIA`  |         | 📁     |
-| Nintendo Wii U      |         | ❗     |
-| Nintendo Switch     |         | ❗     |
+| Name                | Arch   | Alias   | Status |
+|---------------------|--------|---------|--------|
+| Universal LOVE file |        | `love`  | ✅     |
+| Linux AppImage      | x86_64 | `linux` | ✅     |
+| Linux AppImage      | x86_32 |         | ❌     |
+| Windows             | x86_64 | `win64` | ✅     |
+| Windows             | x86_32 | `win32` | ✅     |
+| MacOS               |        |         | ❗     |
+| Web                 |        |         | 📁     |
+| Android             |        |         | 📁     |
+| Nintendo 3DS `3DSX` |        |         | 📁     |
+| Nintendo 3DS `CIA`  |        |         | 📁     |
+| Nintendo Wii U      |        |         | ❗     |
+| Nintendo Switch     |        |         | ❗     |
 
 ### Lover tool
 | Platform | Arch   | Status |
