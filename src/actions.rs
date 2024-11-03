@@ -100,8 +100,8 @@ pub fn execute_wine(command: &str, mut args: Vec<String>, quiet: bool) -> ExitSt
     }
 }
 
-pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus {
-    let mut env = HashMap::new();
+pub fn execute_prime_with_env(command: &str, args: Vec<String>, env: HashMap<&str, String>, quiet: bool) -> ExitStatus {
+    let mut env = env.clone();
 
     env.insert("__NV_PRIME_RENDER_OFFLOAD", "1".to_string());
     env.insert("__GLX_VENDOR_LIBRARY_NAME", "nvidia".to_string());
@@ -109,6 +109,10 @@ pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatu
     env.insert("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/nvidia_icd.json".to_string());
     
     execute_with_env(command, args, env, quiet)
+}
+
+pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatus {
+    execute_prime_with_env(command, args, HashMap::new(),quiet)
 }
 
 
