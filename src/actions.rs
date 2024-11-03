@@ -151,11 +151,27 @@ pub fn clean(path: &Path) {
     };
 }
 
+pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) {
+    let archive_file = files::open(archive_path);
+    let mut file = files::open(file_path);
+
+    let mut zip = zip::ZipWriter::new(archive_file);
+
+
+    print_stage(format!("Adding {} to {}", file_path.to_str().unwrap(), archive_path.to_str().unwrap()));
+
+    let mut buf: Vec<u8> = Vec::new();
+    file.read_to_end(&mut buf).unwrap();
+
+    zip.start_file_from_path(inner_path, SimpleFileOptions::default()).unwrap();
+    zip.write_all(&buf).unwrap();
+}
+
 pub fn archive_with_ignore(source: &Path, output: &Path, ignored: Vec<&Path>) {
     files::create_dir(output.parent().unwrap());
 
     let output_file = files::create(output);
-    let tree = get_file_tree(source);
+    let tree: Vec<PathBuf> = get_file_tree(source);
     let options = SimpleFileOptions::default();
     let mut zip = zip::ZipWriter::new(output_file);
     let mut buffer: Vec<u8> = Vec::new();
