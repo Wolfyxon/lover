@@ -286,7 +286,7 @@ fn build_love() {
     let out_conf_path = Path::new(&config.directories.build).join("conf.lua");
 
     let mut buf: Vec<u8> = Vec::new();
-    let mut module = gen_module().as_bytes().to_vec();
+    let mut module = gen_module(Context::Build).as_bytes().to_vec();
 
     buf.append(&mut module);
 
