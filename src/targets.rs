@@ -12,6 +12,11 @@ use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
 
+pub enum Context {
+    Run,
+    Build
+}
+
 pub enum Arch {
     X86_64,
     X86_32
