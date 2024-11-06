@@ -96,10 +96,31 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
     ]
 }
 
-pub fn gen_module() -> String {
-    let map = actions::get_env_map();
+pub fn gen_module(context: Context) -> String {
+    let mut map: HashMap<String, String> = HashMap::new();
     let mut res = include_str!("env.lua").to_string();
 
+    let config_env = project_config::get().env;
+
+    // Collecting keys
+    let ctx_map = match context {
+        Context::Build => config_env.build_env,
+        Context::Run => config_env.run_env,
+    };
+
+    for (key, val) in actions::get_env_map() {
+        map.insert(key.to_string(), val);
+    }
+
+    for (key, val) in config_env.env {
+        map.insert(key, val);
+    }
+
+    for (key, val) in ctx_map {
+        map.insert(key, val);
+    }
+
+    // Inserting keys
     for (key, val) in map {
         res += format!("consts.{} = '{}'\n", key, val).as_str();
     }
