@@ -636,5 +636,5 @@ fn cmd_fetch(command: &Command) {
 }
 
 fn cmd_module(command: &Command) {
-    println!("{}", targets::gen_module());
+    println!("{}", targets::gen_module(targets::Context::Build));
 }
