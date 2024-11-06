@@ -635,6 +635,6 @@ fn cmd_fetch(command: &Command) {
     println!("Download URL: {}", asset.browser_download_url);
 }
 
-fn cmd_module(command: &Command) {
+fn cmd_module(_command: &Command) {
     println!("{}", targets::gen_module(targets::Context::Build));
 }
