@@ -383,7 +383,7 @@ fn cmd_run(_command: &Command) {
     args.append(&mut std::env::args().skip(2).into_iter().collect());
     
     let config = &config::get();
-    let env = actions::get_env_map();
+    let env = actions::get_env_map(actions::Context::Run);
 
     if config.run.prime || cmd_settings.has_flag("prime") {
         actions::execute_prime_with_env(&config::get().software.love, args, env, false);
@@ -636,5 +636,5 @@ fn cmd_fetch(command: &Command) {
 }
 
 fn cmd_module(_command: &Command) {
-    println!("{}", targets::gen_module(targets::Context::Build));
+    println!("{}", targets::gen_module(actions::Context::Build));
 }

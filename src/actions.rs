@@ -19,6 +19,11 @@ use crate::files;
 use crate::files::get_file_tree;
 use crate::project_config;
 
+pub enum Context {
+    Run,
+    Build
+}
+
 pub fn command_exists(command: &str) -> bool {
     let as_path = Path::new(command);
     
@@ -41,7 +46,7 @@ pub fn command_exists(command: &str) -> bool {
     return false;
 }
 
-pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<&str, String>, quiet: bool) -> ExitStatus {
+pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<String, String>, quiet: bool) -> ExitStatus {
     if !command_exists(command) {
         exit_err(format!("Can't run '{}': not found.", command));
     }
@@ -91,8 +96,8 @@ pub fn execute_wine(command: &str, mut args: Vec<String>, quiet: bool) -> ExitSt
         let mut all_args = vec![command.to_string()];
         all_args.append(&mut args);
 
-        let mut env: HashMap<&str, String> = HashMap::new();
-        env.insert("WINEDEBUG", "-all".to_string());
+        let mut env: HashMap<String, String> = HashMap::new();
+        env.insert("WINEDEBUG".to_string(), "-all".to_string());
 
         execute_with_env(&config::get().software.wine, all_args, env, quiet)
     } else {
@@ -100,13 +105,13 @@ pub fn execute_wine(command: &str, mut args: Vec<String>, quiet: bool) -> ExitSt
     }
 }
 
-pub fn execute_prime_with_env(command: &str, args: Vec<String>, env: HashMap<&str, String>, quiet: bool) -> ExitStatus {
+pub fn execute_prime_with_env(command: &str, args: Vec<String>, env: HashMap<String, String>, quiet: bool) -> ExitStatus {
     let mut env = env.clone();
 
-    env.insert("__NV_PRIME_RENDER_OFFLOAD", "1".to_string());
-    env.insert("__GLX_VENDOR_LIBRARY_NAME", "nvidia".to_string());
-    env.insert("__VK_LAYER_NV_optimus", "NVIDIA_only".to_string());
-    env.insert("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/nvidia_icd.json".to_string());
+    env.insert("__NV_PRIME_RENDER_OFFLOAD".to_string(), "1".to_string());
+    env.insert("__GLX_VENDOR_LIBRARY_NAME".to_string(), "nvidia".to_string());
+    env.insert("__VK_LAYER_NV_optimus".to_string(), "NVIDIA_only".to_string());
+    env.insert("VK_ICD_FILENAMES".to_string(), "/usr/share/vulkan/icd.d/nvidia_icd.json".to_string());
     
     execute_with_env(command, args, env, quiet)
 }
@@ -324,16 +329,30 @@ pub fn append_file(from: &Path, to: &Path) {
     }
 }
 
-pub fn get_env_map<'a>() -> HashMap<&'a str, String> {
-    let mut map: HashMap<&str, String> = HashMap::new();
+pub fn get_env_map(context: Context) -> HashMap<String, String> {
+    let mut map: HashMap<String, String> = HashMap::new();
 
     let project_conf = project_config::get();
+    let env = project_conf.env;
     let pkg = project_conf.package;
 
-    map.insert("LOVER_VERSION", pkg.version);
-    map.insert("LOVER_NAME", pkg.name);
-    map.insert("LOVER_AUTHOR", pkg.author);
-    map.insert("LOVER_DESCRIPTION", pkg.description);
+    let ctx_map = match context {
+        Context::Build => env.build_env,
+        Context::Run => env.run_env
+    };
+
+    for (k, v) in ctx_map {
+        map.insert(k, v);
+    }
+
+    for (k, v) in env.env {
+        map.insert(k, v);
+    }
+
+    map.insert("LOVER_VERSION".to_string(), pkg.version);
+    map.insert("LOVER_NAME".to_string(), pkg.name);
+    map.insert("LOVER_AUTHOR".to_string(), pkg.author);
+    map.insert("LOVER_DESCRIPTION".to_string(), pkg.description);
 
     return map;
 }
