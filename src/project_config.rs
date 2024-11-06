@@ -99,6 +99,32 @@ impl Build {
 }
 
 #[derive(Deserialize)]
+pub struct Env {
+    #[serde(default = "Env::default_any_env")]
+    pub env: HashMap<String, String>,
+
+    #[serde(default = "Env::default_any_env")]
+    pub run_env: HashMap<String, String>,
+
+    #[serde(default = "Env::default_any_env")]
+    pub build_env: HashMap<String, String>
+}
+
+impl Env {
+    pub fn default() -> Self {
+        Self {
+            env: Self::default_any_env(),
+            run_env: Self::default_any_env(),
+            build_env: Self::default_any_env()
+        }
+    }
+
+    pub fn default_any_env() -> HashMap<String, String> {
+        HashMap::new()
+    }
+}
+
+#[derive(Deserialize)]
 pub struct ProjectConfig {
     pub package: Package,
 
@@ -106,7 +132,10 @@ pub struct ProjectConfig {
     pub directories: Directories,
 
     #[serde(default = "Build::default")]
-    pub build: Build
+    pub build: Build,
+
+    #[serde(default = "Env::default")]
+    pub env: Env
 }
 
 impl ProjectConfig {
