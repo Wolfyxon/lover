@@ -120,7 +120,6 @@ pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatu
     execute_prime_with_env(command, args, HashMap::new(),quiet)
 }
 
-
 pub fn parse_all(root: &Path) {
     let parser = config::get().software.luac;
 
