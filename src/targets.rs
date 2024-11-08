@@ -91,8 +91,8 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
     ]
 }
 
-pub fn gen_module(context: actions::Context) -> String {
-    let map = actions::get_env_map(context);
+pub fn gen_module() -> String {
+    let map = actions::get_env_map(actions::Context::Build);
     let mut res = include_str!("env.lua").to_string();
 
     for (key, val) in map {
@@ -261,7 +261,7 @@ fn build_love() {
     let out_conf_path = Path::new(&config.directories.build).join("conf.lua");
 
     let mut buf: Vec<u8> = Vec::new();
-    let mut module = gen_module(actions::Context::Build).as_bytes().to_vec();
+    let mut module = gen_module().as_bytes().to_vec();
 
     buf.append(&mut module);
 
