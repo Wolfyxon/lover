@@ -60,7 +60,7 @@ The `love` target is runnable on all platforms, but require [LÖVE](https://love
 |----------|--------|--------|
 | Linux    | x86_64 | ✅     |
 | Linux    | x86_32 | ⭕     |
-| Windows  | x86_64 | ✅     |
+| Windows  | x86_64 | 🟡     |
 | Windows  | x86_32 | ⭕     |
 | MacOS    |        | ❗     |
 
