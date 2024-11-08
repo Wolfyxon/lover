@@ -337,15 +337,15 @@ pub fn get_env_map(context: Context) -> HashMap<String, String> {
     let pkg = project_conf.package;
 
     let ctx_map = match context {
-        Context::Build => env.build_env,
-        Context::Run => env.run_env
+        Context::Build => env.build,
+        Context::Run => env.run
     };
 
     for (k, v) in ctx_map {
         map.insert(k, v);
     }
 
-    for (k, v) in env.env {
+    for (k, v) in env.global {
         map.insert(k, v);
     }
 

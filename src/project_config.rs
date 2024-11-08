@@ -101,21 +101,21 @@ impl Build {
 #[derive(Deserialize)]
 pub struct Env {
     #[serde(default = "Env::default_any_env")]
-    pub env: HashMap<String, String>,
+    pub global: HashMap<String, String>,
 
     #[serde(default = "Env::default_any_env")]
-    pub run_env: HashMap<String, String>,
+    pub run: HashMap<String, String>,
 
     #[serde(default = "Env::default_any_env")]
-    pub build_env: HashMap<String, String>
+    pub build: HashMap<String, String>
 }
 
 impl Env {
     pub fn default() -> Self {
         Self {
-            env: Self::default_any_env(),
-            run_env: Self::default_any_env(),
-            build_env: Self::default_any_env()
+            global: Self::default_any_env(),
+            run: Self::default_any_env(),
+            build: Self::default_any_env()
         }
     }
 
