@@ -1,5 +1,4 @@
-use std::collections::HashMap;
-use std::fs::{self, File};
+use std::fs;
 use std::io::{BufReader, Read, Write};
 use std::path::Path;
 
