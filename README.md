@@ -53,6 +53,8 @@ Lover has a simple and easy to use command syntax (at least I hope).
 | Nintendo Wii U      |        |         | ❗     |
 | Nintendo Switch     |        |         | ❗     |
 
+The `love` target is runnable on all platforms, but require [LÖVE](https://love2d.org/) to be installed.
+
 ### Lover tool
 | Platform | Arch   | Status |
 |----------|--------|--------|
