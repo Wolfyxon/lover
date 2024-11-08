@@ -16,6 +16,7 @@ mod http;
 mod config;
 mod deps;
 mod targets;
+mod lovebrew_bundler;
 
 struct Command<'a> {
     alias: String,
