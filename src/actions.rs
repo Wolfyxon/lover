@@ -349,6 +349,12 @@ pub fn get_env_map(context: Context) -> HashMap<String, String> {
         map.insert(k, v);
     }
 
+    let ctx_str = match context {
+        Context::Build => "build",
+        Context::Run => "run"
+    }.to_string();
+
+    map.insert("LOVER_CONTEXT".to_string(), ctx_str);
     map.insert("LOVER_VERSION".to_string(), pkg.version);
     map.insert("LOVER_NAME".to_string(), pkg.name);
     map.insert("LOVER_AUTHOR".to_string(), pkg.author);
