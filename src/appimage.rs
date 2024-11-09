@@ -7,8 +7,8 @@ use crate::files;
 // TODO: Implement automatic detection for the offset.
 pub const SQUASHFS_OFFSET: u64 = 193728;
 
-pub fn is_appimage(appimage_path: &Path) -> bool {
-    let mut file = files::open(appimage_path);
+pub fn is_appimage(path: &Path) -> bool {
+    let mut file = files::open(path);
 
     // AppImages always have 0x414902 at the offset of 8 bytes
 
