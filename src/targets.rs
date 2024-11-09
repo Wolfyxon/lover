@@ -250,6 +250,7 @@ pub fn build_windows_zip(arch: Arch) {
 fn build_love() {
     let config = project_config::get();
     let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
+    let temp = config.directories.get_temp_dir();
 
     let ignored = vec![Path::new("conf.lua")];
 
@@ -257,7 +258,7 @@ fn build_love() {
     actions::archive_with_ignore(Path::new(config.directories.source.as_str()), &output, ignored);
 
     let in_conf_path = Path::new(&config.directories.source).join("conf.lua");
-    let out_conf_path = Path::new(&config.directories.build).join("conf.lua");
+    let out_conf_path = temp.join("conf.lua");
 
     let mut buf: Vec<u8> = Vec::new();
     let mut module = gen_module().as_bytes().to_vec();
@@ -283,12 +284,14 @@ fn build_linux() {
 
     // Paths
     let build_dir = Path::new(&project_conf.directories.build);
+    let temp = project_conf.directories.get_temp_dir();
+
     let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
 
     let love_app_img = deps::get_dep("love-linux").get_path();
     
-    let squashfs_root = build_dir.join("squashfs-root");
-    let ext_squashfs = build_dir.join("extracted-squashfs");
+    let squashfs_root = temp.join("squashfs-root");
+    let ext_squashfs = temp.join("extracted-squashfs");
     let love_bin = squashfs_root.join("bin/love");
 
     // Path checks
