@@ -289,10 +289,12 @@ fn build_linux() {
     let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
 
     let love_app_img = deps::get_dep("love-linux").get_path();
-    
+    let app_img = build_dir.join(format!("{}.AppImage", &pkg_name));
+
     let squashfs_root = temp.join("squashfs-root");
     let ext_squashfs = temp.join("extracted-squashfs");
-    let love_bin = squashfs_root.join("bin/love");
+    let love_bin = temp.join("love");
+    let love_inner_bin = Path::new("/bin/love");
 
     // Path checks
 
@@ -311,24 +313,28 @@ fn build_linux() {
 
     appimage::extract_squashfs(&love_app_img, &ext_squashfs);
 
-    print_stage("Extracting SquashFS contents".to_string());
-    appimage::extract_squashfs_files(&ext_squashfs, &squashfs_root);
-
-    print_stage("Embedding the game's code into the executable".to_string());
-
+    print_stage("Extracting LOVE binary".to_string());
+    appimage::extract_squashfs_file(&ext_squashfs, love_inner_bin, &love_bin);
+    
     // Appending .love to the love binary
+    print_stage("Embedding the game's code into the executable".to_string());
     actions::append_file(love.as_path(), love_bin.as_path());
 
-    // Building .AppImage from squashfs-root
+    // Injecting into SquashFS
+    print_stage("Replacing the LOVE binary in SquashFS".to_string());
+    appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin);
 
-    print_stage("Building .AppImage".to_string());
+    // Cloning LOVE AppImage
+    print_stage("Cloning LOVE AppImage".to_string());
 
-    let appimage_path = build_dir.join(format!("{}.AppImage", &pkg_name));
+    match std::fs::copy(&love_app_img, &app_img) {
+        Ok(_) => {},
+        Err(err) => exit_err(format!("Copy failed: {}", err))
+    }
 
-    actions::execute(conf.software.appimagetool.as_str(), vec![
-        squashfs_root.to_str().unwrap().to_string(), 
-        appimage_path.to_str().unwrap().to_string()
-    ], false);
+    // Embedding SquashFS to the AppImage
+    print_stage("Embedding SquashFS into the AppImage".to_string());
+    appimage::embed_squashfs(&app_img, &ext_squashfs);
 }
 
 fn build_win64() {
