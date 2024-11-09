@@ -434,6 +434,8 @@ fn cmd_build(command: &Command) {
         print_success("All dependencies are installed.".to_string());
     }
 
+    files::create_dir(&project_conf.directories.get_temp_dir());
+
     let mut already_built: Vec<&str> = Vec::new();
 
     for target in &targets {
