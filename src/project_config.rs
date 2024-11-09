@@ -78,6 +78,10 @@ impl Directories {
     fn default_build() -> String {
         "build".to_string()
     }
+
+    pub fn get_build_dir(&self) -> &Path {
+        Path::new(&self.build)
+    }
 }
 
 #[derive(Deserialize)]
