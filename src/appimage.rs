@@ -5,7 +5,7 @@ use crate::files;
 
 // This is the offset I've seen in most AppImages (including LOVE)
 // TODO: Implement automatic detection for the offset.
-pub const DEFAULT_OFFSET: u32 = 193728;
+pub const DEFAULT_OFFSET: u64 = 193728;
 
 pub fn is_appimage(appimage_path: &Path) -> bool {
     let mut file = files::open(appimage_path);
