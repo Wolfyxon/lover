@@ -3,6 +3,10 @@ use std::io::{Seek, SeekFrom, Read};
 use crate::console::exit_err;
 use crate::files;
 
+// This is the offset I've seen in most AppImages (including LOVE)
+// TODO: Implement automatic detection for the offset.
+const DEFAULT_OFFSET: u32 = 193728;
+
 pub fn is_appimage(appimage_path: &Path) -> bool {
     let mut file = files::open(appimage_path);
 
