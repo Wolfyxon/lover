@@ -113,4 +113,6 @@ pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path
             _ => exit_err(format!("'{}' is not a file.", file_path.to_str().unwrap()))
         };
     }
+
+    exit_err(format!("File '{}' not found in SquashFS", file_path.to_str().unwrap()));
 }
