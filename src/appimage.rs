@@ -1,6 +1,6 @@
 use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
-use backhand::{FilesystemReader, InnerNode, SquashfsFileReader};
+use backhand::{FilesystemReader, FilesystemWriter, InnerNode, NodeHeader, SquashfsFileReader};
 
 use crate::console::{exit_err, print_warn};
 use crate::files;
@@ -114,4 +114,27 @@ pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path
     }
 
     exit_err(format!("File '{}' not found in SquashFS", file_path.to_str().unwrap()));
+}
+
+pub fn put_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_path: &Path) {
+    let file = files::open_rw(file_path);
+
+    let sfs_reader = read_squashfs(squashfs_path);
+
+    let mut sfs_writer = match FilesystemWriter::from_fs_reader(&sfs_reader) {
+        Ok(res) => res,
+        Err(err) => exit_err(format!("Failed to initialize writer: {}", err))
+    };
+
+    match sfs_writer.push_file(file, inner_path, NodeHeader::default()) {
+        Ok(()) => {},
+        Err(err) => exit_err(format!("Failed to write into SquashFS: {}", err))
+    };
+
+    let sfs_file = files::create(squashfs_path);
+    
+    match sfs_writer.write(sfs_file) {
+        Ok(_) => {},
+        Err(err) => exit_err(format!("Failed to save SquashFS: {}", err))
+    };
 }
