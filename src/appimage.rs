@@ -95,3 +95,22 @@ pub fn extract_squashfs_files(squashfs_path: &Path, output_path: &Path) {
         }
     }
 }
+
+pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path: &Path) {
+    let reader = read_squashfs(squashfs_path);
+
+    for node in reader.files() {
+        let path = output_path.join(node.fullpath.strip_prefix("/").unwrap());
+        
+        if path != file_path {
+            continue;
+        }
+
+        match &node.inner {
+            InnerNode::File(f) => {
+                write_from_squashfs_file(&reader, f, output_path);
+            },
+            _ => exit_err(format!("'{}' is not a file.", file_path.to_str().unwrap()))
+        };
+    }
+}
