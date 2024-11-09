@@ -1,4 +1,4 @@
-use std::{collections::HashMap, path::Path};
+use std::{collections::HashMap, path::{Path, PathBuf}};
 use serde::Deserialize;
 use crate::console::exit_err;
 
@@ -81,6 +81,10 @@ impl Directories {
 
     pub fn get_build_dir(&self) -> &Path {
         Path::new(&self.build)
+    }
+
+    pub fn get_temp_dir(&self) -> PathBuf {
+        self.get_build_dir().join("temp")
     }
 }
 
