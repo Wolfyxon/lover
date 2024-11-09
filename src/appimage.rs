@@ -1,6 +1,8 @@
 use std::path::Path;
-use std::io::{Read, Seek, SeekFrom, Write};
-use crate::console::exit_err;
+use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
+use backhand::{FilesystemReader, InnerNode, SquashfsFileReader, SquashfsReadFile};
+
+use crate::console::{exit_err, print_warn};
 use crate::files;
 
 // This is the offset I've seen in most AppImages (including LOVE)
@@ -51,4 +53,37 @@ pub fn extract_squashfs(appimage_path: &Path, output_path: &Path) {
         Ok(()) => {},
         Err(err) => exit_err(format!("Write failed: {}", err))
     };
+}
+
+pub fn extract_squashfs_files(squashfs_path: &Path, output_path: &Path) {
+    let file_reader = BufReader::new(files::open(squashfs_path));
+
+    let reader = match FilesystemReader::from_reader(file_reader) {
+        Ok(res) => res,
+        Err(err) => exit_err(format!("Failed to read SquashFS: {}", err))
+    };
+
+    for node in reader.files() {
+        let path = output_path.join(node.fullpath.strip_prefix("/").unwrap());
+        
+        match &node.inner {
+            InnerNode::File(f) => {
+                let file = files::create(path.as_path());
+                
+                let mut wr = BufWriter::with_capacity(f.basic.file_size as usize, &file);
+                let mut rd = reader.file(&f.basic).reader();
+                
+                match std::io::copy(&mut rd, &mut wr) {
+                    Ok(_) => {},
+                    Err(err) => exit_err(format!("Extraction of '{}' failed: {}", path.to_str().unwrap(), err))
+                };
+            },
+            InnerNode::Dir(_d) => {
+                files::create_dir(path.as_path());
+            },
+            _ => {
+                print_warn(format!("Unimplemented SquashFS node: {:?}", &node.inner));
+            }
+        }
+    }
 }
