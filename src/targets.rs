@@ -282,11 +282,6 @@ fn build_linux() {
     let pkg_name = project_conf.package.name;
 
     // Paths
-    let current_dir = match std::env::current_dir() {
-        Ok(dir) => dir,
-        Err(err) => exit_err(format!("Failed to get current working directory: {}", err))
-    };
-
     let build_dir = Path::new(&project_conf.directories.build);
     let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
 
