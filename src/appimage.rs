@@ -109,7 +109,7 @@ pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path
                 write_from_squashfs_file(&reader, f, output_path);
                 return;
             },
-            _ => exit_err(format!("'{}' is not a file.", file_path.to_str().unwrap()))
+            _ => {}
         };
     }
 
