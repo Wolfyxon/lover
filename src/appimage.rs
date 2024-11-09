@@ -55,13 +55,17 @@ pub fn extract_squashfs(appimage_path: &Path, output_path: &Path) {
     };
 }
 
-pub fn extract_squashfs_files(squashfs_path: &Path, output_path: &Path) {
-    let file_reader = BufReader::new(files::open(squashfs_path));
+pub fn read_squashfs(path: &Path) -> FilesystemReader<'_> {
+    let file_reader = BufReader::new(files::open(path));
 
-    let reader = match FilesystemReader::from_reader(file_reader) {
+    match FilesystemReader::from_reader(file_reader) {
         Ok(res) => res,
         Err(err) => exit_err(format!("Failed to read SquashFS: {}", err))
-    };
+    }
+}
+
+pub fn extract_squashfs_files(squashfs_path: &Path, output_path: &Path) {
+    let reader = read_squashfs(squashfs_path);
 
     for node in reader.files() {
         let path = output_path.join(node.fullpath.strip_prefix("/").unwrap());
