@@ -1,5 +1,5 @@
 use std::path::Path;
-use std::io::{Seek, SeekFrom, Read};
+use std::io::{Read, Seek, SeekFrom, Write};
 use crate::console::exit_err;
 use crate::files;
 
@@ -25,4 +25,30 @@ pub fn is_appimage(appimage_path: &Path) -> bool {
     };
 
     &check_buffer == b"\x41\x49\x02"
+}
+
+pub fn extract_squashfs(appimage_path: &Path, output_path: &Path) {
+    if !is_appimage(appimage_path) {
+        exit_err(format!("'{}' is not a valid AppImage", appimage_path.to_str().unwrap()));
+    }
+    
+    let mut input_file = files::open(appimage_path);
+    let mut output_file = files::create(output_path);
+
+    match input_file.seek(SeekFrom::Start(DEFAULT_OFFSET)) {
+        Ok(res) => res,
+        Err(err) => exit_err(format!("Seek failed: {}", err))
+    };
+
+    let mut buf: Vec<u8> = Vec::new();
+
+    match input_file.read_to_end(&mut buf) {
+        Ok(_) => {},
+        Err(err) => exit_err(format!("Read failed: {}", err))
+    };
+
+    match output_file.write_all(&mut buf) {
+        Ok(()) => {},
+        Err(err) => exit_err(format!("Write failed: {}", err))
+    };
 }
