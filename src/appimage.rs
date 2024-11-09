@@ -5,7 +5,7 @@ use crate::files;
 
 // This is the offset I've seen in most AppImages (including LOVE)
 // TODO: Implement automatic detection for the offset.
-pub const DEFAULT_OFFSET: u64 = 193728;
+pub const SQUASHFS_OFFSET: u64 = 193728;
 
 pub fn is_appimage(appimage_path: &Path) -> bool {
     let mut file = files::open(appimage_path);
@@ -35,7 +35,7 @@ pub fn extract_squashfs(appimage_path: &Path, output_path: &Path) {
     let mut input_file = files::open(appimage_path);
     let mut output_file = files::create(output_path);
 
-    match input_file.seek(SeekFrom::Start(DEFAULT_OFFSET)) {
+    match input_file.seek(SeekFrom::Start(SQUASHFS_OFFSET)) {
         Ok(res) => res,
         Err(err) => exit_err(format!("Seek failed: {}", err))
     };
