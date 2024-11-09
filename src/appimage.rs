@@ -55,6 +55,25 @@ pub fn extract_squashfs(appimage_path: &Path, output_path: &Path) {
     };
 }
 
+pub fn embed_squashfs(appimage_path: &Path, squashfs_path: &Path) {
+    if !is_appimage(appimage_path) {
+        exit_err(format!("'{}' is not a valid AppImage", appimage_path.to_str().unwrap()));
+    }
+
+    let mut appimage = files::open_rw(appimage_path);
+    let mut squashfs = files::open(squashfs_path);
+
+    match appimage.seek(SeekFrom::Start(SQUASHFS_OFFSET)) {
+        Ok(_) => {},
+        Err(err) => exit_err(format!("Seek failed: {}", err))
+    };
+
+    match std::io::copy(&mut squashfs, &mut appimage) {
+        Ok(_) => {},
+        Err(err) => exit_err(format!("Failed to write SquashFS into AppImage: {}", err))
+    };
+}
+
 pub fn read_squashfs(path: &Path) -> FilesystemReader<'_> {
     let file_reader = BufReader::new(files::open(path));
 
