@@ -116,7 +116,7 @@ pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path
     exit_err(format!("File '{}' not found in SquashFS", file_path.to_str().unwrap()));
 }
 
-pub fn put_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_path: &Path) {
+pub fn replace_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_path: &Path) {
     let file = files::open_rw(file_path);
 
     let sfs_reader = read_squashfs(squashfs_path);
@@ -126,7 +126,7 @@ pub fn put_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_path: 
         Err(err) => exit_err(format!("Failed to initialize writer: {}", err))
     };
 
-    match sfs_writer.push_file(file, inner_path, NodeHeader::default()) {
+    match sfs_writer.replace_file(inner_path, file) {
         Ok(()) => {},
         Err(err) => exit_err(format!("Failed to write into SquashFS: {}", err))
     };
