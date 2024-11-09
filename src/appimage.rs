@@ -1,6 +1,6 @@
 use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
-use backhand::{FilesystemReader, InnerNode};
+use backhand::{FilesystemReader, InnerNode, SquashfsFileReader};
 
 use crate::console::{exit_err, print_warn};
 use crate::files;
@@ -64,6 +64,18 @@ pub fn read_squashfs(path: &Path) -> FilesystemReader<'_> {
     }
 }
 
+pub fn write_from_squashfs_file(reader: &FilesystemReader<'_>, squashfs_file: &SquashfsFileReader, output_path: &Path) {
+    let file = files::create(output_path);
+    
+    let mut wr = BufWriter::with_capacity(squashfs_file.basic.file_size as usize, &file);
+    let mut rd = reader.file(&squashfs_file.basic).reader();
+    
+    match std::io::copy(&mut rd, &mut wr) {
+        Ok(_) => {},
+        Err(err) => exit_err(format!("Extraction to '{}' failed: {}", output_path.to_str().unwrap(), err))
+    };
+}
+
 pub fn extract_squashfs_files(squashfs_path: &Path, output_path: &Path) {
     let reader = read_squashfs(squashfs_path);
 
@@ -72,15 +84,7 @@ pub fn extract_squashfs_files(squashfs_path: &Path, output_path: &Path) {
         
         match &node.inner {
             InnerNode::File(f) => {
-                let file = files::create(path.as_path());
-                
-                let mut wr = BufWriter::with_capacity(f.basic.file_size as usize, &file);
-                let mut rd = reader.file(&f.basic).reader();
-                
-                match std::io::copy(&mut rd, &mut wr) {
-                    Ok(_) => {},
-                    Err(err) => exit_err(format!("Extraction of '{}' failed: {}", path.to_str().unwrap(), err))
-                };
+                write_from_squashfs_file(&reader, f, &path);
             },
             InnerNode::Dir(_d) => {
                 files::create_dir(path.as_path());
