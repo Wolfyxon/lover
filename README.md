@@ -100,3 +100,4 @@ This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) w
 - `dirs`: Finding system directories on various platforms
 - `regex`: Using regular expressions on strings
 - `ansi_term`: Styling terminal output
+- `backhand`: Modifying, creating and parsing SquashFS
