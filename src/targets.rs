@@ -5,7 +5,7 @@ use std::path::Path;
 use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
-use crate::{actions, config, files, util};
+use crate::{actions, appimage, config, files, util};
 use crate::console::{exit_err, print_err, print_significant, print_stage, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
@@ -293,6 +293,7 @@ fn build_linux() {
     let love_app_img = deps::get_dep("love-linux").get_path();
     
     let squashfs_root = build_dir.join("squashfs-root");
+    let ext_squashfs = build_dir.join("extracted-squashfs");
     let love_bin = squashfs_root.join("bin/love");
 
     // Path checks
@@ -307,50 +308,15 @@ fn build_linux() {
         }
     }
 
-    // cd into the build directory
-    // (AppImages always unpacks to the current directory and seems like this can't be changed)
-
-    let cd_res = std::env::set_current_dir(&build_dir);
-
-    if cd_res.is_err() {
-        exit_err(format!("Failed to change directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
-    }
-
-    // Adding execution perms
-    #[cfg(unix)] {
-        use std::os::unix::fs::PermissionsExt;
-
-        print_stage("Applying execution permission to the Love AppImage".to_string());
-
-        let meta = match std::fs::metadata(&love_app_img) {
-            Ok(meta) => meta,
-            Err(err) => exit_err(format!("Failed to get file metadata: {}", err))
-        };
-
-        let mut perms = meta.permissions();
-        perms.set_mode(perms.mode() | 0o755);
-
-        let update_res = std::fs::set_permissions(&love_app_img, perms);
-
-        if update_res.is_err() {
-            exit_err(format!("Failed to update permissions: {}", update_res.err().unwrap()));
-        }
-    }
-    
     // Extracting squashfs-root
-    print_stage("Extracting Love2D AppImage contents".to_string());
+    print_stage("Extracting Love2D AppImage SquashFS".to_string());
 
-    actions::execute(love_app_img.to_str().unwrap(), vec!["--appimage-extract".to_string()], true);
+    appimage::extract_squashfs(&love_app_img, &ext_squashfs);
+
+    print_stage("Extracting SquashFS contents".to_string());
+    appimage::extract_squashfs_files(&ext_squashfs, &squashfs_root);
 
     print_stage("Embedding the game's code into the executable".to_string());
-
-    // Reverting the directory change
-
-    let cd_back_res = std::env::set_current_dir(&current_dir);
-
-    if cd_back_res.is_err() {
-        exit_err(format!("Failed to revert directory to '{}': {}", &build_dir.to_str().unwrap(), cd_res.err().unwrap()));
-    }
 
     // Appending .love to the love binary
     actions::append_file(love.as_path(), love_bin.as_path());
