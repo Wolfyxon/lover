@@ -131,10 +131,16 @@ pub fn replace_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_pa
         Err(err) => exit_err(format!("Failed to write into SquashFS: {}", err))
     };
 
-    let sfs_file = files::create(squashfs_path);
+    let tmp_path = squashfs_path.with_extension("new");
+    let sfs_file = files::create(&tmp_path);
     
     match sfs_writer.write(sfs_file) {
         Ok(_) => {},
-        Err(err) => exit_err(format!("Failed to save SquashFS: {}", err))
+        Err(err) => exit_err(format!("Failed to save new SquashFS: {}", err))
+    };
+
+    match std::fs::rename(&tmp_path, squashfs_path) {
+        Ok(()) => {},
+        Err(err) => exit_err(format!("Failed to rename temp SquashFS: {}", err))
     };
 }
