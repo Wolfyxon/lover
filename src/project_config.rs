@@ -14,6 +14,9 @@ pub struct ProjectConfig {
     #[serde(default = "Build::default")]
     pub build: Build,
 
+    #[serde(default = "Run::default")]
+    pub run: Run,
+
     #[serde(default = "Env::default")]
     pub env: Env
 }
@@ -117,6 +120,17 @@ impl Directories {
 
     pub fn get_temp_dir(&self) -> PathBuf {
         self.get_build_dir().join("temp")
+    }
+}
+
+#[derive(Deserialize)]
+pub struct Run {
+
+}
+
+impl Run {
+    pub fn default() -> Self {
+        Self {}
     }
 }
 
