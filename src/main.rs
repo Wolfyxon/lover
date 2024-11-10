@@ -372,9 +372,10 @@ fn cmd_version(_command: &Command) {
 }
 
 fn cmd_run(_command: &Command) {
-    let src = project_config::get().directories.source;
+    let mut project_conf = project_config::get();
+    let src = project_conf.directories.source;
     let cmd_settings = get_command_line_settings();
-
+    
     print_significant("Running", src.clone());
 
     if !cmd_settings.has_flag("no-parse") {
@@ -382,7 +383,13 @@ fn cmd_run(_command: &Command) {
     }
 
     let mut args = vec![project_config::get().directories.source];
-    args.append(&mut std::env::args().skip(2).into_iter().collect());
+    let mut run_args: &mut Vec<String> = &mut std::env::args().skip(2).into_iter().collect();
+
+    if run_args.len() == 0 {
+        run_args = &mut project_conf.run.default_args;
+    }
+
+    args.append(run_args);
     
     let config = &config::get();
     let env = actions::get_env_map(actions::Context::Run);
