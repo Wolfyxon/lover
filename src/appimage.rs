@@ -130,8 +130,7 @@ pub fn replace_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_pa
         Err(err) => exit_err(format!("Failed to write into SquashFS: {}", err))
     };
 
-    let tmp_path = new_squashfs_path;
-    let sfs_file = files::create(&tmp_path);
+    let sfs_file = files::create(&new_squashfs_path);
     
     match sfs_writer.write(sfs_file) {
         Ok(_) => {},
