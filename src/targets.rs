@@ -278,7 +278,6 @@ fn build_love() {
 
 fn build_linux() {
     let project_conf = project_config::get();
-    let conf = config::get();
 
     let pkg_name = project_conf.package.name;
 

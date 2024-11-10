@@ -87,8 +87,6 @@ pub struct Software {
     #[serde(default = "Software::default_rcedit")]
     pub rcedit: String,
 
-    #[serde(default = "Software::default_appimagetool")]
-    pub appimagetool: String,
     /*
     #[serde(default = "Software::default_smdhtool")]
     pub smdhtool: String,
@@ -127,8 +125,7 @@ impl Software {
             love: Software::default_love(),
             luac: Software::default_luac(),
             wine: Software::default_wine(),
-            rcedit: Software::default_rcedit(),
-            appimagetool: Software::default_appimagetool(),
+            rcedit: Software::default_rcedit()
             /*smdhtool: Software::default_smdhtool(),
             threedsxtool: Software::default_3dsxtool(),
             threedslink: Software::default_3dslink()*/
@@ -149,10 +146,6 @@ impl Software {
 
     fn default_rcedit() -> String {
         "rcedit".to_string()
-    }
-
-    fn default_appimagetool() -> String {
-        "appimagetool".to_string()
     }
 
     /*fn default_smdhtool() -> String {
