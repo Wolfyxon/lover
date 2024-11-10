@@ -1,6 +1,6 @@
 use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
-use backhand::{FilesystemReader, FilesystemWriter, InnerNode, NodeHeader, SquashfsFileReader};
+use backhand::{FilesystemReader, FilesystemWriter, InnerNode, SquashfsFileReader};
 
 use crate::console::{exit_err, print_warn};
 use crate::files;
