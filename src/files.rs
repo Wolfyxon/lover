@@ -95,3 +95,11 @@ pub fn to_unix_path(string: String) -> String {
 pub fn to_windows_path(string: String) -> String {
     string.replace("/", "\\")
 }
+
+pub fn to_current_os_path(string: String) -> String {
+    #[cfg(windows)]
+    return to_windows_path(string);
+
+    #[cfg(unix)]
+    return to_unix_path(string);
+}
