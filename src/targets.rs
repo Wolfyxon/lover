@@ -6,7 +6,7 @@ use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
 use crate::{actions, appimage, config, files, util};
-use crate::console::{exit_err, print_err, print_significant, print_stage, print_success, print_warn};
+use crate::console::{exit_err, print_significant, print_stage, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
