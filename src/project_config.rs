@@ -5,6 +5,38 @@ use crate::console::exit_err;
 pub const PATH: &str = "lover.toml";
 
 #[derive(Deserialize)]
+pub struct ProjectConfig {
+    pub package: Package,
+
+    #[serde(default = "Directories::default")]
+    pub directories: Directories,
+
+    #[serde(default = "Build::default")]
+    pub build: Build,
+
+    #[serde(default = "Env::default")]
+    pub env: Env
+}
+
+impl ProjectConfig {
+    pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
+        toml::from_str(string)
+    }
+
+    pub fn validate(&self) {
+        let mut errors: Vec<&str> = Vec::new();
+
+        if self.directories.source == self.directories.build {
+            errors.push("Do not attempt to use the same directory for build and source files!");
+        }
+
+        if !errors.is_empty() {
+            exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
+        }
+    }
+}
+
+#[derive(Deserialize)]
 pub struct Package {
     pub name: String,
 
@@ -129,38 +161,6 @@ impl Env {
 
     pub fn default_any_env() -> HashMap<String, String> {
         HashMap::new()
-    }
-}
-
-#[derive(Deserialize)]
-pub struct ProjectConfig {
-    pub package: Package,
-
-    #[serde(default = "Directories::default")]
-    pub directories: Directories,
-
-    #[serde(default = "Build::default")]
-    pub build: Build,
-
-    #[serde(default = "Env::default")]
-    pub env: Env
-}
-
-impl ProjectConfig {
-    pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
-        toml::from_str(string)
-    }
-
-    pub fn validate(&self) {
-        let mut errors: Vec<&str> = Vec::new();
-
-        if self.directories.source == self.directories.build {
-            errors.push("Do not attempt to use the same directory for build and source files!");
-        }
-
-        if !errors.is_empty() {
-            exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
-        }
     }
 }
 
