@@ -18,7 +18,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Pull submodules
-      run: git submodule update
+      run: git submodule update --init
     
     - name: Build
       run: cargo build --verbose
