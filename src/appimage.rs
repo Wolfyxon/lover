@@ -115,7 +115,7 @@ pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path
     exit_err(format!("File '{}' not found in SquashFS", file_path.to_str().unwrap()));
 }
 
-pub fn replace_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_path: &Path) {
+pub fn replace_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_path: &Path, new_squashfs_path: &Path) {
     let file = files::open_rw(file_path);
 
     let sfs_reader = read_squashfs(squashfs_path);
@@ -130,7 +130,7 @@ pub fn replace_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_pa
         Err(err) => exit_err(format!("Failed to write into SquashFS: {}", err))
     };
 
-    let tmp_path = squashfs_path.with_extension("new");
+    let tmp_path = new_squashfs_path;
     let sfs_file = files::create(&tmp_path);
     
     match sfs_writer.write(sfs_file) {
@@ -138,8 +138,4 @@ pub fn replace_file_in_squashfs(squashfs_path: &Path, file_path: &Path, inner_pa
         Err(err) => exit_err(format!("Failed to save new SquashFS: {}", err))
     };
 
-    match std::fs::rename(&tmp_path, squashfs_path) {
-        Ok(()) => {},
-        Err(err) => exit_err(format!("Failed to rename temp SquashFS: {}", err))
-    };
 }

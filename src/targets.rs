@@ -290,17 +290,19 @@ fn build_linux() {
     let love_app_img = deps::get_dep("love-linux").get_path();
     let app_img = build_dir.join(format!("{}.AppImage", &pkg_name));
 
-    let squashfs = temp.join("squashfs");
+    let ext_squashfs = temp.join("squashfs");
+    let new_squashfs = ext_squashfs.with_extension("new");
+    
     let love_bin = temp.join("love");
     let love_inner_bin = Path::new("/bin/love");
 
     // Extracting squashfs-root
     print_stage("Extracting Love2D AppImage SquashFS".to_string());
 
-    appimage::extract_squashfs(&love_app_img, &squashfs);
+    appimage::extract_squashfs(&love_app_img, &ext_squashfs);
 
     print_stage("Extracting LOVE binary".to_string());
-    appimage::extract_squashfs_file(&squashfs, love_inner_bin, &love_bin);
+    appimage::extract_squashfs_file(&ext_squashfs, love_inner_bin, &love_bin);
     
     // Appending .love to the love binary
     print_stage("Embedding the game's code into the executable".to_string());
@@ -308,7 +310,7 @@ fn build_linux() {
 
     // Injecting into SquashFS
     print_stage("Replacing the LOVE binary in SquashFS".to_string());
-    appimage::replace_file_in_squashfs(&squashfs, &love_bin, love_inner_bin);
+    appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin, &new_squashfs);
 
     // Cloning LOVE AppImage
     print_stage("Cloning LOVE AppImage".to_string());
@@ -320,7 +322,7 @@ fn build_linux() {
 
     // Embedding SquashFS to the AppImage
     print_stage("Embedding SquashFS into the AppImage".to_string());
-    appimage::embed_squashfs(&app_img, &squashfs);
+    appimage::embed_squashfs(&app_img, &new_squashfs);
 }
 
 fn build_win64() {
