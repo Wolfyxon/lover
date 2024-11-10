@@ -125,12 +125,19 @@ impl Directories {
 
 #[derive(Deserialize)]
 pub struct Run {
-
+    #[serde(default = "Run::default_default_run_args")]
+    pub default_args: Vec<String>
 }
 
 impl Run {
     pub fn default() -> Self {
-        Self {}
+        Self {
+            default_args: Self::default_default_run_args()
+        }
+    }
+
+    fn default_default_run_args() -> Vec<String> {
+        Vec::new()
     }
 }
 
