@@ -88,13 +88,17 @@ pub fn open_append(path: &Path) -> File {
     }
 }
 
+// Remove [cfg(...)] if these functions are needed on both platforms
+#[cfg(unix)]
 pub fn to_unix_path(string: String) -> String {
     string.replace("\\", "/")
 }
 
+#[cfg(windows)]
 pub fn to_windows_path(string: String) -> String {
     string.replace("/", "\\")
 }
+//////////////////////////////////////////////////////////////////////
 
 pub fn to_current_os_path(string: String) -> String {
     #[cfg(windows)]
