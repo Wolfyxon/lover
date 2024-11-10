@@ -7,6 +7,9 @@ use std::fs::File;
 use std::process::Command;
 use std::process::ExitStatus;
 use std::process::Stdio;
+use std::time::Duration;
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
@@ -354,11 +357,20 @@ pub fn get_env_map(context: Context) -> HashMap<String, String> {
         Context::Run => "run"
     }.to_string();
 
+    let timestamp = match SystemTime::now().duration_since(UNIX_EPOCH) {
+        Ok(res) => res,
+        Err(err) => {
+            print_warn(format!("Error getting UNIX timestamp: {}", err));
+            Duration::from_secs(0)
+        }
+    }.as_secs();
+
     map.insert("LOVER_CONTEXT".to_string(), ctx_str);
     map.insert("LOVER_VERSION".to_string(), pkg.version);
     map.insert("LOVER_NAME".to_string(), pkg.name);
     map.insert("LOVER_AUTHOR".to_string(), pkg.author);
     map.insert("LOVER_DESCRIPTION".to_string(), pkg.description);
+    map.insert("LOVER_TIMESTAMP".to_string(), timestamp.to_string());
 
     return map;
 }
