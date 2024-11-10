@@ -1,0 +1,4 @@
+[submodule "lib/backhand"]
+	path = lib/backhand
+	url = https://github.com/Wolfyxon/backhand.git
+	branch = windows-support
