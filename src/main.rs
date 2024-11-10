@@ -566,9 +566,9 @@ fn cmd_dep(command: &Command) {
     
                 println!("- {} {}: {}", styled_name, suffix, dep.description);
             }
-    
-            println!();
-    
+            
+            println!("\nDependencies are located in: {}\n", deps::get_dir().to_str().unwrap());
+
             println!("`lover install <name>` to install.");
             println!("`lover uninstall <name>` to remove.");
         }
