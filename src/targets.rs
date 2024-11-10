@@ -290,22 +290,9 @@ fn build_linux() {
     let love_app_img = deps::get_dep("love-linux").get_path();
     let app_img = build_dir.join(format!("{}.AppImage", &pkg_name));
 
-    let squashfs_root = temp.join("squashfs-root");
     let ext_squashfs = temp.join("extracted-squashfs");
     let love_bin = temp.join("love");
     let love_inner_bin = Path::new("/bin/love");
-
-    // Path checks
-
-    if squashfs_root.exists() {
-        print_warn("squashfs-root already exists and will be re-extracted.".to_string());
-
-        let res = std::fs::remove_dir_all(&squashfs_root);
-        
-        if res.is_err() {
-            print_err(format!("Failed to delete '{}': {}", &squashfs_root.to_str().unwrap(), res.err().unwrap()));
-        }
-    }
 
     // Extracting squashfs-root
     print_stage("Extracting Love2D AppImage SquashFS".to_string());
