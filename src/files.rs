@@ -87,3 +87,11 @@ pub fn open_append(path: &Path) -> File {
         Err(err) => exit_err(format!("Failed to open '{}' for appending: {}", path.to_str().unwrap(), err))
     }
 }
+
+pub fn to_unix_path(string: String) -> String {
+    string.replace("\\", "/")
+}
+
+pub fn to_windows_path(string: String) -> String {
+    string.replace("/", "\\")
+}
