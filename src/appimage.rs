@@ -2,7 +2,7 @@ use std::path::Path;
 use std::io::{BufReader, BufWriter, Read, Seek, SeekFrom, Write};
 use backhand::{FilesystemReader, FilesystemWriter, InnerNode, SquashfsFileReader};
 
-use crate::console::{exit_err, print_warn};
+use crate::console::exit_err;
 use crate::files;
 
 // This is the offset I've seen in most AppImages (including LOVE)
