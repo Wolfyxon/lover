@@ -103,3 +103,10 @@ pub fn to_current_os_path(string: String) -> String {
     #[cfg(unix)]
     return to_unix_path(string);
 }
+
+pub fn compare_paths(a: &Path, b: &Path) -> bool {
+    let a_str = a.to_str().unwrap().to_string();
+    let b_str = b.to_str().unwrap().to_string();
+    
+    return to_current_os_path(a_str) == to_current_os_path(b_str);
+}
