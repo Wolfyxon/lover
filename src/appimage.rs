@@ -101,7 +101,7 @@ pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path
     for node in reader.files() {
         match &node.inner {
             InnerNode::File(f) => {
-                if file_path.to_str().unwrap() != node.fullpath.to_str().unwrap() {
+                if files::compare_paths(file_path, node.fullpath.as_path()) {
                     continue;
                 }
 
