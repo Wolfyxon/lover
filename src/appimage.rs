@@ -95,26 +95,6 @@ pub fn write_from_squashfs_file(reader: &FilesystemReader<'_>, squashfs_file: &S
     };
 }
 
-pub fn extract_squashfs_files(squashfs_path: &Path, output_path: &Path) {
-    let reader = read_squashfs(squashfs_path);
-
-    for node in reader.files() {
-        let path = output_path.join(node.fullpath.strip_prefix("/").unwrap());
-        
-        match &node.inner {
-            InnerNode::File(f) => {
-                write_from_squashfs_file(&reader, f, &path);
-            },
-            InnerNode::Dir(_d) => {
-                files::create_dir(path.as_path());
-            },
-            _ => {
-                print_warn(format!("Unimplemented SquashFS node: {:?}", &node.inner));
-            }
-        }
-    }
-}
-
 pub fn extract_squashfs_file(squashfs_path: &Path, file_path: &Path, output_path: &Path) {
     let reader = read_squashfs(squashfs_path);
 
