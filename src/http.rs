@@ -5,6 +5,33 @@ use std::{fs::File, io::{Read, Write}, path::Path};
 use crate::console::{exit_err, ProgressBar};
 use crate::console::print_success;
 
+pub struct Downloadable<'a> {
+    response: Response,
+    url: &'a str
+}
+
+impl<'a> Downloadable<'a> {
+    pub fn request(url: &'a str) -> Self {
+        let res = get_request(url);
+
+        Self {
+            response: res,
+            url: url
+        }
+    }
+
+    pub fn download(&mut self, path: &Path) {
+        download_response(&mut self.response, path);
+    }
+
+    pub fn len(&self) -> u64 {
+        match self.response.content_length() {
+            Some(res) => res,
+            None => exit_err("Failed to get response length".to_string())
+        }
+    }
+}
+
 pub fn get_user_agent() -> String {
     format!("Lover/{}", env!("CARGO_PKG_VERSION"))
 }
