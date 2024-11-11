@@ -105,6 +105,10 @@ impl<'a> Dependency<'a> {
             }
         }
     }
+
+    pub fn fetch_downloadable(&self) -> Downloadable {
+        Downloadable::request(self.fetch_download_url())
+    }
 }
 
 pub struct ReleaseDependency<'a> {
