@@ -1,4 +1,4 @@
-use std::{fs, path::PathBuf};
+use std::{borrow::BorrowMut, fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
@@ -223,7 +223,7 @@ pub fn get_deps_by_strings<'a>(names: Vec<String>) -> Vec<Dependency<'a>> {
 
 pub fn install(names: Vec<String>) {
     let deps = get_deps_by_strings(names);
-    let mut assets: Vec<GithubReleaseAsset> = Vec::new();
+    let mut downloads: Vec<Downloadable> = Vec::new();
 
     print_stage("Fetching dependencies".to_string());
 
@@ -233,14 +233,7 @@ pub fn install(names: Vec<String>) {
     fetch_bar.update(fetch_progress);
 
     for dep in &deps {
-        match &dep.get_instance() {
-            DependencyInstance::LatestRelease(d) => {
-                assets.push(d.fetch_asset());
-            },
-            _ => {
-                todo!("Dependency source mode")
-            }
-        }
+        downloads.push(dep.fetch_downloadable());
 
         fetch_progress += 1;
         fetch_bar.update(fetch_progress);
@@ -251,18 +244,19 @@ pub fn install(names: Vec<String>) {
 
     let mut total: u32 = 0;
 
-    for i in 0..assets.len() {
+    for i in 0..downloads.len() {
         let mut re = "";
         let dep = deps.get(i).unwrap();
-        let asset = assets.get(i).unwrap();
+        let download = downloads.get(i).unwrap();
+        let len = download.len();
 
         if dep.is_installed() {
             re = "(reinstall)";
         }
         
-        total += asset.size;
+        total += len as u32;
 
-        println!("  {}: {} MB {}", dep.name, asset.size as f32 / (1024 * 1024) as f32, re);
+        println!("  {}: {} MB {}", dep.name, len as f32 / (1024 * 1024) as f32, re);
     }
 
     println!("\nTotal size: {} MB", total as f32 / (1024 * 1024) as f32);
@@ -273,11 +267,11 @@ pub fn install(names: Vec<String>) {
 
     print_stage("Installing...".to_string());
 
-    for i in 0..assets.len() {
+    for i in 0..downloads.len() {
         let dep = deps.get(i).unwrap();
-        let asset = assets.get(i).unwrap();
+        let download = downloads.get_mut(i).unwrap();
 
-        http::download(&asset.browser_download_url, &dep.get_path());
+        download.download(&dep.get_path());
     }
 
     print_success("All dependencies successfully installed.".to_string());
