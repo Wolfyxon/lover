@@ -4,6 +4,7 @@ use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
 use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
+use deps::DependencyInstance;
 use targets::get_targets;
 
 mod project_config;
@@ -632,18 +633,26 @@ fn cmd_fetch(command: &Command) {
 
     print_significant("Data of dependency", name.to_owned());
     
-    print_stage("Release data".to_string());
-    let release = dep.fetch_release();
-
-    println!("Name: {}", release.name);
-    println!("Tag (version): {}", release.tag_name);
-    println!("Page: {}", release.html_url);
-    
-    print_stage("Asset data".to_string());
-    let asset = dep.get_asset_from_release(&release);
-
-    println!("Name: {}", asset.name);
-    println!("Download URL: {}", asset.browser_download_url);
+    match dep.get_instance() {
+        DependencyInstance::LatestRelease(d) => {
+            print_stage("Release data".to_string());
+            let release = d.fetch_release();
+        
+            println!("Name: {}", release.name);
+            println!("Tag (version): {}", release.tag_name);
+            println!("Page: {}", release.html_url);
+            
+            print_stage("Asset data".to_string());
+            let asset = d.get_asset_from_release(&release);
+        
+            println!("Name: {}", asset.name);
+            println!("Download URL: {}", asset.browser_download_url);
+        },
+        DependencyInstance::Source(d) => {
+            print_stage("Source data".to_string());
+            println!("Branch: {}", d.branch);
+        }
+    }
 }
 
 fn cmd_module(_command: &Command) {

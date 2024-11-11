@@ -2,11 +2,16 @@ use std::{fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http};
+use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, print_warn, ProgressBar}, http};
 
 pub enum RepoDownload<'a> {
     LatestRelease(&'a str), // file pattern
     Source(&'a str) // branch
+}
+
+pub enum DependencyInstance<'a> {
+    LatestRelease(ReleaseDependency<'a>),
+    Source(SourceDependency<'a>)
 }
 
 #[derive(Deserialize)]
@@ -64,31 +69,57 @@ impl<'a> Dependency<'a> {
         self.get_path().exists()
     }
 
+    pub fn get_instance(&'a self) -> DependencyInstance<'a> {
+        match &self.mode {
+            RepoDownload::LatestRelease(pattern) => {
+                DependencyInstance::LatestRelease(
+                    ReleaseDependency {
+                        base: &self,
+                        pattern: &pattern
+                    }
+                )
+            },
+
+            RepoDownload::Source(branch) => {
+                DependencyInstance::Source(
+                    SourceDependency {
+                        base: &self,
+                        branch: &branch
+                    }
+                )
+            }
+        }
+    }
+}
+
+pub struct ReleaseDependency<'a> {
+    pub base: &'a Dependency<'a>,
+    pub pattern: &'a str
+}
+
+impl<'a> ReleaseDependency<'a> {
     pub fn fetch_release(&self) -> GitHubRelease {
-        fetch_gh_latest_release(&self.repo_owner, &self.repo)
+        fetch_gh_latest_release(&self.base.repo_owner, &self.base.repo)
     }
 
     pub fn get_asset_from_release(&self, release: &GitHubRelease) -> GithubReleaseAsset {
-        match &self.mode {
-            RepoDownload::LatestRelease(pattern) => {
-                let asset_res = release.get_asset_matching(&pattern);
+        let asset_res = release.get_asset_matching(&self.pattern);
 
-                if asset_res.is_none() {
-                    exit_err(format!("No file matches pattern '{}' in release. This is a bug!", &pattern));
-                }
-        
-                asset_res.unwrap().clone()
-            },
-            _ => {
-                panic!("Asset mode must be LatestRelease")
-            }
+        if asset_res.is_none() {
+            exit_err(format!("No file matches pattern '{}' in release. This is a bug!", &self.pattern));
         }
 
+        asset_res.unwrap().clone()
     }
 
     pub fn fetch_asset(&self) -> GithubReleaseAsset {
         self.get_asset_from_release(&self.fetch_release())
     }
+}
+
+pub struct SourceDependency<'a> {
+    pub base: &'a Dependency<'a>,
+    pub branch: &'a str
 }
 
 pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
@@ -176,8 +207,15 @@ pub fn install(names: Vec<String>) {
 
     fetch_bar.update(fetch_progress);
 
-    for dep in &deps {        
-        assets.push(dep.fetch_asset());
+    for dep in &deps {
+        match &dep.get_instance() {
+            DependencyInstance::LatestRelease(d) => {
+                assets.push(d.fetch_asset());
+            },
+            _ => {
+                todo!("Dependency source mode")
+            }
+        }
 
         fetch_progress += 1;
         fetch_bar.update(fetch_progress);
