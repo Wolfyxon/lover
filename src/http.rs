@@ -5,14 +5,14 @@ use std::{fs::File, io::{Read, Write}, path::Path};
 use crate::console::{exit_err, ProgressBar};
 use crate::console::print_success;
 
-pub struct Downloadable<'a> {
+pub struct Downloadable {
     response: Response,
-    url: &'a str
+    url: String
 }
 
-impl<'a> Downloadable<'a> {
-    pub fn request(url: &'a str) -> Self {
-        let res = get_request(url);
+impl<'a> Downloadable {
+    pub fn request(url: String) -> Self {
+        let res = get_request(url.to_owned().as_str());
 
         Self {
             response: res,
