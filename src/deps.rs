@@ -50,7 +50,7 @@ pub struct Dependency<'a> {
     pub name: &'a str,
     pub description: &'a str,
     pub file_name: &'a str,
-    pub pattern: &'a str,
+    pub mode: RepoDownload<'a>,
     pub repo: &'a str,
     pub repo_owner: &'a str
 }
@@ -69,13 +69,21 @@ impl<'a> Dependency<'a> {
     }
 
     pub fn get_asset_from_release(&self, release: &GitHubRelease) -> GithubReleaseAsset {
-        let asset_res = release.get_asset_matching(&self.pattern);
+        match &self.mode {
+            RepoDownload::LatestRelease(pattern) => {
+                let asset_res = release.get_asset_matching(&pattern);
 
-        if asset_res.is_none() {
-            exit_err(format!("No file matches pattern '{}' in release. This is a bug!", &self.pattern));
+                if asset_res.is_none() {
+                    exit_err(format!("No file matches pattern '{}' in release. This is a bug!", &pattern));
+                }
+        
+                asset_res.unwrap().clone()
+            },
+            _ => {
+                panic!("Asset mode must be LatestRelease")
+            }
         }
 
-        asset_res.unwrap().clone()
     }
 
     pub fn fetch_asset(&self) -> GithubReleaseAsset {
