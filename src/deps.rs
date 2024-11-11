@@ -192,6 +192,15 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             mode: RepoDownload::LatestRelease("resources.zip"),
             repo: "bundler",
             repo_owner: "lovebrew"
+        },
+
+        Dependency {
+            name: "nest",
+            description: "LovePotion console compatibility layer",
+            file_name: "nest.zip",
+            mode: RepoDownload::Source("master"),
+            repo: "nest",
+            repo_owner: "lovebrew"
         }
     ]
 }
