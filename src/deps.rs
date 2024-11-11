@@ -4,9 +4,9 @@ use serde::Deserialize;
 
 use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http};
 
-pub enum RepoDownload {
+pub enum RepoDownload<'a> {
     LatestRelease,
-    Source(String) // branch
+    Source(&'a str) // branch
 }
 
 #[derive(Deserialize)]
