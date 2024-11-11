@@ -543,7 +543,7 @@ fn cmd_dep(command: &Command) {
     
             println!("Status: {}", status);
             println!("Location: {}", dep.get_path().to_str().unwrap());
-            println!("Repository: https://github.com/{}/{}", dep.repo_owner, dep.repo);
+            println!("Repository: {}", dep.get_repo_url());
     
             println!();
             print_stage("Actions:".to_string());
@@ -632,7 +632,7 @@ fn cmd_fetch(command: &Command) {
     let dep = deps::get_dep(&name);
 
     print_significant("Data of dependency", name.to_owned());
-    
+
     match dep.get_instance() {
         DependencyInstance::LatestRelease(d) => {
             print_stage("Release data".to_string());
