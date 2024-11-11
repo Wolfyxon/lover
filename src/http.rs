@@ -7,7 +7,7 @@ use crate::console::print_success;
 
 pub struct Downloadable {
     response: Response,
-    url: String
+    //url: String
 }
 
 impl<'a> Downloadable {
@@ -16,7 +16,7 @@ impl<'a> Downloadable {
 
         Self {
             response: res,
-            url: url
+            //url: url
         }
     }
 
