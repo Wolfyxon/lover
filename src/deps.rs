@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http};
+use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http::{self, Downloadable}};
 
 pub enum RepoDownload<'a> {
     LatestRelease(&'a str), // file pattern
@@ -91,6 +91,17 @@ impl<'a> Dependency<'a> {
                         branch: &branch
                     }
                 )
+            }
+        }
+    }
+
+    pub fn fetch_download_url(&self) -> String {
+        match &self.get_instance() {
+            DependencyInstance::LatestRelease(dep) => {
+                dep.fetch_asset().browser_download_url
+            },
+            DependencyInstance::Source(dep) => {
+                dep.get_download_url()
             }
         }
     }
