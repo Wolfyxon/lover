@@ -98,7 +98,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             name: "love-linux",
             description: "Linux AppImage with embedded Love2D binaries and required libraries.",
             file_name: "love_linux.AppImage",
-            pattern: ".*x86_64.AppImage",
+            mode: RepoDownload::LatestRelease(".*x86_64.AppImage"),
             repo: "love",
             repo_owner: "love2d"
         },
@@ -106,7 +106,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             name: "love-win32",
             description: "Zipped Love2D binaries and libraries for Windows x86_32",
             file_name: "love_win32.zip",
-            pattern: ".*win32.zip",
+            mode: RepoDownload::LatestRelease(".*win32.zip"),
             repo: "love",
             repo_owner: "love2d"
         },
@@ -114,7 +114,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             name: "love-win64",
             description: "Zipped Love2D binaries and libraries for Windows x86_64",
             file_name: "love_win64.zip",
-            pattern: ".*win64.zip",
+            mode: RepoDownload::LatestRelease(".*win64.zip"),
             repo: "love",
             repo_owner: "love2d"
         },
@@ -125,7 +125,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             name: "lovepotion-3ds",
             file_name: "lovepotion_3ds.zip",
             description: "LovePotion binaries for the 3DS.",
-            pattern: r"Nintendo\.3DS.*.zip",
+            mode: RepoDownload::LatestRelease(r"Nintendo\.3DS.*.zip"),
             repo: "lovepotion",
             repo_owner: "lovebrew"
         },
@@ -134,7 +134,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             name: "lovepotion-assets",
             description: "Love2D code and assets for various consoles.",
             file_name: "lovepotion_assets.zip",
-            pattern: "resources.zip",
+            mode: RepoDownload::LatestRelease("resources.zip"),
             repo: "bundler",
             repo_owner: "lovebrew"
         }
