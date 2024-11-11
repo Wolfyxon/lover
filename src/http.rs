@@ -1,4 +1,4 @@
-use reqwest::{blocking::Client, blocking::Response};
+use reqwest::blocking::{Client, Request, Response};
 use serde::de::DeserializeOwned;
 use std::{fs::File, io::{Read, Write}, path::Path};
 
@@ -41,15 +41,13 @@ pub fn get_request(url: &str) -> Response {
     }
 }
 
-pub fn download(url: &str, path: &Path) {
-    let mut req = get_request(url);
-    
+pub fn download_response(response: &mut Response, path: &Path) {
     let mut file = match File::create(path) {
         Ok(file) => file,
         Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)) 
     };
 
-    let len = match req.content_length() {
+    let len = match response.content_length() {
         Some(len) => len as usize,
         None => exit_err("Failed to get content length".to_string()) 
     };
@@ -60,7 +58,7 @@ pub fn download(url: &str, path: &Path) {
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
 
-        let bytes_read = match req.read(&mut buf) {
+        let bytes_read = match response.read(&mut buf) {
             Ok(bytes) => bytes,
             Err(err) => exit_err(format!("Read failed: {}", err)) 
         };
@@ -85,4 +83,10 @@ pub fn download(url: &str, path: &Path) {
     
     bar.finish();
     print_success(format!("Downloaded to: '{}'", path.to_str().unwrap()));
+}
+
+pub fn download(url: &str, path: &Path) {
+    let mut req = get_request(url);
+    
+    download_response(&mut req, path);
 }
