@@ -4,11 +4,10 @@ use serde::Deserialize;
 
 use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http};
 
-/*
 pub enum RepoDownload {
     LatestRelease,
-    Source
-}*/
+    Source(String) // branch
+}
 
 #[derive(Deserialize)]
 pub struct GitHubRelease { 
@@ -17,7 +16,6 @@ pub struct GitHubRelease {
     pub tag_name: String,
     pub html_url: String,
     pub assets: Vec<GithubReleaseAsset>,
-    
 }
 
 impl GitHubRelease {
