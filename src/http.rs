@@ -113,9 +113,3 @@ pub fn download_response(response: &mut Response, path: &Path) {
     bar.finish();
     print_success(format!("Downloaded to: '{}'", path.to_str().unwrap()));
 }
-
-pub fn download(url: &str, path: &Path) {
-    let mut req = get_request(url);
-    
-    download_response(&mut req, path);
-}
