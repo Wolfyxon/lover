@@ -69,6 +69,10 @@ impl<'a> Dependency<'a> {
         self.get_path().exists()
     }
 
+    pub fn get_repo_url(&self) -> String {
+        format!("https://github.com/{}/{}", self.repo_owner, self.repo)
+    }
+
     pub fn get_instance(&'a self) -> DependencyInstance<'a> {
         match &self.mode {
             RepoDownload::LatestRelease(pattern) => {
