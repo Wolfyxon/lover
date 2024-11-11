@@ -1,4 +1,4 @@
-use reqwest::blocking::Client;
+use reqwest::{blocking::Client, blocking::Response};
 use serde::de::DeserializeOwned;
 use std::{fs::File, io::{Read, Write}, path::Path};
 
@@ -30,19 +30,19 @@ pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> T {
     }
 }
 
-pub fn download(url: &str, path: &Path) {
-    print_stage(format!("Downloading '{}'...", url));
-
-    let req_res = Client::new()
+pub fn get_request(url: &str) -> Response {
+    let client = Client::new()
         .get(url)
-        .header("User-Agent", USER_AGENT)
-        .send();
+        .header("User-Agent", USER_AGENT);
 
-    if req_res.is_err() {
-        exit_err(format!("Request failed: {}", req_res.err().unwrap()));
+    match client.send() {
+        Ok(res) => res,
+        Err(err) => exit_err(format!("Request failed: {}", err))
     }
+}
 
-    let mut req = req_res.unwrap();
+pub fn download(url: &str, path: &Path) {
+    let mut req = get_request(url);
     
     let mut file = match File::create(path) {
         Ok(file) => file,
