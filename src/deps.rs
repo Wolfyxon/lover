@@ -126,6 +126,12 @@ pub struct SourceDependency<'a> {
     pub branch: &'a str
 }
 
+impl<'a> SourceDependency<'a> {
+    pub fn get_download_url(&self) -> String {
+        format!("https://github.com/{}/{}/archive/refs/heads/{}.zip", self.base.repo_owner, self.base.repo, self.branch)
+    }
+}
+
 pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
     vec![
         // PC deps
