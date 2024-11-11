@@ -5,12 +5,14 @@ use std::{fs::File, io::{Read, Write}, path::Path};
 use crate::console::{exit_err, ProgressBar};
 use crate::console::print_success;
 
-const USER_AGENT: &str = "Lover";
+pub fn get_user_agent() -> String {
+    format!("Lover/{}", env!("CARGO_PKG_VERSION"))
+}
 
 pub fn fetch_text(url: &str) -> String {
     let res = Client::new()
         .get(url)
-        .header("User-Agent", USER_AGENT)
+        .header("User-Agent", get_user_agent())
         .send();
 
     if res.is_err() {
@@ -33,7 +35,7 @@ pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> T {
 pub fn get_request(url: &str) -> Response {
     let client = Client::new()
         .get(url)
-        .header("User-Agent", USER_AGENT);
+        .header("User-Agent", get_user_agent());
 
     match client.send() {
         Ok(res) => res,
