@@ -91,12 +91,13 @@ pub fn download_response(response: &mut Response, path: &Path) {
 
         if bytes_read == 0 { break; }
 
-        let write_res = file.write_all(&buf[..bytes_read]);
-
-        if write_res.is_err() {
-            bar.finish();
-            exit_err(format!("Write failed: {}", write_res.err().unwrap()));
-        }
+        match file.write_all(&buf[..bytes_read]) {
+            Ok(_) => {},
+            Err(err) => {
+                bar.finish();
+                exit_err(format!("Write failed: {}", err));
+            }
+        };
 
         bytes += bytes_read;
 
