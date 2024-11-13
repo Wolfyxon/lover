@@ -24,11 +24,8 @@ impl<'a> Downloadable {
         download_response(&mut self.response, path);
     }
 
-    pub fn len(&self) -> u64 {
-        match self.response.content_length() {
-            Some(res) => res,
-            None => exit_err("Failed to get response length".to_string())
-        }
+    pub fn len(&self) -> Option<u64> {
+        self.response.content_length()
     }
 }
 

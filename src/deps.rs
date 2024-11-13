@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, ProgressBar}, http::{self, Downloadable}};
+use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
 
 pub enum RepoDownload<'a> {
     LatestRelease(&'a str), // file pattern
@@ -251,24 +251,39 @@ pub fn install(names: Vec<String>) {
     print_stage("The following dependencies will be installed:".to_string());
 
     let mut total: u32 = 0;
+    let mut has_unknown = false;
 
     for i in 0..downloads.len() {
         let mut re = "";
         let dep = deps.get(i).unwrap();
         let download = downloads.get(i).unwrap();
-        let len = download.len();
+
+        let len_res = download.len();
+        let mut len_text = "unknown".to_string();
 
         if dep.is_installed() {
             re = "(reinstall)";
         }
         
-        total += len as u32;
-
-        println!("  {}: {} MB {}", dep.name, len as f32 / (1024 * 1024) as f32, re);
+        match len_res {
+            Some(len) => {
+                len_text = (len as f32 / (1024 * 1024) as f32).to_string();
+                total += len as u32;
+            },
+            None => {
+                has_unknown = true;
+            }
+        };
+        
+        println!("  {}: {} MB {}", dep.name, len_text, re);
     }
 
     println!("\nTotal size: {} MB", total as f32 / (1024 * 1024) as f32);
 
+    if has_unknown {
+        print_warn("Size may not be accurate. Failed to retrieve size of some dependencies.".to_string());
+    }
+    
     confirm_or_exit("Proceed with the installation?");
 
     create_dir();
