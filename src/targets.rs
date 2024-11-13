@@ -5,7 +5,7 @@ use std::path::Path;
 use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
-use crate::{actions, appimage, config, files, util};
+use crate::{actions, appimage, config, files};
 use crate::console::{exit_err, print_significant, print_stage, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
@@ -208,8 +208,8 @@ pub fn build_windows_zip(arch: Arch) {
 
                                         let (mut w, mut h) = img.dimensions();
 
-                                        w = util::clamp_u32(w, 16, 256);
-                                        h = util::clamp_u32(h, 16, 256);
+                                        w = w.clamp(16, 256);
+                                        h = h.clamp(16, 256);
                                         
                                         img = img.resize(w, h, FilterType::Nearest);
 
