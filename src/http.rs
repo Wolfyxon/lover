@@ -2,7 +2,7 @@ use reqwest::blocking::{Client, Response};
 use serde::de::DeserializeOwned;
 use std::{fs::File, io::{Read, Write}, path::Path};
 
-use crate::console::{exit_err, ProgressBar};
+use crate::console::{exit_err, print_warn, ProgressBar};
 use crate::console::print_success;
 
 pub struct Downloadable {
@@ -75,7 +75,7 @@ pub fn download_response(response: &mut Response, path: &Path) {
 
     let len = match response.content_length() {
         Some(len) => len as usize,
-        None => exit_err("Failed to get content length".to_string()) 
+        None => 0
     };
 
     let bar = ProgressBar::new(len);
