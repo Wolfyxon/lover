@@ -4,9 +4,9 @@
 os = os or {}
 
 local originalGetEnv = os.getenv or function () end
-local consts = {}
+local loverConsts = {}
 
 function os.getenv(varname)
-    return consts[varname] or originalGetEnv(varname)
+    return loverConsts[varname] or originalGetEnv(varname)
 end
 
