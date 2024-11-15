@@ -1,5 +1,11 @@
+# IDEs and editors
+.idea
+.vscode
+
+# Build files
 target/
 
+# Other
 /test
 /tmp
 /lover.toml
