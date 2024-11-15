@@ -290,6 +290,13 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "env".to_string(),
+            description: "Shows a list of available Lover constants and their values.".to_string(),
+            function: cmd_env,
+            args: vec![],
+            flags: vec![]
+        },
+        Command {
             alias: "module".to_string(),
             description: "Generates the extra code injected into your game when building. Mostly for testing".to_string(),
             function: cmd_module,
@@ -652,6 +659,14 @@ fn cmd_fetch(command: &Command) {
             println!("Branch: {}", d.branch);
         }
     }
+}
+
+fn cmd_env(_command: &Command) {
+    for (k, v) in actions::get_env_map(actions::Context::Run) {
+        println!("{}: {}", k, v);
+    }
+
+    println!("\nUse `os.getenv(\"name\")` in your game to access each value.");
 }
 
 fn cmd_module(_command: &Command) {
