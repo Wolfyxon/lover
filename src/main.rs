@@ -404,7 +404,7 @@ fn cmd_run(_command: &Command) {
     if config.run.prime || cmd_settings.has_flag("prime") {
         actions::execute_prime_with_env(&config::get().software.love, args, env, false);
     } else { 
-        actions::execute_prime_with_env(&config::get().software.love, args, env, false);
+        actions::execute_with_env(&config::get().software.love, args, env, false);
     }
 }
 
