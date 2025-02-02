@@ -41,7 +41,7 @@ impl ProgressBar {
         let fill = "=".repeat( (amt * width) as usize );
         let spaces = " ".repeat( (width - amt * width) as usize );
 
-        print!("\r[{}{}] {}/{}", fill, spaces, progress, self.max);
+        print!("\r  [{}{}] {}/{}", fill, spaces, progress, self.max);
 
         let flush_res = stdout().flush();
 
