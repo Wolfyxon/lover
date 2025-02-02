@@ -92,10 +92,10 @@ pub struct Software {
     pub smdhtool: String,
 
     #[serde(default = "Software::default_3dsxtool")]
-    pub threedsxtool: String, // 3dsxtool
+    pub n3dsxtool: String, // 3dsxtool
 
     #[serde(default = "Software::default_3dslink")]
-    pub threedslink: String, // 3dslink
+    pub n3dslink: String, // 3dslink
     */
 }
 
@@ -127,8 +127,8 @@ impl Software {
             wine: Software::default_wine(),
             rcedit: Software::default_rcedit()
             /*smdhtool: Software::default_smdhtool(),
-            threedsxtool: Software::default_3dsxtool(),
-            threedslink: Software::default_3dslink()*/
+            n3dsdsxtool: Software::default_3dsxtool(),
+            n3dslink: Software::default_3dslink()*/
         }
     }
 
