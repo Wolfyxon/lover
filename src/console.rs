@@ -122,7 +122,7 @@ pub fn print_significant(prefix: &str, message: String) {
     println!("{} {}", Style::new().fg(Cyan).bold().paint(format!("> {}:", prefix)), message)
 }
 
-pub fn print_stage(message: String) {
+pub fn print_step(message: String) {
     let prefix = Style::new().fg(Blue).bold().paint(">>");
     println!("{} {}", prefix, message)
 }

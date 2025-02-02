@@ -3,7 +3,7 @@ use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
-use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_stage, print_success, print_warn};
+use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_step, print_success, print_warn};
 use deps::DependencyInstance;
 use targets::get_targets;
 
@@ -497,14 +497,14 @@ fn cmd_target(command: &Command) {
             print_significant("Details of target", target.name.to_string());
             println!("{}\n", Style::new().italic().paint(target.description));
 
-            print_stage("Previous targets:".to_string());
+            print_step("Previous targets:".to_string());
             for prev in target.previous {
                 println!("- {}", prev);
             }
 
             println!();
 
-            print_stage("Dependencies:".to_string());
+            print_step("Dependencies:".to_string());
             for name in target.deps {
                 let dep = deps::get_dep(name);
                 
@@ -552,7 +552,7 @@ fn cmd_dep(command: &Command) {
             println!("Repository: {}", dep.get_repo_url());
     
             println!();
-            print_stage("Actions:".to_string());
+            print_step("Actions:".to_string());
     
             println!("`lover install {}` to install or update.", dep.name);
             println!("`lover uninstall {}` to remove.", dep.name);
@@ -602,7 +602,7 @@ fn cmd_uninstall(command: &Command) {
         exit_err("None of the specified packages are installed.".to_string());
     }
 
-    print_stage("The following dependencies will be removed:".to_string());
+    print_step("The following dependencies will be removed:".to_string());
 
     for dep in &dependencies {
         if dep.is_installed() {
@@ -641,21 +641,21 @@ fn cmd_fetch(command: &Command) {
 
     match dep.get_instance() {
         DependencyInstance::LatestRelease(d) => {
-            print_stage("Release data".to_string());
+            print_step("Release data".to_string());
             let release = d.fetch_release();
         
             println!("Name: {}", release.name);
             println!("Tag (version): {}", release.tag_name);
             println!("Page: {}", release.html_url);
             
-            print_stage("Asset data".to_string());
+            print_step("Asset data".to_string());
             let asset = d.get_asset_from_release(&release);
         
             println!("Name: {}", asset.name);
             println!("Download URL: {}", asset.browser_download_url);
         },
         DependencyInstance::Source(d) => {
-            print_stage("Source data".to_string());
+            print_step("Source data".to_string());
             println!("Branch: {}", d.branch);
         }
     }

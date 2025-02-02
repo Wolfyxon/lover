@@ -6,7 +6,7 @@ use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
 use crate::{actions, appimage, config, files};
-use crate::console::{exit_err, print_significant, print_stage, print_success, print_warn};
+use crate::console::{exit_err, print_significant, print_step, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
@@ -164,13 +164,13 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("'{}' could not be found.", &exe_src.to_str().unwrap()));
     }
 
-    print_stage("Embedding the game's code into the executable".to_string());
+    print_step("Embedding the game's code into the executable".to_string());
 
     actions::append_file(love.as_path(), &exe_src);
 
     print_success("The EXE should now be usable, even if something fails.".to_string());
 
-    print_stage("Renaming the EXE".to_string());
+    print_step("Renaming the EXE".to_string());
 
     let exe_out = path.join(pkg_name.to_owned() + ".exe");
     let rename_res = fs::rename(&exe_src, &exe_out);
@@ -204,7 +204,7 @@ pub fn build_windows_zip(arch: Arch) {
                                 match img_reader.decode() {
                                     Ok(mut img) => {
                                         
-                                        print_stage("Converting icon to the ICO format".to_string());
+                                        print_step("Converting icon to the ICO format".to_string());
 
                                         let (mut w, mut h) = img.dimensions();
 
@@ -297,23 +297,23 @@ fn build_linux() {
     let love_inner_bin = Path::new("/bin/love");
 
     // Extracting squashfs-root
-    print_stage("Extracting Love2D AppImage SquashFS".to_string());
+    print_step("Extracting Love2D AppImage SquashFS".to_string());
 
     appimage::extract_squashfs(&love_app_img, &ext_squashfs);
 
-    print_stage("Extracting LOVE binary".to_string());
+    print_step("Extracting LOVE binary".to_string());
     appimage::extract_squashfs_file(&ext_squashfs, love_inner_bin, &love_bin);
     
     // Appending .love to the love binary
-    print_stage("Embedding the game's code into the executable".to_string());
+    print_step("Embedding the game's code into the executable".to_string());
     actions::append_file(love.as_path(), love_bin.as_path());
 
     // Injecting into SquashFS
-    print_stage("Replacing the LOVE binary in SquashFS".to_string());
+    print_step("Replacing the LOVE binary in SquashFS".to_string());
     appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin, &new_squashfs);
 
     // Cloning LOVE AppImage
-    print_stage("Cloning LOVE AppImage".to_string());
+    print_step("Cloning LOVE AppImage".to_string());
 
     match std::fs::copy(&love_app_img, &app_img) {
         Ok(_) => {},
@@ -321,7 +321,7 @@ fn build_linux() {
     }
 
     // Embedding SquashFS to the AppImage
-    print_stage("Embedding SquashFS into the AppImage".to_string());
+    print_step("Embedding SquashFS into the AppImage".to_string());
     appimage::embed_squashfs(&app_img, &new_squashfs);
 }
 

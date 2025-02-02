@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, exit_err, print_stage, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
+use crate::{config, console::{confirm_or_exit, exit_err, print_step, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
 
 pub enum RepoDownload<'a> {
     LatestRelease(&'a str), // file pattern
@@ -233,7 +233,7 @@ pub fn install(names: Vec<String>) {
     let deps = get_deps_by_strings(names);
     let mut downloads: Vec<Downloadable> = Vec::new();
 
-    print_stage("Fetching dependencies".to_string());
+    print_step("Fetching dependencies".to_string());
 
     let fetch_bar = ProgressBar::new(deps.len());
     let mut fetch_progress: usize = 0;
@@ -248,7 +248,7 @@ pub fn install(names: Vec<String>) {
     }
 
     fetch_bar.finish();
-    print_stage("The following dependencies will be installed:".to_string());
+    print_step("The following dependencies will be installed:".to_string());
 
     let mut total: u32 = 0;
     let mut has_unknown = false;
@@ -288,7 +288,7 @@ pub fn install(names: Vec<String>) {
 
     create_dir();
 
-    print_stage("Installing...".to_string());
+    print_step("Installing...".to_string());
 
     for i in 0..downloads.len() {
         let dep = deps.get(i).unwrap();
