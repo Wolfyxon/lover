@@ -124,6 +124,5 @@ pub fn print_significant(prefix: &str, message: String) {
 
 pub fn print_stage(message: String) {
     let prefix = Style::new().fg(Blue).bold().paint(">>");
-    let msg = Style::new().fg(Blue).paint(message);
-    println!("{} {}", prefix, msg)
+    println!("{} {}", prefix, message)
 }
