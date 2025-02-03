@@ -1,4 +1,3 @@
-
 use std::collections::HashMap;
 use std::io::Read;
 use std::io::Write;
@@ -14,6 +13,7 @@ use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
 use zip::ZipArchive;
+
 use crate::config;
 use crate::console::exit_err;
 use crate::console::ProgressBar;
