@@ -174,6 +174,15 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             repo_owner: "love2d"
         },
 
+        Dependency {
+            name: "rcedit",
+            description: "Command line tool for editing EXE binaries",
+            file_name: "rcedit.exe",
+            mode: RepoDownload::LatestRelease(".*rcedit-x86.exe"),
+            repo: "rcedit",
+            repo_owner: "electron"
+        },
+
         // Console deps
         
         Dependency {
