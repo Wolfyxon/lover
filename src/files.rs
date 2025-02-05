@@ -58,7 +58,7 @@ pub fn create_dir(path: &Path) {
 
 pub fn exists(path: &Path) -> bool {
     return fs::exists(path).map_err(|err| {
-        exit_err(format!("Failed to check if file '{path}' exists: {:?}", path))
+        exit_err(format!("Failed to check if file '{}' exists: {:?}", path.to_str().unwrap(), err))
     }).unwrap();
 }
 
