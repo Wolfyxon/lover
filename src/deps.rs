@@ -149,6 +149,7 @@ impl<'a> SourceDependency<'a> {
 pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
     vec![
         // PC deps
+        
         Dependency {
             name: "love-linux",
             description: "Linux AppImage with embedded Love2D binaries and required libraries.",
@@ -157,6 +158,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             repo: "love",
             repo_owner: "love2d"
         },
+
         Dependency {
             name: "love-win32",
             description: "Zipped Love2D binaries and libraries for Windows x86_32",
@@ -165,6 +167,7 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
             repo: "love",
             repo_owner: "love2d"
         },
+
         Dependency {
             name: "love-win64",
             description: "Zipped Love2D binaries and libraries for Windows x86_64",
