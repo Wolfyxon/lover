@@ -1,4 +1,4 @@
-use std::{fs::{File, OpenOptions}, path::{Path, PathBuf}};
+use std::{fs::{self, File, OpenOptions}, path::{Path, PathBuf}};
 
 use crate::console::exit_err;
 
@@ -54,6 +54,12 @@ pub fn create_dir(path: &Path) {
     if res.is_err() {
         exit_err(format!("Failed to create directory '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
     }
+}
+
+pub fn exists(path: &Path) -> bool {
+    return fs::exists(path).map_err(|err| {
+        exit_err(format!("Failed to check if file '{path}' exists: {:?}", path))
+    }).unwrap();
 }
 
 pub fn create(path: &Path) -> File {
