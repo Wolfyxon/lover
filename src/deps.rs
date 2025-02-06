@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, exit_err, print_step, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
+use crate::{config, console::{confirm_or_exit, exit_err, print_note, print_step, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
 
 pub enum RepoDownload<'a> {
     LatestRelease(&'a str), // file pattern
@@ -310,6 +310,7 @@ pub fn install(names: Vec<String>) {
     }
 
     print_success("All dependencies successfully installed.".to_string());
+    print_note(format!("Dependencies are stored in: {}", get_dir().to_str().unwrap()));
 }
 
 pub fn get_dir() -> PathBuf {
