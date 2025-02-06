@@ -18,14 +18,16 @@ impl CommandLineSettings {
     }
 }
 
-pub struct ProgressBar {
-    pub max: usize
+pub struct ProgressBar<'a> {
+    pub max: usize,
+    pub prefix: Option<&'a str>
 }
 
-impl ProgressBar {
+impl<'a> ProgressBar<'a> {
     pub fn new(max: usize) -> Self {
         ProgressBar {
-            max: max
+            max: max,
+            prefix: None
         }
     }
 
@@ -41,7 +43,7 @@ impl ProgressBar {
         let fill = "=".repeat( (amt * width) as usize );
         let spaces = " ".repeat( (width - amt * width) as usize );
 
-        print!("\r  [{}{}] {}/{}", fill, spaces, progress, self.max);
+        print!("\r{} [{}{}] {}/{}", self.prefix.unwrap_or(""), fill, spaces, progress, self.max);
 
         let flush_res = stdout().flush();
 
