@@ -1,6 +1,6 @@
 use std::fs;
 use std::io::{BufReader, Read, Write};
-use std::path::Path;
+use std::path::{Path, PathBuf};
 
 use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
@@ -140,6 +140,21 @@ pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
 
     res
 } 
+
+pub fn get_rcedit_path() -> PathBuf {
+    let config_string_path = config::get().software.rcedit;
+    
+    let config_path = Path::new(&config_string_path);
+    
+    let dep = deps::get_dep("rcedit");
+    let dep_path = dep.get_path();
+    
+    if dep.is_installed() && !config_path.exists() {
+        return dep_path;
+    }
+
+    return config_path.to_path_buf();
+}
 
 // for windows targets
 pub fn build_windows_zip(arch: Arch) {
