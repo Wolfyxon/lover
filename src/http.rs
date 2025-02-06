@@ -3,7 +3,6 @@ use serde::de::DeserializeOwned;
 use std::{fs::File, io::{Read, Write}, path::Path};
 
 use crate::console::{exit_err, ProgressBar};
-use crate::console::print_success;
 
 pub struct Downloadable {
     response: Response,
@@ -111,5 +110,4 @@ pub fn download_response(response: &mut Response, path: &Path, alias: &str) {
     }
     
     bar.finish();
-    print_success(format!("Downloaded to: '{}'", path.to_str().unwrap()));
 }
