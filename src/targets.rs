@@ -8,7 +8,7 @@ use image::{GenericImageView, ImageFormat, ImageReader};
 use crate::{actions, appimage, config, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_success, print_warn};
 use crate::deps::Dependency;
-use crate::project_config;
+use crate::project_config::{self, Package};
 use crate::deps;
 
 pub enum Arch {
@@ -212,6 +212,60 @@ pub fn check_rcedit() -> Result<(), String> {
     Ok(())
 }
 
+pub fn rcedit_add_icon(args: &mut Vec<String>, package: &Package, path: &PathBuf) {
+    let icon_str_path = &package.icon;
+
+    if icon_str_path.is_empty() {
+        return;
+    }
+
+    let icon_path = Path::new(&icon_str_path);
+    let icon_out_path = path.join("game.ico");
+
+    if !icon_path.exists() {
+        print_warn(format!("Icon at path '{}' not found.", icon_str_path));
+        return;
+    }
+
+    if icon_path.is_dir() {
+        print_warn(format!("Icon '{}' is a directory!", icon_str_path));
+        return;
+    }
+
+    let file = files::open(icon_path);
+    let reader = BufReader::new(file);
+
+    match ImageReader::new(reader).with_guessed_format() {
+        Ok(img_reader) => {
+            match img_reader.decode() {
+                Ok(mut img) => {
+                    
+                    print_step("Converting icon to the ICO format".to_string());
+
+                    let (mut w, mut h) = img.dimensions();
+
+                    w = w.clamp(16, 256);
+                    h = h.clamp(16, 256);
+                    
+                    img = img.resize(w, h, FilterType::Nearest);
+
+                    let save_res = img.save_with_format(&icon_out_path, ImageFormat::Ico);
+
+                    if save_res.is_err() {
+                        print_warn(format!("Failed to save new icon: {}", save_res.err().unwrap()));
+                        return;
+                    }
+
+                    args.append(&mut vec!["--set-icon".to_string(), icon_out_path.to_str().unwrap().to_string()]);
+
+                },
+                Err(err) => print_warn(format!("Failed to decode image: '{}': {}", icon_str_path, err)),
+            }
+        },
+        Err(err) => print_warn(format!("Failed to read image '{}': {}", icon_str_path, err))
+    };
+}
+
 // for windows targets
 pub fn build_windows_zip(arch: Arch) {
     let name = format!("win{}", arch.get_num_suffix());
@@ -256,56 +310,10 @@ pub fn build_windows_zip(arch: Arch) {
             let exe = exe_out.to_str().unwrap().to_string();
 
             let mut args = vec![exe];
-            args.append(&mut pkg.get_rcedit_args());
-
-            let icon_str_path = &pkg.icon;
             
-            if !icon_str_path.is_empty() { // TODO: maybe unnest this abomination
-                let icon_path = Path::new(icon_str_path);
-                let icon_out_path = path.join("game.ico");
+            args.append(&mut pkg.get_rcedit_args());
+            rcedit_add_icon(&mut args, &pkg, &path);
 
-                if icon_path.exists() {
-                    if !icon_path.is_dir() {
-
-                        let file = files::open(icon_path);
-                        let reader = BufReader::new(file);
-                        
-                        match ImageReader::new(reader).with_guessed_format() {
-                            Ok(img_reader) => {
-                                match img_reader.decode() {
-                                    Ok(mut img) => {
-                                        
-                                        print_step("Converting icon to the ICO format".to_string());
-
-                                        let (mut w, mut h) = img.dimensions();
-
-                                        w = w.clamp(16, 256);
-                                        h = h.clamp(16, 256);
-                                        
-                                        img = img.resize(w, h, FilterType::Nearest);
-
-                                        let save_res = img.save_with_format(&icon_out_path, ImageFormat::Ico);
-
-                                        if save_res.is_err() {
-                                            print_warn(format!("Failed to save new icon: {}", save_res.err().unwrap()));
-                                        }
-
-                                        args.append(&mut vec!["--set-icon".to_string(), icon_out_path.to_str().unwrap().to_string()]);
-
-                                    },
-                                    Err(err) => print_warn(format!("Failed to decode image: '{}': {}", icon_str_path, err)),
-                                }
-                            },
-                            Err(err) => print_warn(format!("Failed to read image '{}': {}", icon_str_path, err))
-                        };
-
-                    } else {
-                        print_warn(format!("Icon '{}' is a directory!", icon_str_path));
-                    }
-                } else {
-                    print_warn(format!("Icon at path '{}' not found.", icon_str_path));
-                }
-            }
 
             actions::execute_wine(rcedit.to_str().unwrap(), args, false);
         },
