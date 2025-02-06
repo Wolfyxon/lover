@@ -1,6 +1,6 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use serde::Deserialize;
-use crate::{actions, console::exit_err};
+use crate::console::exit_err;
 
 //const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 
