@@ -1,7 +1,7 @@
 use std::io::{stdin, stdout, Read, Write};
 use std::process::exit;
 use ansi_term::Style;
-use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue};
+use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue, Purple};
 
 pub struct CommandLineSettings {
     pub args: Vec<String>,
@@ -117,6 +117,11 @@ pub fn print_warn(message: String) {
 pub fn print_success(message: String) {
     println!("{} {}", Style::new().fg(Green).bold().paint("OK:"), message)
 }
+
+pub fn print_note(message: String) {
+    println!("{} {}", Style::new().fg(Purple).bold().paint("Note:"), message)
+}
+
 
 pub fn print_significant(prefix: &str, message: String) {
     println!("{} {}", Style::new().fg(Cyan).bold().paint(format!("> {}:", prefix)), message)
