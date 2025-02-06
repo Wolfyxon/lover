@@ -20,8 +20,8 @@ impl<'a> Downloadable {
         }
     }
 
-    pub fn download(&mut self, path: &Path) {
-        download_response(&mut self.response, path);
+    pub fn download(&mut self, path: &Path, alias: &str) {
+        download_response(&mut self.response, path, alias);
     }
 
     pub fn len(&self) -> Option<u64> {
@@ -67,7 +67,7 @@ pub fn get_request(url: &str) -> Response {
     }
 }
 
-pub fn download_response(response: &mut Response, path: &Path) {
+pub fn download_response(response: &mut Response, path: &Path, alias: &str) {
     let mut file = match File::create(path) {
         Ok(file) => file,
         Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)) 
@@ -78,7 +78,9 @@ pub fn download_response(response: &mut Response, path: &Path) {
         None => 0
     };
 
-    let bar = ProgressBar::new(len);
+    let mut bar = ProgressBar::new(len);
+    bar.set_prefix(alias);
+
     let mut bytes: usize = 0;
     
     loop {
