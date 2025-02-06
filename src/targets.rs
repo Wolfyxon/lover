@@ -156,6 +156,31 @@ pub fn get_rcedit_path() -> PathBuf {
     return config_path.to_path_buf();
 }
 
+pub fn check_rcedit() -> Result<(), String> {
+    let conf = config::get();
+
+    let rcedit = get_rcedit_path();
+    let rcedit_str = rcedit.to_str().unwrap();
+
+    let wine = conf.software.wine;
+
+    if std::env::consts::FAMILY == "unix" {
+        if !actions::command_exists(&wine) {
+            return Err(format!("Wine is not installed or could not be found at path '{}'.", &wine));
+        }
+
+        if !rcedit.exists() {
+            return Err(format!("RCEdit could not be found at path '{}'.", rcedit_str));
+        }
+    } else {
+        if !actions::command_exists(rcedit_str) {
+            return Err(format!("RCEdit is not installed or could not be found at path '{}'", rcedit_str));
+        }
+    }
+
+    Ok(())
+}
+
 // for windows targets
 pub fn build_windows_zip(arch: Arch) {
     let name = format!("win{}", arch.get_num_suffix());
@@ -194,9 +219,9 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
     }
 
-    match conf.software.check_rcedit() {
+    match check_rcedit() {
         Ok(()) => {
-            let rcedit = conf.software.rcedit;
+            let rcedit = get_rcedit_path();
             let exe = exe_out.to_str().unwrap().to_string();
 
             let mut args = vec![exe];
@@ -251,7 +276,7 @@ pub fn build_windows_zip(arch: Arch) {
                 }
             }
 
-            actions::execute_wine(&rcedit, args, false);
+            actions::execute_wine(rcedit.to_str().unwrap(), args, false);
         },
         Err(err) => print_warn(format!("EXE info could not be applied: {}\nPlease check your {}", err, config::get_config_path().to_str().unwrap())),
     };
