@@ -31,6 +31,10 @@ impl<'a> ProgressBar<'a> {
         }
     }
 
+    pub fn set_prefix(&mut self, prefix: &'a str) {
+        self.prefix = Some(prefix);
+    }
+
     pub fn update(&self, progress: usize) {
         let width = 32.0;
 
