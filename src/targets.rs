@@ -29,6 +29,7 @@ pub struct BuildTarget<'a> {
     pub name: &'a str,
     pub description: &'a str,
     pub deps: Vec<&'a str>,
+    pub optional: Vec<&'a str>,
     pub previous: Vec<&'a str>,
     builder: fn()
 }
@@ -63,6 +64,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             name: "love",
             description: "Game's code packaged in the Love format.",
             deps: Vec::new(),
+            optional: Vec::new(),
             previous: Vec::new(),
             builder: build_love
         },
@@ -70,6 +72,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             name: "linux",
             description: "Linux AppImage",
             deps: vec!["love-linux"],
+            optional: Vec::new(),
             previous: vec!["love"],
             builder: build_linux
         },
@@ -77,6 +80,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             name: "win64",
             description: "Windows x86_64 EXE",
             deps: vec!["love-win64"],
+            optional: vec!["rcedit"],
             previous: vec!["love"],
             builder: build_win64
         },
@@ -84,6 +88,7 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             name: "win32",
             description: "Windows x86_32 EXE",
             deps: vec!["love-win32"],
+            optional: vec!["rcedit"],
             previous: vec!["love"],
             builder: build_win32
         }
