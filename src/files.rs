@@ -1,4 +1,4 @@
-use std::{fs::{self, File, OpenOptions}, path::{Path, PathBuf}};
+use std::{fs::{File, OpenOptions}, path::{Path, PathBuf}};
 
 use crate::console::exit_err;
 
