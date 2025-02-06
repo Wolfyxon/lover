@@ -6,7 +6,7 @@ use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
 use crate::{actions, appimage, config, files};
-use crate::console::{exit_err, print_significant, print_step, print_success, print_warn};
+use crate::console::{exit_err, print_note, print_significant, print_step, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config;
 use crate::deps;
@@ -53,7 +53,29 @@ impl<'a> BuildTarget<'a> {
 
     pub fn build(&self) {
         print_significant("Building target", self.name.to_string());
+                
         (self.builder)();
+
+        let mut opt: Vec<Dependency> = Vec::new();
+
+        for i in &self.optional {
+            let dep = deps::get_dep(i);
+
+            if !dep.is_installed() {
+                opt.push(dep);
+            }
+        }
+
+        if opt.len() != 0 {
+            print_note(format!("Optional dependencies for '{}':", self.name));
+
+            for i in opt {
+                print!(" {} ", i.name);
+            }
+
+            println!("\n (use `lover install <name>` to install them)");
+        }
+
         print_success(format!("Successfully built '{}'", self.name));
     }
 }
