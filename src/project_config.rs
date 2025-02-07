@@ -1,10 +1,11 @@
 use std::{collections::HashMap, path::{Path, PathBuf}};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use crate::console::exit_err;
 
 pub const PATH: &str = "lover.toml";
 
 #[derive(Deserialize)]
+#[derive(Serialize)]
 pub struct ProjectConfig {
     pub package: Package,
 
@@ -50,6 +51,7 @@ impl ProjectConfig {
 }
 
 #[derive(Deserialize)]
+#[derive(Serialize)]
 pub struct Package {
     pub name: String,
 
@@ -89,17 +91,18 @@ impl Package {
         res
     }
 
-    fn default_version() -> String {
+    pub fn default_version() -> String {
         "1.0".to_string()
     }
 
-    fn default_icon() -> String {
+    pub fn default_icon() -> String {
         "icon.png".to_string()
     }
 
 }
 
 #[derive(Deserialize)]
+#[derive(Serialize)]
 pub struct Directories {
     #[serde(default = "Directories::default_source")]
     pub source: String,
@@ -134,6 +137,7 @@ impl Directories {
 }
 
 #[derive(Deserialize)]
+#[derive(Serialize)]
 pub struct Run {
     #[serde(default = "Run::default_default_run_args")]
     pub default_args: Vec<String>
@@ -152,6 +156,7 @@ impl Run {
 }
 
 #[derive(Deserialize)]
+#[derive(Serialize)]
 pub struct Build {
     #[serde(default = "Build::default_default")]
     pub default: Vec<String>
@@ -170,6 +175,7 @@ impl Build {
 }
 
 #[derive(Deserialize)]
+#[derive(Serialize)]
 pub struct Env {
     #[serde(default = "Env::default_any_env")]
     pub global: HashMap<String, String>,
