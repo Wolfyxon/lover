@@ -1,5 +1,5 @@
 use std::{fs, io::Write, path::Path};
-use crate::{console::{exit_err, print_success}, files, project_config};
+use crate::{console::{exit_err, print_success}, files, project_config::{self, Package, ProjectConfig}};
 
 struct ComponentFile<'a> {
     path: &'a Path,
@@ -66,13 +66,20 @@ pub fn create(name: String, path: &Path) {
     /* Generating project config */
 
     let config_path = path.join(project_config::PATH);
-    let config_string: String = format!(r#"[package]
-name = "{}"
-author = "Cool person"
-version = "1.0"
-"#, name);
 
-    let write_res = fs::write(config_path, config_string);
+    let pkg = Package {
+            name: name.to_owned(),
+            author: "".to_string(),
+            description: "".to_string(),
+            version: Package::default_version(),
+            icon: Package::default_icon()
+    };
+
+    
+    let project = ProjectConfig::from_package(pkg);
+    let project_string = toml::to_string_pretty(&project).expect("Serialization failed");
+    
+    let write_res = fs::write(config_path, project_string);
 
     if write_res.is_err() {
         exit_err(format!("Failed to create project config: {}", write_res.err().unwrap()));
