@@ -10,15 +10,19 @@ pub struct ProjectConfig {
     pub package: Package,
 
     #[serde(default = "Directories::default")]
+    #[serde(skip_serializing_if = "Directories::is_default")]
     pub directories: Directories,
 
     #[serde(default = "Build::default")]
+    #[serde(skip_serializing_if = "Build::is_default")]
     pub build: Build,
 
     #[serde(default = "Run::default")]
+    #[serde(skip_serializing_if = "Run::is_default")]
     pub run: Run,
 
     #[serde(default = "Env::default")]
+    #[serde(skip_serializing_if = "Env::is_default")]
     pub env: Env
 }
 
