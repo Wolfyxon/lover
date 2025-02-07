@@ -56,19 +56,23 @@ impl ProjectConfig {
 
 #[derive(Deserialize)]
 #[derive(Serialize)]
+#[derive(PartialEq)]
 pub struct Package {
     pub name: String,
 
     #[serde(default)]
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub description: String,
     
     #[serde(default)]
+    #[serde(skip_serializing_if = "String::is_empty")]
     pub author: String,
     
     #[serde(default = "Package::default_version")]
     pub version: String,
 
     #[serde(default = "Package::default_icon")]
+    #[serde(skip_serializing_if = "Package::is_default_icon")]
     pub icon: String
 }
 
@@ -103,6 +107,9 @@ impl Package {
         "icon.png".to_string()
     }
 
+    pub fn is_default_icon(icon: &String) -> bool {
+        return &Self::default_icon() == icon;
+    }
 }
 
 #[derive(Deserialize)]
