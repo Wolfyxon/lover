@@ -37,6 +37,16 @@ impl ProjectConfig {
             exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
         }
     }
+
+    pub fn from_package(pkg: Package) -> Self {
+        Self {
+            package: pkg,
+            env: Env::default(),
+            directories: Directories::default(),
+            run: Run::default(),
+            build: Build::default()
+        }
+    }
 }
 
 #[derive(Deserialize)]
