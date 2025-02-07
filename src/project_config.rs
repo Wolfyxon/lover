@@ -103,6 +103,7 @@ impl Package {
 
 #[derive(Deserialize)]
 #[derive(Serialize)]
+#[derive(PartialEq)]
 pub struct Directories {
     #[serde(default = "Directories::default_source")]
     pub source: String,
@@ -134,10 +135,15 @@ impl Directories {
     pub fn get_temp_dir(&self) -> PathBuf {
         self.get_build_dir().join("temp")
     }
+
+    pub fn is_default(&self) -> bool {
+        return self == &Self::default();
+    }
 }
 
 #[derive(Deserialize)]
 #[derive(Serialize)]
+#[derive(PartialEq)]
 pub struct Run {
     #[serde(default = "Run::default_default_run_args")]
     pub default_args: Vec<String>
@@ -153,10 +159,15 @@ impl Run {
     fn default_default_run_args() -> Vec<String> {
         Vec::new()
     }
+
+    pub fn is_default(&self) -> bool {
+        return self == &Self::default();
+    }
 }
 
 #[derive(Deserialize)]
 #[derive(Serialize)]
+#[derive(PartialEq)]
 pub struct Build {
     #[serde(default = "Build::default_default")]
     pub default: Vec<String>
@@ -172,10 +183,15 @@ impl Build {
     fn default_default() -> Vec<String> {
         vec!["love".to_string()]
     }
+
+    pub fn is_default(&self) -> bool {
+        return self == &Self::default();
+    }
 }
 
 #[derive(Deserialize)]
 #[derive(Serialize)]
+#[derive(PartialEq)]
 pub struct Env {
     #[serde(default = "Env::default_any_env")]
     pub global: HashMap<String, String>,
@@ -198,6 +214,10 @@ impl Env {
 
     pub fn default_any_env() -> HashMap<String, String> {
         HashMap::new()
+    }
+
+    pub fn is_default(&self) -> bool {
+        return self == &Self::default();
     }
 }
 
