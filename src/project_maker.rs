@@ -79,11 +79,9 @@ pub fn create(name: String, path: &Path) {
     let project = ProjectConfig::from_package(pkg);
     let project_string = toml::to_string_pretty(&project).expect("Serialization failed");
     
-    let write_res = fs::write(config_path, project_string);
-
-    if write_res.is_err() {
-        exit_err(format!("Failed to create project config: {}", write_res.err().unwrap()));
-    }
+    fs::write(config_path, project_string).map_err(|err| {
+        exit_err(format!("Failed to create project config: {err}"));
+    }).unwrap();
 
     print_success(format!("Successfully initialized new project '{}' in {}", name, path.to_str().unwrap()));
 
