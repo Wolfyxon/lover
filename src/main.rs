@@ -307,6 +307,8 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
 }
 
 fn show_help() {
+    println!("Usage: lover <command> [<arguments>] \n");
+
     println!("Lover is a open source cross-platform build system for Love2D projects.");
     println!("https://github.com/Wolfyxon/lover \n");
 
