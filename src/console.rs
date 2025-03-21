@@ -128,7 +128,6 @@ pub fn print_note(message: String) {
     println!("{} {}", Style::new().fg(Purple).bold().paint("Note:"), message)
 }
 
-
 pub fn print_significant(prefix: &str, message: String) {
     println!("{} {}", Style::new().fg(Cyan).bold().paint(format!("> {}:", prefix)), message)
 }
