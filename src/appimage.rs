@@ -86,8 +86,8 @@ pub fn read_squashfs(path: &Path) -> FilesystemReader<'_> {
 pub fn write_from_squashfs_file(reader: &FilesystemReader<'_>, squashfs_file: &SquashfsFileReader, output_path: &Path) {
     let file = files::create(output_path);
     
-    let mut wr = BufWriter::with_capacity(squashfs_file.basic.file_size as usize, &file);
-    let mut rd = reader.file(&squashfs_file.basic).reader();
+    let mut wr = BufWriter::with_capacity(squashfs_file.file_len(), &file);
+    let mut rd = reader.file(&squashfs_file).reader();
     
     match std::io::copy(&mut rd, &mut wr) {
         Ok(_) => {},
