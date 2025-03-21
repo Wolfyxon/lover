@@ -25,11 +25,9 @@ pub fn create(name: String, path: &Path) {
     }
 
     if !path.exists() {
-        let res = std::fs::create_dir(path);
-
-        if res.is_err() {
-            exit_err(format!("Failed to create directory: {}", res.err().unwrap()));
-        }
+        std::fs::create_dir(path).unwrap_or_else(|err| {
+            exit_err(format!("Failed to create directory: {}", err));
+        });
     }
 
     let mut dir = match path.read_dir() {
@@ -48,19 +46,16 @@ pub fn create(name: String, path: &Path) {
         let parent = target_path.parent().unwrap();
 
         if !parent.exists() {
-            let res = fs::create_dir_all(parent);
-
-            if res.is_err() {
-                exit_err(format!("Failed to create directory {}: {}", parent.to_str().unwrap(), res.err().unwrap()));
-            }
+            fs::create_dir_all(parent).unwrap_or_else(|err| {
+                exit_err(format!("Failed to create directory {}: {}", parent.to_str().unwrap(), err));
+            });
         }
 
         let mut file = files::create(&target_path);
-        let write_res = file.write_all(component.buffer);
-
-        if write_res.is_err() {
-            exit_err(format!("Failed to write file '{}': {}", target_path.to_str().unwrap(), write_res.err().unwrap()));
-        }
+        
+        file.write_all(component.buffer).unwrap_or_else(|err| {
+            exit_err(format!("Failed to write file '{}': {}", target_path.to_str().unwrap(), err));
+        });
     }
 
     /* Generating project config */
@@ -79,9 +74,9 @@ pub fn create(name: String, path: &Path) {
     let project = ProjectConfig::from_package(pkg);
     let project_string = toml::to_string_pretty(&project).expect("Serialization failed");
     
-    fs::write(config_path, project_string).map_err(|err| {
+    fs::write(config_path, project_string).unwrap_or_else(|err| {
         exit_err(format!("Failed to create project config: {err}"));
-    }).unwrap();
+    });
 
     print_success(format!("Successfully initialized new project '{}' in {}", name, path.to_str().unwrap()));
 
