@@ -107,7 +107,7 @@ pub fn confirm_or_exit(message: &str) {
 }
 
 pub fn print_err(message: String) {
-    println!("{} {}", Style::new().fg(Red).bold().paint("Error:"), message);
+    eprintln!("{} {}", Style::new().fg(Red).bold().paint("Error:"), message);
 }
 
 pub fn exit_err(message: String) -> ! {
