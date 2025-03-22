@@ -27,6 +27,16 @@ pub struct ProjectConfig {
 }
 
 impl ProjectConfig {
+    pub fn new(name: String) -> Self {
+        Self {
+            package: Package::new(name),
+            directories: Directories::default(),
+            build: Build::default(),
+            run: Run::default(),
+            env: Env::default()
+        }
+    }
+    
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(string)
     }
@@ -77,6 +87,16 @@ pub struct Package {
 }
 
 impl Package {
+    pub fn new(name: String) -> Self {
+        Self {
+            name: name,
+            description: String::new(),
+            author: String::new(),
+            version: Self::default_version(),
+            icon: Self::default_icon()
+        }
+    }
+
     pub fn get_rcedit_args(&self) -> Vec<String> {
         let mut res: Vec<String> = Vec::new();
         let mut map: HashMap<&str, String> = HashMap::new();

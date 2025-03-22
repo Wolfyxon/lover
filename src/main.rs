@@ -210,6 +210,13 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             flags: vec![]
         },
         Command {
+            alias: "create".to_string(),
+            description: "Runs an interactive project setup".to_string(),
+            function: cmd_create,
+            args: vec![],
+            flags: vec![]
+        },
+        Command {
             alias: "run".to_string(),
             description: "Runs the game.".to_string(),
             function: cmd_run,
@@ -492,6 +499,10 @@ fn cmd_new(command: &Command) {
     }
     
     project_maker::create(name.to_owned(), path);
+}
+
+fn cmd_create(_command: &Command) {
+    project_maker::setup();
 }
 
 fn cmd_target(command: &Command) {

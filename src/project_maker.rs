@@ -1,5 +1,5 @@
-use std::{fs, io::Write, path::Path};
-use crate::{console::{exit_err, print_success}, files, project_config::{self, Package, ProjectConfig}};
+use std::{fs, io::Write, path::{Path, PathBuf}};
+use crate::{console::{exit_err, input, input_non_empty, print_err, print_note, print_significant, print_success}, files, project_config::{self, Package, ProjectConfig}};
 
 struct ComponentFile<'a> {
     path: &'a Path,
@@ -80,4 +80,60 @@ pub fn create(name: String, path: &Path) {
 
     print_success(format!("Successfully initialized new project '{}' in {}", name, path.to_str().unwrap()));
 
+}
+
+pub fn setup() {
+    print_significant("Welcome to the Lover project creator", "");
+    println!("You'll be asked a few questions for your project settings and then everything will be set up for you.");
+    println!("If a question has '(default: ...)' or '(optional)', just press enter enter if you don't want to change it.");
+    println!("Use ^C to abort (press Ctr+C in your terminal)");
+    println!();
+
+    setup_init();
+
+    println!();
+    print_note("All settings can be changed at any time you want in the lover.toml file.");
+    println!("See https://github.com/wolfyxon/lover/wiki/project-configuration for more info");
+    print_success("Project successfully created");
+}
+
+pub fn setup_init() {
+    let name = input_non_empty("Name of your project: ");
+    let mut project = ProjectConfig::new(name.to_owned());
+
+    // TODO: Name validation
+
+    let path = setup_dir(&mut project);
+
+    project.package.author = input("Your name (optional): ");
+    project.package.description = input("Description (optional): ");
+}
+
+pub fn setup_dir(project: &mut ProjectConfig) -> PathBuf {
+    let name = &project.package.name;
+    let mut entered_path = input(format!("Where should your project files be? (default: {}): ", name));
+    
+    if entered_path.is_empty() {
+        entered_path = name.to_string();
+    }
+
+    let path = Path::new(&entered_path);
+
+    if path.exists() {
+        if path.is_file() {
+            print_err("The given path is a file. You must either use an empty directory or a non existing one");
+            return setup_dir(project);
+        }
+    } else {
+        match fs::create_dir_all(path) {
+            Ok(()) => {},
+            Err(err) => {
+                print_err(format!("Failed to create directories: {}", err));
+                return setup_dir(project);
+            }
+        }
+    }
+
+    print_success("Project directory successfully created");
+    path.to_owned()
 }
