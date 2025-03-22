@@ -86,11 +86,14 @@ pub fn get_command_line_settings() -> CommandLineSettings {
     }
 }
 
+pub fn flush() {
+    stdout().flush().expect("Failed to flush stdout.");
+}
+
 pub fn confirm(message: impl Into<String>) -> bool {
     print!("{} [Y/N]: ", message.into());
-
-    stdout().flush().expect("Failed to flush stdout.");
-
+    flush();
+    
     let mut handle = stdin().lock();  
     let mut ch = [0_u8];
 
@@ -101,7 +104,7 @@ pub fn confirm(message: impl Into<String>) -> bool {
 
 pub fn input(message: impl Into<String>) -> String {
     print!("{}", message.into());
-    stdout().flush().expect("Failed to flush stdout.");
+    flush();
 
     let stdin = std::io::stdin();
     let mut res = String::new();
