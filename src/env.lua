@@ -6,7 +6,11 @@ os._getenv = os.getenv or function() end
 
 local loverConsts = {}
 
-function os.getenv(varname)
+function os.getenv(varname, noLover)
+    if noLover then
+        return os._getenv(varname)
+    end
+
     return loverConsts[varname] or os._getenv(varname)
 end
 
