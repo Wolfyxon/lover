@@ -294,7 +294,10 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             description: "Shows a list of available Lover constants and their values.".to_string(),
             function: cmd_env,
             args: vec![],
-            flags: vec![]
+
+            flags: vec![
+                CommandFlag::new_only_full("no-hint", "Removes the 'Use os.getenv(name)...' hint under the list")
+            ]
         },
         Command {
             alias: "module".to_string(),
@@ -668,7 +671,11 @@ fn cmd_env(_command: &Command) {
         println!("{}: {}", k, v);
     }
 
-    println!("\nUse `os.getenv(\"name\")` in your game to access each value.");
+    let cmd_settings = get_command_line_settings();
+
+    if !cmd_settings.has_flag("no-hint") {
+        println!("\nUse `os.getenv(\"name\")` in your game to access each value.");
+    }
 }
 
 fn cmd_module(_command: &Command) {
