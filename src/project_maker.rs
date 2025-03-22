@@ -89,13 +89,13 @@ pub fn setup() {
     println!("You'll be asked a few questions for your project settings and then everything will be set up for you.");
     println!("If a question has '(default: ...)' or '(optional)', just press enter enter if you don't want to change it.");
     println!("Use ^C to abort (press Ctr+C in your terminal)");
+    print_note("All settings can be changed at any time you want in the lover.toml file.");
     println!();
 
     setup_init();
 
     println!();
-    print_note("All settings can be changed at any time you want in the lover.toml file.");
-    println!("See https://github.com/wolfyxon/lover/wiki/project-configuration for more info");
+    println!("See https://github.com/wolfyxon/lover/wiki/project-configuration To see how you can configure your project");
     print_success("Project successfully created");
 }
 
