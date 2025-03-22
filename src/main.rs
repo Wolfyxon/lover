@@ -674,7 +674,7 @@ fn cmd_env(_command: &Command) {
     let cmd_settings = get_command_line_settings();
 
     if !cmd_settings.has_flag("no-hint") {
-        println!("\nUse `os.getenv(\"name\")` in your game to access each value.");
+        println!("\n# Use `os.getenv(\"name\")` in your game to access each value.");
     }
 }
 
