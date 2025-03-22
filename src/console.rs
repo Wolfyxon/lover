@@ -114,6 +114,18 @@ pub fn input(message: impl Into<String>) -> String {
     res
 }
 
+pub fn input_non_empty(message: impl Into<String>) -> String {
+    let msg: String = message.into();
+    let res = input(msg.to_owned());
+
+    if res.trim().is_empty() {
+        print_err("Value cannot be empty, try again");
+        return input_non_empty(msg);
+    }
+
+    res
+}
+
 pub fn confirm_or_exit(message: &str) {
     if !confirm(message) {
         println!("Cancelled");
