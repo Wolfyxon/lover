@@ -113,6 +113,14 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
             optional: vec!["rcedit"],
             previous: vec!["love"],
             builder: build_win32
+        },
+        BuildTarget {
+            name: "all",
+            description: "Virtual target that builds every available platform",
+            deps: vec![],
+            optional: vec![],
+            previous: vec!["linux", "win64", "win32"],
+            builder: build_virtual
         }
     ]
 }
@@ -334,6 +342,10 @@ pub fn build_windows_zip(arch: Arch) {
         actions::archive(&path, &build_dir.join(format!("{}_{}.zip", pkg_name, &name)));
     }
     
+}
+
+fn build_virtual() {
+    // Do not touch
 }
 
 fn build_love() {
