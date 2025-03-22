@@ -527,19 +527,18 @@ fn cmd_target(command: &Command) {
         Some(name) => {
             let target = targets::get_target_by_string(name);
 
-            print_significant("Details of target", target.name);
-            println!("{}\n", Style::new().italic().paint(target.description));
+            print_significant("Details of target", &target.name.to_owned());
+            println!("{}\n", Style::new().italic().paint(&target.description.to_owned()));
 
             print_step("Previous targets:");
-            for prev in target.previous {
+            for prev in &target.previous {
                 println!("- {}", prev);
             }
 
             println!();
 
             print_step("Dependencies:");
-            for name in target.deps {
-                let dep = deps::get_dep(name);
+            for dep in target.get_all_deps() {
                 
                 let mut suffix = "";
                 let mut style = Style::new();
