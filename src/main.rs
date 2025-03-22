@@ -309,7 +309,7 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
         },
         Command {
             alias: "module".to_string(),
-            description: "Generates the extra code injected into your game when building. Mostly for testing".to_string(),
+            description: "Shows the extra code injected into your game when building. Mostly for testing".to_string(),
             function: cmd_module,
             args: vec![],
             flags: vec![]
@@ -504,7 +504,7 @@ fn cmd_clean(_command: &Command) {
 
 fn cmd_new(command: &Command) {
     let char_blacklist = vec!["..", "/", "\\", "\""];
-    
+
     let name = command.get_arg("name").unwrap();
     let path_str = command.get_arg("path").unwrap_or(name.to_owned());
     let path = Path::new(&path_str);
