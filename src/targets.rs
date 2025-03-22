@@ -44,6 +44,16 @@ impl<'a> BuildTarget<'a> {
             res.push(dep.name.to_string());
         }
 
+        for name in &self.previous {
+            let target = get_target_by_string(name.to_string());
+
+            for dep_name in target.get_all_dep_names() {
+                if !res.contains(&dep_name) {
+                    res.push(dep_name);
+                }
+            }
+        }
+
         res
     }
 
