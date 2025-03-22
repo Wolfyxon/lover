@@ -205,7 +205,8 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             description: "Initializes a new Love2D project.".to_string(),
             function: cmd_new,
             args: vec![
-                CommandArg::req("name", "Name of your new project.")
+                CommandArg::req("name", "Name of your new project."),
+                CommandArg::opt("path", "Path of your project directory")
             ],
             flags: vec![]
         },
@@ -503,8 +504,10 @@ fn cmd_clean(_command: &Command) {
 
 fn cmd_new(command: &Command) {
     let char_blacklist = vec!["..", "/", "\\", "\""];
+    
     let name = command.get_arg("name").unwrap();
-    let path = Path::new(&name);
+    let path_str = command.get_arg("path").unwrap_or(name.to_owned());
+    let path = Path::new(&path_str);
 
     for blacklisted in &char_blacklist {
         if name.contains(blacklisted) {
