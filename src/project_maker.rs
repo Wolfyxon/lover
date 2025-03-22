@@ -57,7 +57,7 @@ pub fn create(name: String, path: &Path) {
     if dir.next().is_some() {
         exit_err(format!("Directory '{}' must be empty", name));
     }
-    
+
     extract_template(path);
 
     /* Generating project config */
@@ -109,6 +109,15 @@ pub fn setup_init() {
 
     project.package.author = input("Your name (optional): ");
     project.package.description = input("Description (optional): ");
+
+    let project_string = toml::to_string_pretty(&project).expect("Serialization failed");
+    let config_path = path.join("lover.toml");
+
+    fs::write(config_path, project_string).unwrap_or_else(|err| {
+        exit_err(format!("Failed to create project config: {err}"));
+    });
+
+    extract_template(&path);
 }
 
 pub fn setup_dir(project: &mut ProjectConfig) -> PathBuf {
