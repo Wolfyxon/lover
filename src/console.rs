@@ -86,8 +86,8 @@ pub fn get_command_line_settings() -> CommandLineSettings {
     }
 }
 
-pub fn confirm(message: &str) -> bool {
-    print!("{} [Y/N]: ", message);
+pub fn confirm(message: impl Into<String>) -> bool {
+    print!("{} [Y/N]: ", message.into());
 
     stdout().flush().expect("Failed to flush stdout.");
 
@@ -106,33 +106,33 @@ pub fn confirm_or_exit(message: &str) {
     }
 }
 
-pub fn print_err(message: String) {
-    eprintln!("{} {}", Style::new().fg(Red).bold().paint("Error:"), message);
+pub fn print_err(message: impl Into<String>) {
+    eprintln!("{} {}", Style::new().fg(Red).bold().paint("Error:"), message.into());
 }
 
-pub fn exit_err(message: String) -> ! {
+pub fn exit_err(message: impl Into<String>) -> ! {
     println!();
     print_err(message);
     exit(1);
 }
 
-pub fn print_warn(message: String) {
-    println!("{} {}", Style::new().fg(Yellow).bold().paint("Warning:"), message);
+pub fn print_warn(message: impl Into<String>) {
+    println!("{} {}", Style::new().fg(Yellow).bold().paint("Warning:"), message.into());
 }
 
-pub fn print_success(message: String) {
-    println!("{} {}", Style::new().fg(Green).bold().paint("OK:"), message)
+pub fn print_success(message: impl Into<String>) {
+    println!("{} {}", Style::new().fg(Green).bold().paint("OK:"), message.into())
 }
 
-pub fn print_note(message: String) {
-    println!("{} {}", Style::new().fg(Purple).bold().paint("Note:"), message)
+pub fn print_note(message: impl Into<String>) {
+    println!("{} {}", Style::new().fg(Purple).bold().paint("Note:"), message.into())
 }
 
-pub fn print_significant(prefix: &str, message: String) {
-    println!("{} {}", Style::new().fg(Cyan).bold().paint(format!("> {}:", prefix)), message)
+pub fn print_significant(prefix: impl Into<String>, message: impl Into<String>) {
+    println!("{} {}", Style::new().fg(Cyan).bold().paint(format!("> {}:", prefix.into())), message.into())
 }
 
-pub fn print_step(message: String) {
+pub fn print_step(message: impl Into<String>) {
     let prefix = Style::new().fg(Blue).bold().paint(">>");
-    println!("{} {}", prefix, message)
+    println!("{} {}", prefix, message.into())
 }
