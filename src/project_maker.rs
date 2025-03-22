@@ -19,6 +19,25 @@ fn get_template_files<'a>() -> Vec<ComponentFile<'a>> {
     ]
 }
 
+pub fn extract_template(path: &Path) {
+    for component in get_template_files() {
+        let target_path = path.join(component.path);
+        let parent = target_path.parent().unwrap();
+
+        if !parent.exists() {
+            fs::create_dir_all(parent).unwrap_or_else(|err| {
+                exit_err(format!("Failed to create directory {}: {}", parent.to_str().unwrap(), err));
+            });
+        }
+
+        let mut file = files::create(&target_path);
+        
+        file.write_all(component.buffer).unwrap_or_else(|err| {
+            exit_err(format!("Failed to write file '{}': {}", target_path.to_str().unwrap(), err));
+        });
+    }
+}
+
 pub fn create(name: String, path: &Path) {
     if path.is_file() {
         exit_err(format!("'{}' already exists as a file in the current directory.", name));
@@ -38,25 +57,8 @@ pub fn create(name: String, path: &Path) {
     if dir.next().is_some() {
         exit_err(format!("Directory '{}' must be empty", name));
     }
-
-    /* Template files */
-
-    for component in get_template_files() {
-        let target_path = path.join(component.path);
-        let parent = target_path.parent().unwrap();
-
-        if !parent.exists() {
-            fs::create_dir_all(parent).unwrap_or_else(|err| {
-                exit_err(format!("Failed to create directory {}: {}", parent.to_str().unwrap(), err));
-            });
-        }
-
-        let mut file = files::create(&target_path);
-        
-        file.write_all(component.buffer).unwrap_or_else(|err| {
-            exit_err(format!("Failed to write file '{}': {}", target_path.to_str().unwrap(), err));
-        });
-    }
+    
+    extract_template(path);
 
     /* Generating project config */
 
