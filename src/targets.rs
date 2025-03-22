@@ -117,6 +117,16 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
     ]
 }
 
+pub fn get_target_names<'a>() -> Vec<&'a str> {
+    let mut res = Vec::new();
+
+    for target in get_targets() {
+        res.push(target.name);
+    }
+
+    res
+}
+
 pub fn gen_module() -> String {
     let map = actions::get_env_map(actions::Context::Build);
     let mut res = include_str!("env.lua").to_string();
