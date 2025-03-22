@@ -1,4 +1,4 @@
-use std::io::{stdin, stdout, Read, Write};
+use std::io::{stdin, stdout, BufRead, Read, Write};
 use std::process::exit;
 use ansi_term::Style;
 use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue, Purple};
@@ -97,6 +97,18 @@ pub fn confirm(message: impl Into<String>) -> bool {
     handle.read_exact(&mut ch).expect("Failed to read stdin");
 
     String::from_utf8_lossy(&ch) == "y"
+}
+
+pub fn input(message: impl Into<String>) -> String {
+    print!("{}", message.into());
+    stdout().flush().expect("Failed to flush stdout.");
+
+    let stdin = std::io::stdin();
+    let mut res = String::new();
+
+    stdin.lock().read_line(&mut res).expect("Failed to read stdin");
+    
+    res
 }
 
 pub fn confirm_or_exit(message: &str) {
