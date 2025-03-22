@@ -10,15 +10,6 @@ You can easily build your game for all supported platforms with a single command
 ### Automatic dependency management
 Love binaries required for building are downloaded automatically and can easily be managed by using Lover commands.
 
-### Finally a good `run` command
-When using `lover run` you can pass arguments to your game and even --flags.
-
-Most tools like **Makefile** and **Cargo** will treat all flags as their own and not allow such things.
-
-```
-lover run someArgument --someFlag --gameMode=survival
-```
-
 ### Default environment variables
 You can access certain constants like the game's version by the use of `os.getenv()`.
 ```lua
