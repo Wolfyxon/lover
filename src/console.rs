@@ -111,14 +111,14 @@ pub fn input(message: impl Into<String>) -> String {
 
     stdin.lock().read_line(&mut res).expect("Failed to read stdin");
     
-    res
+    res.trim().to_string()
 }
 
 pub fn input_non_empty(message: impl Into<String>) -> String {
     let msg: String = message.into();
     let res = input(msg.to_owned());
 
-    if res.trim().is_empty() {
+    if res.is_empty() {
         print_err("Value cannot be empty, try again");
         return input_non_empty(msg);
     }
