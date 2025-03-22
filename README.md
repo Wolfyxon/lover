@@ -22,7 +22,7 @@ lover run someArgument --someFlag --gameMode=survival
 ### Default environment variables
 You can access certain constants like the game's version by the use of `os.getenv()`.
 ```lua
-local version = os.getenv("LOVER_VERSION")
+local version = os.getenv("LOVER_PKG_VERSION")
 ```
 [learn more](https://github.com/Wolfyxon/lover/wiki/Constants)
 
