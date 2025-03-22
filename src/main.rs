@@ -324,9 +324,23 @@ fn show_help() {
 
     println!("Available commands: \n");
 
-    for cmd in get_commands() {
-        let colored_alias = Style::new().bold().fg(Blue).paint(cmd.alias);
-        println!("  {}: {}", colored_alias, cmd.description);
+    let commands = get_commands();
+    let mut longest = 0;
+
+    for cmd in &commands {
+        let len = cmd.alias.len();
+
+        if len > longest {
+            longest = len;
+        }
+    }
+
+    for cmd in commands {
+        let alias = cmd.alias;
+        let colored_alias = Style::new().bold().fg(Blue).paint(&alias);
+        let gap = " ".repeat(longest - &alias.len());
+
+        println!("  {}: {}{}", colored_alias, gap, cmd.description);
     }
     println!("\nUse `lover help <command>` to see the usage of a specific command.");
     println!("For additional help, see the wiki: https://github.com/Wolfyxon/lover/wiki");
