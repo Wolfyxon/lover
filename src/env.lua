@@ -2,11 +2,11 @@
 -- Learn more at https://github.com/Wolfyxon/lover/wiki/Constants 
 
 os = os or {}
+os._getenv = os.getenv or function() end
 
-local originalGetEnv = os.getenv or function () end
 local loverConsts = {}
 
 function os.getenv(varname)
-    return loverConsts[varname] or originalGetEnv(varname)
+    return loverConsts[varname] or os._getenv(varname)
 end
 
