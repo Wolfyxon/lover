@@ -3,7 +3,7 @@ use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
 mod console;
-use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_significant, print_step, print_success, print_warn};
+use console::{confirm_or_exit, exit_err, get_command_line_settings, print_err, print_note, print_significant, print_step, print_success, print_warn};
 use deps::DependencyInstance;
 use targets::get_targets;
 
@@ -674,7 +674,8 @@ fn cmd_env(_command: &Command) {
     let cmd_settings = get_command_line_settings();
 
     if !cmd_settings.has_flag("no-hint") {
-        println!("\n# Use `os.getenv(\"name\")` in your game to access each value.");
+        println!("");
+        print_note("Use `os.getenv(\"name\")` in your game to access each value.".to_string());
     }
 }
 
