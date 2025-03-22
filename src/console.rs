@@ -128,7 +128,6 @@ pub fn input_non_empty(message: impl Into<String>) -> String {
 
 pub fn confirm_or_exit(message: &str) {
     if !confirm(message) {
-        println!("Cancelled");
         exit(1);
     }
 }
