@@ -132,7 +132,7 @@ pub fn parse_all(root: &Path) {
         return;
     }
 
-    print_step("Parsing Lua scripts...".to_string());
+    print_step("Parsing Lua scripts...");
 
     let scripts = files::get_file_tree_of_type(root, "lua");
     
@@ -140,12 +140,12 @@ pub fn parse_all(root: &Path) {
         execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
     }
 
-    print_success("Parsing successful".to_string());
+    print_success("Parsing successful");
 }
 
 pub fn clean(path: &Path) {
     if !path.exists() {
-        print_success("Nothing to clean.".to_string());
+        print_success("Nothing to clean.");
         return;
     }
 
@@ -154,7 +154,7 @@ pub fn clean(path: &Path) {
     }
 
     match std::fs::remove_dir_all(path) {
-        Ok(()) => print_success("Clean successful".to_string()),
+        Ok(()) => print_success("Clean successful"),
         Err(err) => exit_err(format!("Failed to delete '{}': {}", path.to_str().unwrap(), err))
     };
 }

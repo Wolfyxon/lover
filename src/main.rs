@@ -143,7 +143,7 @@ fn main() {
         }
 
         if !cl_settings.has_flag("help") {
-            print_err("No command specified\n".to_string());
+            print_err("No command specified\n");
         }
 
         show_help();
@@ -476,7 +476,7 @@ fn cmd_build(command: &Command) {
 fn cmd_clean(_command: &Command) {
     let build = &project_config::get().directories.build;
 
-    print_significant("Removing", build.to_string());
+    print_significant("Removing", build);
     actions::clean(Path::new(build));
 }
 
@@ -499,17 +499,17 @@ fn cmd_target(command: &Command) {
         Some(name) => {
             let target = targets::get_target_by_string(name);
 
-            print_significant("Details of target", target.name.to_string());
+            print_significant("Details of target", target.name);
             println!("{}\n", Style::new().italic().paint(target.description));
 
-            print_step("Previous targets:".to_string());
+            print_step("Previous targets:");
             for prev in target.previous {
                 println!("- {}", prev);
             }
 
             println!();
 
-            print_step("Dependencies:".to_string());
+            print_step("Dependencies:");
             for name in target.deps {
                 let dep = deps::get_dep(name);
                 
@@ -525,7 +525,7 @@ fn cmd_target(command: &Command) {
             }
         },
         None => {
-            print_significant("Available build targets", "\n".to_string());
+            print_significant("Available build targets", "\n");
 
             for target in get_targets() {
                 println!("- {}: {}", Style::new().fg(Green).paint(target.name), target.description)
@@ -548,7 +548,7 @@ fn cmd_dep(command: &Command) {
                 status = "installed";
             }
     
-            print_significant("Details of", dep.name.to_string());
+            print_significant("Details of", dep.name);
     
             println!("{}\n", Style::new().italic().paint(dep.description));
     
@@ -557,13 +557,13 @@ fn cmd_dep(command: &Command) {
             println!("Repository: {}", dep.get_repo_url());
     
             println!();
-            print_step("Actions:".to_string());
+            print_step("Actions:");
     
             println!("`lover install {}` to install or update.", dep.name);
             println!("`lover uninstall {}` to remove.", dep.name);
         },
         None => {
-            print_significant("Available dependencies", "\n".to_string());
+            print_significant("Available dependencies", "\n");
 
             let installed_style = Style::new().fg(Green);
     
@@ -604,10 +604,10 @@ fn cmd_uninstall(command: &Command) {
     }
 
     if amt == 0 {
-        exit_err("None of the specified packages are installed.".to_string());
+        exit_err("None of the specified packages are installed.");
     }
 
-    print_step("The following dependencies will be removed:".to_string());
+    print_step("The following dependencies will be removed:");
 
     for dep in &dependencies {
         if dep.is_installed() {
@@ -634,7 +634,7 @@ fn cmd_uninstall(command: &Command) {
     if fail {
         exit(1);
     } else {
-        print_success("Removed successfully.".to_string());
+        print_success("Removed successfully.");
     }
 }
 
@@ -646,21 +646,21 @@ fn cmd_fetch(command: &Command) {
 
     match dep.get_instance() {
         DependencyInstance::LatestRelease(d) => {
-            print_step("Release data".to_string());
+            print_step("Release data");
             let release = d.fetch_release();
         
             println!("Name: {}", release.name);
             println!("Tag (version): {}", release.tag_name);
             println!("Page: {}", release.html_url);
             
-            print_step("Asset data".to_string());
+            print_step("Asset data");
             let asset = d.get_asset_from_release(&release);
         
             println!("Name: {}", asset.name);
             println!("Download URL: {}", asset.browser_download_url);
         },
         DependencyInstance::Source(d) => {
-            print_step("Source data".to_string());
+            print_step("Source data");
             println!("Branch: {}", d.branch);
         }
     }
@@ -675,7 +675,7 @@ fn cmd_env(_command: &Command) {
 
     if !cmd_settings.has_flag("no-hint") {
         println!("");
-        print_note("Use `os.getenv(\"name\")` in your game to access each value.".to_string());
+        print_note("Use `os.getenv(\"name\")` in your game to access each value.");
     }
 }
 

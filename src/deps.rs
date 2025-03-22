@@ -245,7 +245,7 @@ pub fn install(names: Vec<String>) {
     let deps = get_deps_by_strings(names);
     let mut downloads: Vec<Downloadable> = Vec::new();
 
-    print_step("Fetching dependencies".to_string());
+    print_step("Fetching dependencies");
 
     let fetch_bar = ProgressBar::new(deps.len());
     let mut fetch_progress: usize = 0;
@@ -260,7 +260,7 @@ pub fn install(names: Vec<String>) {
     }
 
     fetch_bar.finish();
-    print_step("The following dependencies will be installed:".to_string());
+    print_step("The following dependencies will be installed:");
 
     let mut total: u32 = 0;
     let mut has_unknown = false;
@@ -293,14 +293,14 @@ pub fn install(names: Vec<String>) {
     println!("\nTotal size: {} MB", total as f32 / (1024 * 1024) as f32);
 
     if has_unknown {
-        print_warn("Size may not be accurate. Failed to retrieve size of some dependencies.".to_string());
+        print_warn("Size may not be accurate. Failed to retrieve size of some dependencies.");
     }
     
     confirm_or_exit("Proceed with the installation?");
 
     create_dir();
 
-    print_step("Installing...".to_string());
+    print_step("Installing...");
 
     for i in 0..downloads.len() {
         let dep = deps.get(i).unwrap();
@@ -309,7 +309,7 @@ pub fn install(names: Vec<String>) {
         download.download(&dep.get_path(), dep.name);
     }
 
-    print_success("All dependencies successfully installed.".to_string());
+    print_success("All dependencies successfully installed.");
     print_note(format!("Dependencies are stored in: {}", get_dir().to_str().unwrap()));
 }
 
