@@ -135,11 +135,24 @@ pub fn setup_dir(project: &mut ProjectConfig) -> PathBuf {
             print_err("The given path is a file. You must either use an empty directory or a non existing one");
             return setup_dir(project);
         }
+
+        match path.read_dir() {
+            Ok(reader) => {
+                if reader.count() != 0 {
+                    print_err("The project directory must be empty.");
+                    return setup_dir(project);
+                }
+            },
+            Err(err) => {
+                print_err(format!("Failed to read directory: {}. Consider changing the path", err));
+                return setup_dir(project);
+            }
+        }
     } else {
         match fs::create_dir_all(path) {
             Ok(()) => {},
             Err(err) => {
-                print_err(format!("Failed to create directories: {}", err));
+                print_err(format!("Failed to create directories: {}. Consider changing the path", err));
                 return setup_dir(project);
             }
         }
