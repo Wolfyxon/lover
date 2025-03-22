@@ -360,7 +360,7 @@ pub fn get_env_map(context: Context) -> HashMap<String, String> {
     let timestamp = match SystemTime::now().duration_since(UNIX_EPOCH) {
         Ok(res) => res,
         Err(err) => {
-            print_warn(format!("Error getting UNIX timestamp: {}", err));
+            print_warn(format!("Error getting UNIX timestamp: {}.\nLOVER_TIMESTAMP will be equal to 0", err));
             Duration::from_secs(0)
         }
     }.as_secs();
