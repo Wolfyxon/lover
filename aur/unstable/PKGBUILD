@@ -6,7 +6,10 @@ url="https://github.com/Wolfyxon/lover"
 license=("LGPL-2.1")
 pkgrel=1
 pkgver=2.0.r6.g2c1127f
-depends=("openssl" "xz" "bzip2" "zstd" "gcc-libs" "glibc")
+depends=("openssl" "xz" "bzip2" "gcc-libs" "glibc")
+optdepends=(
+    "wine": "RCEdit support"
+)
 makedepends=("cargo" "git")
 arch=("x86_64")
 options=(!debug !lto)
