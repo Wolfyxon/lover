@@ -1,7 +1,7 @@
 # Lover
 Lover is a open source command line build system and runner for [Love2D](https://love2d.org) projects inspired by Cargo.
 
-[Wiki](https://github.com/Wolfyxon/lover/wiki) | [CLI usage](https://github.com/Wolfyxon/lover/wiki/Using-Lover) | [Constants](https://github.com/Wolfyxon/lover/wiki/Constants)
+[Wiki](https://github.com/Wolfyxon/lover/wiki) | [CLI usage](https://github.com/Wolfyxon/lover/wiki/Using-Lover) | [Constants](https://github.com/Wolfyxon/lover/wiki/Constants) | [Downloads](https://github.com/Wolfyxon/lover/releases/latest)
 
 ## Features
 ### Easy cross-platform building
@@ -10,19 +10,10 @@ You can easily build your game for all supported platforms with a single command
 ### Automatic dependency management
 Love binaries required for building are downloaded automatically and can easily be managed by using Lover commands.
 
-### Finally a good `run` command
-When using `lover run` you can pass arguments to your game and even --flags.
-
-Most tools like **Makefile** and **Cargo** will treat all flags as their own and not allow such things.
-
-```
-lover run someArgument --someFlag --gameMode=survival
-```
-
 ### Default environment variables
 You can access certain constants like the game's version by the use of `os.getenv()`.
 ```lua
-local version = os.getenv("LOVER_VERSION")
+local version = os.getenv("LOVER_PKG_VERSION")
 ```
 [learn more](https://github.com/Wolfyxon/lover/wiki/Constants)
 
