@@ -500,7 +500,7 @@ fn cmd_clean(_command: &Command) {
     let build = &project_config::get().directories.get_build_dir();
 
     print_significant("Removing", build.to_str().unwrap());
-    actions::clean(Path::new(build));
+    actions::clean(build);
 }
 
 fn cmd_new(command: &Command) {
