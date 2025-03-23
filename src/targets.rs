@@ -291,11 +291,11 @@ pub fn build_windows_zip(arch: Arch) {
     let pkg = project_conf.package;
     let pkg_name = &pkg.name;
 
-    let build_dir = Path::new(&project_conf.directories.build);
+    let build_dir = &project_conf.directories.get_build_dir();
     let zip_path = &deps::get_dep(("love-".to_string() + &name).as_str()).get_path();
     let path = build_dir.join(&name);
 
-    let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
+    let love = build_dir.join(format!("{}.love", &pkg_name));
 
     actions::extract(zip_path, path.as_path());
 
