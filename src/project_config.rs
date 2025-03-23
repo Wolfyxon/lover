@@ -2,7 +2,7 @@ use std::{collections::HashMap, path::{Path, PathBuf}};
 use serde::{Deserialize, Serialize};
 use crate::console::exit_err;
 
-pub const PATH: &str = "lover.toml";
+pub const PROJECT_FILE: &str = "lover.toml";
 
 #[derive(Deserialize)]
 #[derive(Serialize)]
@@ -253,7 +253,7 @@ impl Env {
 }
 
 pub fn get() -> ProjectConfig {
-    let path = Path::new(PATH);
+    let path = Path::new(PROJECT_FILE);
 
     if !path.exists() {
         exit_err(format!("Project config '{}' doesn't exist in the current directory.", path.display()));

@@ -62,7 +62,7 @@ pub fn create(name: String, path: &Path) {
 
     /* Generating project config */
 
-    let config_path = path.join(project_config::PATH);
+    let config_path = path.join(project_config::PROJECT_FILE);
 
     let pkg = Package {
             name: name.to_owned(),
