@@ -20,6 +20,7 @@ prepare() {
 }
 
 pkgver() {
+    cd "$srcdir/$pkgname"
     git describe --tags --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
