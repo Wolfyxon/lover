@@ -95,7 +95,7 @@ pub fn setup() {
     setup_init();
 
     println!();
-    println!("See https://github.com/wolfyxon/lover/wiki/project-configuration To see how you can configure your project");
+    println!("See https://github.com/wolfyxon/lover/wiki/project-configuration to see how you can configure your project.");
     print_success("Project successfully created");
 }
 
