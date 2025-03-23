@@ -3,8 +3,8 @@
 pkgname=lover-git
 pkgdesc="Love2D build system and runner written in Rust"
 url="https://github.com/Wolfyxon/lover"
-pkgver=2.0
 pkgrel=1
+pkgver=2.0.r5.g40518d5
 depends=("openssl" "xz" "bzip2" "zstd" "gcc-libs" "glibc")
 makedepends=("cargo" "git")
 arch=("x86_64")
@@ -17,6 +17,10 @@ prepare() {
     
     cd $srcdir/$pkgname
     cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+pkgver() {
+    git describe --tags --long | sed 's/^v//;s/\([^-]*-g\)/r\1/;s/-/./g'
 }
 
 build() {
