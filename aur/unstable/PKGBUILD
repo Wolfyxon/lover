@@ -1,15 +1,15 @@
 # Maintainer: Wolfyxon <wolfyxon@gmail.com>
 
 pkgname=lover-git
+pkgver=2.0.r6.g2c1127f
+pkgrel=1
 pkgdesc="Love2D build system and runner written in Rust"
+arch=("x86_64")
 url="https://github.com/Wolfyxon/lover"
 license=("LGPL-2.1-only")
-pkgrel=1
-pkgver=2.0.r6.g2c1127f
 depends=("openssl" "xz" "bzip2" "gcc-libs" "glibc")
-optdepends=("wine: RCEdit support")
 makedepends=("cargo" "git")
-arch=("x86_64")
+optdepends=("wine: RCEdit support")
 options=(!debug !lto)
 source=("$pkgname::git+$url.git")
 sha256sums=("SKIP")
