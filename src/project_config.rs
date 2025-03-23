@@ -1,6 +1,6 @@
-use std::{collections::HashMap, path::{Path, PathBuf}};
+use std::{collections::HashMap, env, path::{Path, PathBuf}};
 use serde::{Deserialize, Serialize};
-use crate::console::exit_err;
+use crate::console::{exit_err, print_warn};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
@@ -249,6 +249,38 @@ impl Env {
 
     pub fn is_default(&self) -> bool {
         return self == &Self::default();
+    }
+}
+
+pub fn find_project_config() -> Option<PathBuf> {
+    let mut current = env::current_dir().unwrap();
+
+    loop {
+        let current_str = current.to_str().unwrap();
+
+        let dir = current.read_dir().unwrap_or_else(|err| {
+            exit_err(format!("Failed to read {}: {}", &current_str, err));
+        });
+
+        for entry_res in dir {
+            match entry_res {
+                Ok(entry) => {
+                    let path = entry.path();
+
+                    if entry.file_name() == PROJECT_FILE && path.is_file() {
+                        return Some(path);
+                    }
+                },
+                Err(err) => {
+                    print_warn(format!("Failed to read entry in {}: {}", current_str, err));
+                }
+            }
+        }
+
+        match current.parent() {
+            Some(parent) => current = parent.to_path_buf(),
+            None => return None
+        }
     }
 }
 
