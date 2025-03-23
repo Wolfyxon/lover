@@ -407,16 +407,16 @@ fn cmd_version(_command: &Command) {
 
 fn cmd_run(_command: &Command) {
     let mut project_conf = project_config::get();
-    let src = project_conf.directories.source;
+    let src = project_conf.directories.get_source_dir();
     let cmd_settings = get_command_line_settings();
     
-    print_significant("Running", src.clone());
+    print_significant("Running", src.to_str().unwrap());
 
     if !cmd_settings.has_flag("no-parse") {
-        actions::parse_all(Path::new(&src));
+        actions::parse_all(&src);
     }
 
-    let mut args = vec![project_config::get().directories.source];
+    let mut args = vec![src.to_str().unwrap().to_string()];
     let mut run_args: &mut Vec<String> = &mut std::env::args().skip(2).into_iter().collect();
 
     if run_args.len() == 0 {
@@ -429,20 +429,21 @@ fn cmd_run(_command: &Command) {
     let env = actions::get_env_map(actions::Context::Run);
 
     if config.run.prime || cmd_settings.has_flag("prime") {
-        actions::execute_prime_with_env(&config::get().software.love, args, env, false);
-    } else { 
-        actions::execute_with_env(&config::get().software.love, args, env, false);
+        actions::execute_prime_with_env(&config.software.love, args, env, false);
+    } else {
+        actions::execute_with_env(&config.software.love, args, env, false);
     }
 }
 
 fn cmd_parse(_command: &Command) {
     let parser = config::get().software.luac;
+    let src = project_config::get().directories.get_source_dir();
 
     if !actions::command_exists(&parser) {
         exit_err(format!("Cannot parse: '{}' not found.", parser));
     }
 
-    actions::parse_all(Path::new(&project_config::get().directories.source));
+    actions::parse_all(&src);
 }
 
 fn cmd_build(command: &Command) {
@@ -496,9 +497,9 @@ fn cmd_build(command: &Command) {
 }
 
 fn cmd_clean(_command: &Command) {
-    let build = &project_config::get().directories.build;
+    let build = &project_config::get().directories.get_build_dir();
 
-    print_significant("Removing", build);
+    print_significant("Removing", build.to_str().unwrap());
     actions::clean(Path::new(build));
 }
 

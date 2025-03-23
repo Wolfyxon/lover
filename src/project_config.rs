@@ -159,12 +159,22 @@ impl Directories {
         "build".to_string()
     }
 
-    pub fn get_build_dir(&self) -> &Path {
-        Path::new(&self.build)
+    pub fn get_root_dir(&self) -> PathBuf {
+        find_project_dir().unwrap_or_else(|| {
+            exit_err("Failed to find project directory");
+        })
+    }
+
+    pub fn get_build_dir(&self) -> PathBuf {
+        self.get_root_dir().join(&self.build)
     }
 
     pub fn get_temp_dir(&self) -> PathBuf {
         self.get_build_dir().join("temp")
+    }
+
+    pub fn get_source_dir(&self) -> PathBuf {
+        self.get_root_dir().join(&self.source)    
     }
 
     pub fn is_default(&self) -> bool {
@@ -297,15 +307,13 @@ pub fn find_project_dir() -> Option<PathBuf> {
 }
 
 pub fn get() -> ProjectConfig {
-    let path = Path::new(PROJECT_FILE);
+    let path = find_project_config().unwrap_or_else(|| {
+        exit_err(format!("Could not find {} in the current or parent directories.", PROJECT_FILE));
+    });
 
-    if !path.exists() {
-        exit_err(format!("Project config '{}' doesn't exist in the current directory.", path.display()));
-    }
-
-    let string = match std::fs::read_to_string(path) {
+    let string = match std::fs::read_to_string(&path) {
         Ok(string) => string,
-        Err(err) => exit_err(format!("Failed to open '{}': {}", path.display(), err)) 
+        Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)) 
     };
 
     let parsed = match ProjectConfig::parse_str(string.as_str()) {

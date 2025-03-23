@@ -151,8 +151,6 @@ pub fn gen_module() -> String {
     format!("{}\n{}\n{}\n\n", header, res, "-".repeat(header.len()))
 }
 
-
-
 pub fn get_target_by_string<'a>(name: String) -> BuildTarget<'a> {
     for target in get_targets() {
         if target.name == name {
@@ -350,15 +348,18 @@ fn build_virtual() {
 
 fn build_love() {
     let config = project_config::get();
-    let output = Path::new(config.directories.build.as_str()).join(config.package.name + ".love");
+    let src = config.directories.get_source_dir();
+    let build = config.directories.get_build_dir();
     let temp = config.directories.get_temp_dir();
 
+    let output = build.join(config.package.name + ".love");
+    
     let ignored = vec![Path::new("conf.lua")];
 
-    actions::parse_all(Path::new(&project_config::get().directories.source));
-    actions::archive_with_ignore(Path::new(config.directories.source.as_str()), &output, ignored);
+    actions::parse_all(&src);
+    actions::archive_with_ignore(&src, &output, ignored);
 
-    let in_conf_path = Path::new(&config.directories.source).join("conf.lua");
+    let in_conf_path = src.join("conf.lua");
     let out_conf_path = temp.join("conf.lua");
 
     let mut buf: Vec<u8> = Vec::new();
@@ -383,10 +384,10 @@ fn build_linux() {
     let pkg_name = project_conf.package.name;
 
     // Paths
-    let build_dir = Path::new(&project_conf.directories.build);
+    let build_dir = project_conf.directories.get_build_dir();
     let temp = project_conf.directories.get_temp_dir();
 
-    let love = Path::new(project_conf.directories.build.as_str()).join(format!("{}.love", &pkg_name));
+    let love = build_dir.join(format!("{}.love", &pkg_name));
 
     let love_app_img = deps::get_dep("love-linux").get_path();
     let app_img = build_dir.join(format!("{}.AppImage", &pkg_name));

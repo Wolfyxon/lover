@@ -207,7 +207,7 @@ pub fn archive_with_ignore(source: &Path, output: &Path, ignored: Vec<&Path>) {
             continue
         }
 
-        let out_path = PathBuf::from_iter(path.components().skip(1));
+        let out_path = PathBuf::from_iter(path.components().skip(source.components().count()));
         let mut file = File::open(path).unwrap();
             
         file.read_to_end(&mut buffer).unwrap();
