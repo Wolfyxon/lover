@@ -3,13 +3,11 @@
 pkgname=lover-git
 pkgdesc="Love2D build system and runner written in Rust"
 url="https://github.com/Wolfyxon/lover"
-license=("LGPL-2.1")
+license=("LGPL-2.1-only")
 pkgrel=1
 pkgver=2.0.r6.g2c1127f
 depends=("openssl" "xz" "bzip2" "gcc-libs" "glibc")
-optdepends=(
-    "wine": "RCEdit support"
-)
+optdepends=("wine: RCEdit support")
 makedepends=("cargo" "git")
 arch=("x86_64")
 options=(!debug !lto)
