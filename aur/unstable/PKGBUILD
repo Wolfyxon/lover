@@ -4,12 +4,12 @@ pkgname=lover-git
 pkgdesc="Love2D build system and runner written in Rust"
 url="https://github.com/Wolfyxon/lover"
 pkgrel=1
-pkgver=2.0.r5.g40518d5
+pkgver=2.0.r6.g2c1127f
 depends=("openssl" "xz" "bzip2" "zstd" "gcc-libs" "glibc")
 makedepends=("cargo" "git")
 arch=("x86_64")
 options=(!debug !lto)
-source=("lover-git::git+$url.git")
+source=("$pkgname::git+$url.git")
 sha256sums=("SKIP")
 
 prepare() {
