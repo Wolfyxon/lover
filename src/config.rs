@@ -6,6 +6,9 @@ use crate::console::exit_err;
 
 #[derive(Deserialize)]
 pub struct Config {
+    #[serde(default = "Config::default_verbose_logging")]
+    pub verbose_logging: bool,
+
     #[serde(default = "Build::default")]
     pub build: Build,
 
@@ -19,6 +22,7 @@ pub struct Config {
 impl Config {
     pub fn default() -> Self {
         Config {
+            verbose_logging: Self::default_verbose_logging(),
             build: Build::default(),
             run: Run::default(),
             software: Software::default()
@@ -27,6 +31,10 @@ impl Config {
 
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(string)
+    }
+
+    fn default_verbose_logging() -> bool {
+        false
     }
 }
 

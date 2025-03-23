@@ -3,9 +3,12 @@ use std::process::exit;
 use ansi_term::Style;
 use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue, Purple};
 
+use crate::config;
+
 pub struct CommandLineSettings {
     pub args: Vec<String>,
-    pub flags: Vec<String>
+    pub flags: Vec<String>,
+    pub verbose: bool,
 }
 
 impl CommandLineSettings {
@@ -62,6 +65,8 @@ impl<'a> ProgressBar<'a> {
 }
 
 pub fn get_command_line_settings() -> CommandLineSettings {
+    let conf = config::get();
+
     let mut args: Vec<String> = Vec::new();
     let mut flags: Vec<String> = Vec::new();
 
@@ -80,9 +85,12 @@ pub fn get_command_line_settings() -> CommandLineSettings {
         }
     }
 
+    let verbose_flag = (&flags).contains(&"--verbose".to_string());
+
     CommandLineSettings {
         args: args,
-        flags: flags
+        flags: flags,
+        verbose: conf.verbose_logging || verbose_flag
     }
 }
 
