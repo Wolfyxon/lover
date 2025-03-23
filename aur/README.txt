@@ -1,0 +1,1 @@
+This a temporary folder for PKGBUILD files before I submit Lover to the AUR

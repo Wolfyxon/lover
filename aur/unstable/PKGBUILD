@@ -1,0 +1,32 @@
+# Maintainer: Wolfyxon <wolfyxon@gmail.com>
+
+pkgname=lover-git
+pkgdesc="Love2D build system and runner written in Rust"
+url="https://github.com/Wolfyxon/lover"
+pkgver=2.0
+pkgrel=1
+depends=("openssl" "xz" "bzip2" "zstd" "gcc-libs" "glibc")
+makedepends=("cargo" "git")
+arch=("x86_64")
+options=(!debug !lto)
+source=("lover-git::git+$url.git")
+sha256sums=("SKIP")
+
+prepare() {
+    export RUSTUP_TOOLCHAIN=stable
+    
+    cd $srcdir/$pkgname
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    
+    cd $srcdir/$pkgname
+    cargo build --frozen --release --all-features
+}
+
+package() {
+	install -Dm755 $srcdir/$pkgname/target/release/lover $pkgdir/usr/bin/lover
+}
