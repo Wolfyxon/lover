@@ -284,6 +284,18 @@ pub fn find_project_config() -> Option<PathBuf> {
     }
 }
 
+pub fn find_project_dir() -> Option<PathBuf> {
+    match find_project_config() {
+        Some(path) => {
+            match path.parent() {
+                Some(parent) => Some(parent.to_path_buf()),
+                None => None
+            }
+        },
+        None => None
+    }
+}
+
 pub fn get() -> ProjectConfig {
     let path = Path::new(PROJECT_FILE);
 
