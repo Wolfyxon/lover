@@ -150,6 +150,24 @@ pub fn exit_err(message: impl Into<String>) -> ! {
     exit(1);
 }
 
+pub fn print_verbose(settings: &CommandLineSettings, message: impl Into<String>) {
+    if settings.verbose {
+        println!("{}", message.into());
+    }
+}
+
+pub fn print_step_verbose(settings: &CommandLineSettings, message: impl Into<String>) {
+    if settings.verbose {
+        print_step(message);
+    }
+}
+
+pub fn print_success_verbose(settings: &CommandLineSettings, message: impl Into<String>) {
+    if settings.verbose {
+        print_success(message);
+    }
+}
+
 pub fn print_warn(message: impl Into<String>) {
     println!("{} {}", Style::new().fg(Yellow).bold().paint("Warning:"), message.into());
 }
