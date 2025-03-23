@@ -89,7 +89,7 @@ pub fn setup() {
     println!("You'll be asked a few questions for your project settings and then everything will be set up for you.");
     println!("If a question has '(default: ...)' or '(optional)', just press enter enter if you don't want to change it.");
     println!("Use ^C to abort (press Ctr+C in your terminal)");
-    print_note("All settings can be changed at any time you want in the lover.toml file.");
+    print_note(format!("All settings can be changed at any time you want in the {} file.", project_config::PROJECT_FILE));
     println!();
 
     setup_init();
@@ -111,7 +111,7 @@ pub fn setup_init() {
     project.package.description = input("Description (optional): ");
 
     let project_string = toml::to_string_pretty(&project).expect("Serialization failed");
-    let config_path = path.join("lover.toml");
+    let config_path = path.join(project_config::PROJECT_FILE);
 
     fs::write(config_path, project_string).unwrap_or_else(|err| {
         exit_err(format!("Failed to create project config: {err}"));
