@@ -70,10 +70,9 @@ pub fn execute_with_env(command: &str, args: Vec<String>, env: HashMap<String, S
         pre_run.stdout(Stdio::null());
     }
 
-    let status = match pre_run.status() {
-        Ok(status) => status,
-        Err(err) =>  exit_err(format!("Failed to execute command: {}", err)) 
-    };
+    let status = pre_run.status().unwrap_or_else(|err| {
+        exit_err(format!("Failed to execute command: {}", err)) 
+    });
     
     let exit_code = status.code().unwrap();
 
@@ -163,25 +162,22 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
     let archive_file = files::open_rw(archive_path);
     let mut file = files::open(file_path);
 
-    let mut zip = match zip::ZipWriter::new_append(archive_file) {
-        Ok(zip) => zip,
-        Err(err) => exit_err(format!("Failed to open zip: {}", err))
-    };
+    let mut zip = zip::ZipWriter::new_append(archive_file).unwrap_or_else(|err| {
+        exit_err(format!("Failed to open zip: {}", err));
+    });
 
     print_step(format!("Adding {} to {}", file_path.to_str().unwrap(), archive_path.to_str().unwrap()));
 
     let mut buf: Vec<u8> = Vec::new();
     file.read_to_end(&mut buf).unwrap();
 
-    match zip.start_file_from_path(&inner_path, SimpleFileOptions::default()) {
-        Ok(()) => {},
-        Err(err) => exit_err(format!("Failed to start file '{}': {}", &inner_path.to_str().unwrap(), err))
-    };
+    zip.start_file_from_path(&inner_path, SimpleFileOptions::default()).unwrap_or_else(|err| {
+        exit_err(format!("Failed to start file '{}': {}", &inner_path.to_str().unwrap(), err))
+    });
 
-    match zip.write_all(&buf) {
-        Ok(()) => {},
-        Err(err) => exit_err(format!("Failed to write to zip: {}", err))
-    };
+    zip.write_all(&buf).unwrap_or_else(|err| {
+        exit_err(format!("Failed to write to zip: {}", err));
+    });
 }
 
 pub fn archive_with_ignore(source: &Path, output: &Path, ignored: Vec<&Path>) {
@@ -236,10 +232,9 @@ pub fn extract(from_zip: &Path, to_dir: &Path) {
 
     let zip_file = files::open(from_zip);
 
-    let mut archive = match ZipArchive::new(zip_file) {
-        Ok(archive) => archive,
-        Err(err) => exit_err(format!("ZIP failed for '{}': {}", from_zip.to_str().unwrap(), err))
-    };
+    let mut archive = ZipArchive::new(zip_file).unwrap_or_else(|err| {
+        exit_err(format!("ZIP failed for '{}': {}", from_zip.to_str().unwrap(), err))
+    });
 
     let archive_len = archive.len();
 
@@ -249,11 +244,10 @@ pub fn extract(from_zip: &Path, to_dir: &Path) {
     bar.update(0);
 
     for i in 0..archive_len {
-        let mut file = match archive.by_index(i) {
-            Ok(file) => file,
-            Err(err) => exit_err(format!("Failed to get file at index {} of '{}': {}", i, from_zip.to_str().unwrap(), err))
-        };
-        
+        let mut file = archive.by_index(i).unwrap_or_else(|err| {
+            exit_err(format!("Failed to get file at index {} of '{}': {}", i, from_zip.to_str().unwrap(), err));
+        });
+
         let path = match file.enclosed_name() {
             Some(path) => {
                 PathBuf::from(path.file_name().unwrap())
@@ -290,18 +284,15 @@ pub fn extract(from_zip: &Path, to_dir: &Path) {
         loop {
             let mut buf: [u8; 1024] = [0; 1024];
             
-            let bytes_read = match file.read(&mut buf) {
-                Ok(bytes_read) => bytes_read,
-                Err(err) =>  exit_err(format!("Read failed: {}", err))
-            };
+            let bytes_read = file.read(&mut buf).unwrap_or_else(|err| {
+                exit_err(format!("Read failed: {}", err))
+            });
     
             if bytes_read == 0 { break; }
     
-            let write_res = out_file.write_all(&buf[..bytes_read]);
-    
-            if write_res.is_err() {
-                exit_err(format!("Write failed: {}", write_res.err().unwrap()));
-            }
+            out_file.write_all(&buf[..bytes_read]).unwrap_or_else(|err| {
+                exit_err(format!("Write failed: {}", err));
+            });
         }
 
         bar.update(i + 1);
@@ -317,10 +308,9 @@ pub fn append_file(from: &Path, to: &Path) {
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
         
-        let bytes_read = match from_file.read(&mut buf) {
-            Ok(bytes_read) => bytes_read,
-            Err(err) =>  exit_err(format!("Read failed: {}", err))
-        };
+        let bytes_read = from_file.read(&mut buf).unwrap_or_else(|err| {
+            exit_err(format!("Read failed: {}", err));
+        });
 
         if bytes_read == 0 { break; }
 
