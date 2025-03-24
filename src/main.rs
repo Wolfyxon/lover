@@ -132,6 +132,11 @@ impl<'a> CommandFlag<'a> {
 }
 
 fn main() {
+    #[cfg(target_os = "windows")]
+    ansi_term::enable_ansi_support().unwrap_or_else(|err_code| {
+        print_warn(format!("Failed to enable ANSI color codes: {}", err_code));
+    });
+
     let cl_settings = get_command_line_settings();
     let alias_res = cl_settings.get_command_alias();
 
