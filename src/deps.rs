@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{confirm_or_exit, exit_err, print_note, print_step, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
+use crate::{config, console::{self, confirm_or_exit, exit_err, print_note, print_step, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
 
 pub enum RepoDownload<'a> {
     LatestRelease(&'a str), // file pattern
@@ -245,9 +245,9 @@ pub fn install(names: Vec<String>) {
     let deps = get_deps_by_strings(names);
     let mut downloads: Vec<Downloadable> = Vec::new();
 
-    print_step("Fetching dependencies");
+    let mut fetch_bar = ProgressBar::new(deps.len());
+    fetch_bar.set_prefix(format!("{} Fetching dependencies", console::get_step_prefix()));
 
-    let fetch_bar = ProgressBar::new(deps.len());
     let mut fetch_progress: usize = 0;
 
     fetch_bar.update(fetch_progress);
