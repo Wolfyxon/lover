@@ -184,7 +184,10 @@ pub fn print_significant(prefix: impl Into<String>, message: impl Into<String>) 
     println!("{} {}", Style::new().fg(Cyan).bold().paint(format!("> {}:", prefix.into())), message.into())
 }
 
+pub fn get_step_prefix() -> String {
+    Style::new().fg(Blue).bold().paint(">>").to_string()
+}
+
 pub fn print_step(message: impl Into<String>) {
-    let prefix = Style::new().fg(Blue).bold().paint(">>");
-    println!("{} {}", prefix, message.into())
+    println!("{} {}", get_step_prefix(), message.into())
 }
