@@ -5,6 +5,7 @@ use std::path::{Path, PathBuf};
 use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
+use crate::actions::Archiver;
 use crate::{actions, appimage, config, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_success, print_warn};
 use crate::deps::Dependency;
@@ -337,7 +338,10 @@ pub fn build_windows_zip(arch: Arch) {
     };
 
     if conf.build.zip {
-        actions::archive(&path, &build_dir.join(format!("{}_{}.zip", pkg_name, &name)));
+        Archiver::new(path)
+            .add_progress_bar("Archiving build files")
+            .archive(build_dir.join(format!("{}_{}.zip", pkg_name, &name)))
+        ;
     }
     
 }
@@ -354,10 +358,12 @@ fn build_love() {
 
     let output = build.join(config.package.name + ".love");
     
-    let ignored = vec![Path::new("conf.lua")];
-
     actions::parse_all(&src);
-    actions::archive_with_ignore(&src, &output, ignored);
+
+    Archiver::new(&src)
+        .add_progress_bar("Building .love file")
+        .ignore_file(Path::new("conf.lua"))
+        .archive(&output);
 
     let in_conf_path = src.join("conf.lua");
     let out_conf_path = temp.join("conf.lua");
