@@ -21,12 +21,12 @@ impl CommandLineSettings {
     }
 }
 
-pub struct ProgressBar<'a> {
+pub struct ProgressBar {
     pub max: usize,
-    pub prefix: Option<&'a str>
+    pub prefix: Option<String>
 }
 
-impl<'a> ProgressBar<'a> {
+impl ProgressBar {
     pub fn new(max: usize) -> Self {
         ProgressBar {
             max: max,
@@ -34,8 +34,8 @@ impl<'a> ProgressBar<'a> {
         }
     }
 
-    pub fn set_prefix(&mut self, prefix: &'a str) {
-        self.prefix = Some(prefix);
+    pub fn set_prefix(&mut self, prefix: impl Into<String>) {
+        self.prefix = Some(prefix.into());
     }
 
     pub fn update(&self, progress: usize) {
@@ -50,7 +50,7 @@ impl<'a> ProgressBar<'a> {
         let fill = "=".repeat( (amt * width) as usize );
         let spaces = " ".repeat( (width - amt * width) as usize );
 
-        print!("\r{} [{}{}] {}/{}", self.prefix.unwrap_or(""), fill, spaces, progress, self.max);
+        print!("\r{} [{}{}] {}/{}", self.prefix.clone().unwrap_or("".to_string()), fill, spaces, progress, self.max);
 
         let flush_res = stdout().flush();
 
