@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
-use crate::actions::Archiver;
+use crate::actions::{Archiver, Extractor};
 use crate::{actions, appimage, config, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_success, print_warn};
 use crate::deps::Dependency;
@@ -298,7 +298,9 @@ pub fn build_windows_zip(arch: Arch) {
 
     let love = build_dir.join(format!("{}.love", &pkg_name));
 
-    actions::extract(zip_path, path.as_path());
+    Extractor::new(zip_path)
+        .add_progress_bar("Extracting Windows Love2D files")
+        .extract(&path);
 
     let exe_src = path.join("love.exe");
 
