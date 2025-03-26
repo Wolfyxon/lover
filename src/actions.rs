@@ -37,9 +37,9 @@ pub struct Archiver {
 }
 
 impl Archiver {
-    pub fn new(dir: PathBuf) -> Self {
+    pub fn new(dir: impl Into<PathBuf>) -> Self {
         Self {
-            dir: dir,
+            dir: dir.into(),
             progress_bar: None,
             ignored_files: Vec::new()
         }
@@ -59,16 +59,17 @@ impl Archiver {
         self
     }
 
-    pub fn ignore_file(&mut self, file: PathBuf) -> &mut Self {
-        self.ignored_files.push(file);
+    pub fn ignore_file(&mut self, file: impl Into<PathBuf>) -> &mut Self {
+        self.ignored_files.push(file.into());
         
         self
     }
 
-    pub fn archive(&mut self, output: PathBuf) {
-        files::create_dir(&output.parent().unwrap());
+    pub fn archive(&mut self, output: impl Into<PathBuf>) {
+        let output_dir = output.into();
+        files::create_dir(&output_dir.parent().unwrap());
 
-        let output_file = files::create(&output);
+        let output_file = files::create(&output_dir);
         let tree: Vec<PathBuf> = get_file_tree(&self.dir);
         let options = SimpleFileOptions::default();
         let mut zip = zip::ZipWriter::new(output_file);
@@ -81,7 +82,7 @@ impl Archiver {
     
         print_step_verbose(
             &get_command_line_settings(), 
-            format!("Archiving '{}' into '{}'...", &self.dir.to_str().unwrap(), output.to_str().unwrap())
+            format!("Archiving '{}' into '{}'...", &self.dir.to_str().unwrap(), output_dir.to_str().unwrap())
         );
         
         for path in tree {
