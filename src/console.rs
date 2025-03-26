@@ -49,8 +49,9 @@ impl ProgressBar {
 
         let fill = "=".repeat( (amt * width) as usize );
         let spaces = " ".repeat( (width - amt * width) as usize );
+        let prefix = self.prefix.clone().unwrap_or("".to_string());
 
-        print!("\r{} [{}{}] {}/{}", self.prefix.clone().unwrap_or("".to_string()), fill, spaces, progress, self.max);
+        print!("\r{} [{}{}] {}/{}", prefix, fill, spaces, progress, self.max);
 
         let flush_res = stdout().flush();
 
