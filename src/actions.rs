@@ -116,6 +116,115 @@ impl Archiver {
     }
 }
 
+pub struct Extractor {
+    source: PathBuf,
+    progress_bar: Option<ProgressBar>
+}
+
+impl Extractor {
+    pub fn new(source: impl Into<PathBuf>) -> Self {
+        Self {
+            source: source.into(),
+            progress_bar: None
+        }
+    }
+
+    pub fn add_progress_bar(&mut self, prefix: impl Into<String>) -> &mut Self {
+        let mut bar = ProgressBar::new(1);
+        bar.set_prefix(format!("{} {}", console::get_step_prefix(), prefix.into()));
+        
+        self.progress_bar = Some(bar);
+        self
+    }
+
+    pub fn extract(&mut self, output: impl Into<PathBuf>) {
+        let output_dir = output.into();
+
+        files::create_dir(&output_dir);
+
+        let zip_file = files::open(&self.source);
+        let source_str = &self.source.to_str().unwrap();
+        let dir_str = &output_dir.to_str().unwrap();
+    
+        let mut archive = ZipArchive::new(zip_file).unwrap_or_else(|err| {
+            exit_err(format!("ZIP failed for '{}': {}", source_str, err))
+        });
+    
+        let archive_len = archive.len();
+    
+        print_step_verbose(
+            &get_command_line_settings(),
+            format!("Extracting '{}' to '{}'...", source_str, dir_str)
+        );
+        
+        self.progress_bar.as_mut().map(|bar| {
+            bar.max = archive_len;
+            bar.update(0);
+        });
+    
+        for i in 0..archive_len {
+            let mut file = archive.by_index(i).unwrap_or_else(|err| {
+                exit_err(format!("Failed to get file at index {} of '{}': {}", i, source_str, err));
+            });
+    
+            let path = match file.enclosed_name() {
+                Some(path) => {
+                    PathBuf::from(path.file_name().unwrap())
+    
+                    // Enable if nested files are needed.
+                    /*
+                    let mut res = path.to_owned();
+                    let components = path.components();
+                    let cmp_len = components.to_owned().count();
+    
+                    if cmp_len > 1 {
+                        let mut new_path = PathBuf::new();
+                        let mut skipped = false;
+    
+                        for cmp in components {
+                            if !skipped {
+                                skipped = true;
+                                continue;
+                            }
+    
+                            new_path = new_path.join(cmp);
+                        }
+    
+                        res = new_path;
+                    }
+    
+                    res*/
+                },
+                None => exit_err(format!("Failed to get path of file at index {} of '{}'", i, source_str))
+            };
+    
+            let mut out_file = files::create(output_dir.join(path).as_path());
+            
+            loop {
+                let mut buf: [u8; 1024] = [0; 1024];
+                
+                let bytes_read = file.read(&mut buf).unwrap_or_else(|err| {
+                    exit_err(format!("Read failed: {}", err))
+                });
+        
+                if bytes_read == 0 { break; }
+        
+                out_file.write_all(&buf[..bytes_read]).unwrap_or_else(|err| {
+                    exit_err(format!("Write failed: {}", err));
+                });
+            }
+    
+            self.progress_bar.as_mut().map(|bar| {
+                bar.update(i + 1);
+            });
+        }
+    
+        self.progress_bar.as_mut().map(|bar| {
+            bar.finish();
+        });
+    }
+}
+
 pub fn command_exists(command: &str) -> bool {
     let as_path = Path::new(command);
     
@@ -273,83 +382,6 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
     zip.write_all(&buf).unwrap_or_else(|err| {
         exit_err(format!("Failed to write to zip: {}", err));
     });
-}
-
-pub fn extract(from_zip: &Path, to_dir: &Path) {
-    files::create_dir(to_dir);
-
-    let zip_file = files::open(from_zip);
-
-    let mut archive = ZipArchive::new(zip_file).unwrap_or_else(|err| {
-        exit_err(format!("ZIP failed for '{}': {}", from_zip.to_str().unwrap(), err))
-    });
-
-    let archive_len = archive.len();
-
-    print_step_verbose(
-        &get_command_line_settings(),
-        format!("Extracting '{}' to '{}'...", from_zip.to_str().unwrap(), to_dir.to_str().unwrap())
-    );
-
-    let bar = ProgressBar::new(archive_len);
-    bar.update(0);
-
-    for i in 0..archive_len {
-        let mut file = archive.by_index(i).unwrap_or_else(|err| {
-            exit_err(format!("Failed to get file at index {} of '{}': {}", i, from_zip.to_str().unwrap(), err));
-        });
-
-        let path = match file.enclosed_name() {
-            Some(path) => {
-                PathBuf::from(path.file_name().unwrap())
-
-                // Enable if nested files are needed.
-                /*
-                let mut res = path.to_owned();
-                let components = path.components();
-                let cmp_len = components.to_owned().count();
-
-                if cmp_len > 1 {
-                    let mut new_path = PathBuf::new();
-                    let mut skipped = false;
-
-                    for cmp in components {
-                        if !skipped {
-                            skipped = true;
-                            continue;
-                        }
-
-                        new_path = new_path.join(cmp);
-                    }
-
-                    res = new_path;
-                }
-
-                res*/
-            },
-            None => exit_err(format!("Failed to get path of file at index {} of '{}'", i, from_zip.to_str().unwrap()))
-        };
-
-        let mut out_file = files::create(to_dir.join(path).as_path());
-        
-        loop {
-            let mut buf: [u8; 1024] = [0; 1024];
-            
-            let bytes_read = file.read(&mut buf).unwrap_or_else(|err| {
-                exit_err(format!("Read failed: {}", err))
-            });
-    
-            if bytes_read == 0 { break; }
-    
-            out_file.write_all(&buf[..bytes_read]).unwrap_or_else(|err| {
-                exit_err(format!("Write failed: {}", err));
-            });
-        }
-
-        bar.update(i + 1);
-    }
-
-    bar.finish();
 }
 
 pub fn append_file(from: &Path, to: &Path) {
