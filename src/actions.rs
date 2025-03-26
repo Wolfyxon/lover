@@ -30,6 +30,96 @@ pub enum Context {
     Build
 }
 
+pub struct Archiver {
+    dir: PathBuf,
+    progress_bar: Option<ProgressBar>,
+    ignored_files: Vec<PathBuf>
+}
+
+impl Archiver {
+    pub fn new(dir: PathBuf) -> Self {
+        Self {
+            dir: dir,
+            progress_bar: None,
+            ignored_files: Vec::new()
+        }
+    }
+
+    pub fn add_progress_bar(&mut self, prefix: impl Into<String>) -> &Self {
+        let mut bar = ProgressBar::new(1);
+        bar.set_prefix(prefix);
+        
+        self.progress_bar = Some(bar);
+        self
+    }
+
+    pub fn ignore_files(&mut self, mut files: Vec<PathBuf>) -> &Self {
+        self.ignored_files.append(&mut files);
+
+        self
+    }
+
+    pub fn ignore_file(&mut self, file: PathBuf) -> &Self {
+        self.ignored_files.push(file);
+        
+        self
+    }
+
+    pub fn archive(&mut self, output: PathBuf) {
+        files::create_dir(&output.parent().unwrap());
+
+        let output_file = files::create(&output);
+        let tree: Vec<PathBuf> = get_file_tree(&self.dir);
+        let options = SimpleFileOptions::default();
+        let mut zip = zip::ZipWriter::new(output_file);
+        let mut buffer: Vec<u8> = Vec::new();
+        let mut progress: usize = 0;
+
+        self.progress_bar.as_mut().map(|bar| {
+            bar.max = tree.len();
+        });
+    
+        print_step_verbose(
+            &get_command_line_settings(), 
+            format!("Archiving '{}' into '{}'...", &self.dir.to_str().unwrap(), output.to_str().unwrap())
+        );
+        
+        for path in tree {
+            let mut ignore = false;
+    
+            for ignored_path in &self.ignored_files {
+                if path.as_path() == &self.dir.join(ignored_path) {
+                    ignore = true;
+                    break;
+                }
+            }
+    
+            if ignore {
+                continue
+            }
+    
+            let out_path = PathBuf::from_iter(path.components().skip(self.dir.components().count()));
+            let mut file = File::open(path).unwrap();
+                
+            file.read_to_end(&mut buffer).unwrap();
+            zip.start_file_from_path(out_path, options).unwrap();
+            zip.write_all(&buffer).unwrap();
+    
+            buffer.clear();
+    
+            progress += 1;
+            
+            self.progress_bar.as_mut().map(|bar| {
+                bar.update(progress);
+            });
+        }
+    
+        self.progress_bar.as_mut().map(|bar| {
+            bar.finish();
+        });
+    }
+}
+
 pub fn command_exists(command: &str) -> bool {
     let as_path = Path::new(command);
     
