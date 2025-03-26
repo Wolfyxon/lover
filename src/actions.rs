@@ -45,7 +45,7 @@ impl Archiver {
         }
     }
 
-    pub fn add_progress_bar(&mut self, prefix: impl Into<String>) -> &Self {
+    pub fn add_progress_bar(&mut self, prefix: impl Into<String>) -> &mut Self {
         let mut bar = ProgressBar::new(1);
         bar.set_prefix(prefix);
         
@@ -53,13 +53,13 @@ impl Archiver {
         self
     }
 
-    pub fn ignore_files(&mut self, mut files: Vec<PathBuf>) -> &Self {
+    pub fn ignore_files(&mut self, mut files: Vec<PathBuf>) -> &mut Self {
         self.ignored_files.append(&mut files);
 
         self
     }
 
-    pub fn ignore_file(&mut self, file: PathBuf) -> &Self {
+    pub fn ignore_file(&mut self, file: PathBuf) -> &mut Self {
         self.ignored_files.push(file);
         
         self
