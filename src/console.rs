@@ -40,7 +40,7 @@ impl ProgressBar {
 
     pub fn update(&self, progress: usize) {
         let width = 32.0;
-        let bar_margin: usize = 40;
+        let mut bar_margin: usize = 40;
 
         let mut amt: f32 = 0.0;
 
@@ -50,7 +50,10 @@ impl ProgressBar {
 
         let prefix_len = match &self.prefix {
             Some(prefix) => strip_ansi_escapes::strip(prefix).len(),
-            None => 0
+            None => {
+                bar_margin = 0;
+                0
+            }
         };
 
         let pre_space_size = bar_margin.saturating_sub(prefix_len);
