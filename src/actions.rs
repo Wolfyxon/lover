@@ -52,13 +52,7 @@ impl Archiver {
         self.progress_bar = Some(bar);
         self
     }
-
-    pub fn ignore_files(&mut self, mut files: Vec<PathBuf>) -> &mut Self {
-        self.ignored_files.append(&mut files);
-
-        self
-    }
-
+    
     pub fn ignore_file(&mut self, file: impl Into<PathBuf>) -> &mut Self {
         self.ignored_files.push(file.into());
         
