@@ -52,12 +52,7 @@ impl ProgressBar {
         let prefix = self.prefix.clone().unwrap_or("".to_string());
 
         print!("\r{} [{}{}] {}/{}", prefix, fill, spaces, progress, self.max);
-
-        let flush_res = stdout().flush();
-
-        if flush_res.is_err() {
-            print_warn(format!("Failed to flush stdout: {}", flush_res.err().unwrap()));
-        }
+        flush();
     }
 
     pub fn finish(&self) {
