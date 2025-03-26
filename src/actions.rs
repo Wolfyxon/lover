@@ -16,6 +16,9 @@ use zip::ZipArchive;
 
 use crate::config;
 use crate::console::exit_err;
+use crate::console::get_command_line_settings;
+use crate::console::print_step_verbose;
+use crate::console::print_success_verbose;
 use crate::console::ProgressBar;
 use crate::console::{print_warn, print_success, print_step};
 use crate::files;
@@ -139,7 +142,10 @@ pub fn parse_all(root: &Path) {
         execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
     }
 
-    print_success("Parsing successful");
+    print_success_verbose(
+        &get_command_line_settings(),
+        "Parsing successful"
+    );
 }
 
 pub fn clean(path: &Path) {
@@ -166,7 +172,10 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
         exit_err(format!("Failed to open zip: {}", err));
     });
 
-    print_step(format!("Adding {} to {}", file_path.to_str().unwrap(), archive_path.to_str().unwrap()));
+    print_step_verbose(
+        &get_command_line_settings(), 
+        format!("Adding {} to {}", file_path.to_str().unwrap(), archive_path.to_str().unwrap())
+    );
 
     let mut buf: Vec<u8> = Vec::new();
     file.read_to_end(&mut buf).unwrap();
@@ -191,7 +200,10 @@ pub fn archive_with_ignore(source: &Path, output: &Path, ignored: Vec<&Path>) {
     let mut progress: usize = 0;
     let bar = ProgressBar::new(tree.len());
 
-    print_step(format!("Archiving '{}' into '{}'...", source.to_str().unwrap(), output.to_str().unwrap()));
+    print_step_verbose(
+        &get_command_line_settings(), 
+        format!("Archiving '{}' into '{}'...", source.to_str().unwrap(), output.to_str().unwrap())
+    );
     
     for path in tree {
         let mut ignore = false;
@@ -238,7 +250,10 @@ pub fn extract(from_zip: &Path, to_dir: &Path) {
 
     let archive_len = archive.len();
 
-    print_step(format!("Extracting '{}' to '{}'...", from_zip.to_str().unwrap(), to_dir.to_str().unwrap()));
+    print_step_verbose(
+        &get_command_line_settings(),
+        format!("Extracting '{}' to '{}'...", from_zip.to_str().unwrap(), to_dir.to_str().unwrap())
+    );
 
     let bar = ProgressBar::new(archive_len);
     bar.update(0);
