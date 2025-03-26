@@ -306,7 +306,7 @@ pub fn install(names: Vec<String>) {
         let dep = deps.get(i).unwrap();
         let download = downloads.get_mut(i).unwrap();
 
-        download.download(&dep.get_path(), dep.name);
+        download.download(&dep.get_path(), format!("  {}", dep.name));
     }
 
     print_success("All dependencies successfully installed.");
