@@ -10,11 +10,11 @@ fn get_template_files<'a>() -> Vec<ComponentFile<'a>> {
     vec![
         ComponentFile {
             path: Path::new(".gitignore"),
-            buffer: include_bytes!("template/.gitignore")
+            buffer: include_bytes!("lua/template/.gitignore")
         },
         ComponentFile {
             path: Path::new("src/main.lua"),
-            buffer: include_bytes!("template/src/main.lua")
+            buffer: include_bytes!("lua/template/src/main.lua")
         }
     ]
 }
