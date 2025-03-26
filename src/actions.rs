@@ -280,56 +280,6 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
     });
 }
 
-pub fn archive_with_ignore(source: &Path, output: &Path, ignored: Vec<&Path>) {
-    files::create_dir(output.parent().unwrap());
-
-    let output_file = files::create(output);
-    let tree: Vec<PathBuf> = get_file_tree(source);
-    let options = SimpleFileOptions::default();
-    let mut zip = zip::ZipWriter::new(output_file);
-    let mut buffer: Vec<u8> = Vec::new();
-    let mut progress: usize = 0;
-    let bar = ProgressBar::new(tree.len());
-
-    print_step_verbose(
-        &get_command_line_settings(), 
-        format!("Archiving '{}' into '{}'...", source.to_str().unwrap(), output.to_str().unwrap())
-    );
-    
-    for path in tree {
-        let mut ignore = false;
-
-        for ignored_path in &ignored {
-            if path.as_path() == source.join(ignored_path) {
-                ignore = true;
-                break;
-            }
-        }
-
-        if ignore {
-            continue
-        }
-
-        let out_path = PathBuf::from_iter(path.components().skip(source.components().count()));
-        let mut file = File::open(path).unwrap();
-            
-        file.read_to_end(&mut buffer).unwrap();
-        zip.start_file_from_path(out_path, options).unwrap();
-        zip.write_all(&buffer).unwrap();
-
-        buffer.clear();
-
-        progress += 1;
-        bar.update(progress);
-    }
-
-    bar.finish();
-}
-
-pub fn archive(source: &Path, output: &Path) {
-    archive_with_ignore(source, output, Vec::new());
-}
-
 pub fn extract(from_zip: &Path, to_dir: &Path) {
     files::create_dir(to_dir);
 
