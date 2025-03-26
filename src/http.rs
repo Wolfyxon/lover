@@ -19,7 +19,7 @@ impl<'a> Downloadable {
         }
     }
 
-    pub fn download(&mut self, path: &Path, alias: &str) {
+    pub fn download(&mut self, path: &Path, alias: impl Into<String>) {
         download_response(&mut self.response, path, alias);
     }
 
@@ -66,7 +66,7 @@ pub fn get_request(url: &str) -> Response {
     }
 }
 
-pub fn download_response(response: &mut Response, path: &Path, alias: &str) {
+pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<String>) {
     let mut file = match File::create(path) {
         Ok(file) => file,
         Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)) 
