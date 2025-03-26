@@ -323,18 +323,43 @@ pub fn execute_prime(command: &str, args: Vec<String>, quiet: bool) -> ExitStatu
 
 pub fn parse_all(root: &Path) {
     let parser = config::get().software.luac;
+    let scripts = files::get_file_tree_of_type(root, "lua");
 
     if !command_exists(&parser) {
-        print_warn(format!("'{}' not found. Skipping parse.", &parser));
+        print_warn(format!("'{}' not found. Skipping luac parse.", &parser));
         return;
     }
 
-    print_step("Parsing Lua scripts...");
+    print_step("Checking validity of Lua scripts...");
 
-    let scripts = files::get_file_tree_of_type(root, "lua");
-    
-    for script in scripts {
+    for script in &scripts {
         execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
+    }
+
+    print_step("Checking for deprecated features...");
+
+    let env_repl = get_env_replacement_map();
+
+    for script in &scripts {
+        let mut file = files::open(&script);
+        let mut buf = String::new();
+        let script_path_str = script.to_str().unwrap();
+
+        file.read_to_string(&mut buf).unwrap_or_else(|err| {
+            exit_err(format!("Failed to read buffer of {}: {}", script_path_str, err))
+        });
+
+        let lines: Vec<&str> = buf.lines().collect();
+        
+        for i in 0..lines.len() {
+            let line = lines[i].to_string();
+
+            for (old, new) in &env_repl {
+                if line.contains(old) {
+                    print_warn(format!("{}:{} Use '{}' instead of {}", script_path_str, i + 1, new, old));
+                }
+            }
+        }
     }
 
     print_success_verbose(
