@@ -15,6 +15,7 @@ use zip::write::SimpleFileOptions;
 use zip::ZipArchive;
 
 use crate::config;
+use crate::console;
 use crate::console::exit_err;
 use crate::console::get_command_line_settings;
 use crate::console::print_step_verbose;
@@ -47,12 +48,12 @@ impl Archiver {
 
     pub fn add_progress_bar(&mut self, prefix: impl Into<String>) -> &mut Self {
         let mut bar = ProgressBar::new(1);
-        bar.set_prefix(prefix);
+        bar.set_prefix(format!("{} {}", console::get_step_prefix(), prefix.into()));
         
         self.progress_bar = Some(bar);
         self
     }
-    
+
     pub fn ignore_file(&mut self, file: impl Into<PathBuf>) -> &mut Self {
         self.ignored_files.push(file.into());
         
