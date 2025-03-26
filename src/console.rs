@@ -155,12 +155,6 @@ pub fn exit_err(message: impl Into<String>) -> ! {
     exit(1);
 }
 
-pub fn print_verbose(settings: &CommandLineSettings, message: impl Into<String>) {
-    if settings.verbose {
-        println!("{}", message.into());
-    }
-}
-
 pub fn print_step_verbose(settings: &CommandLineSettings, message: impl Into<String>) {
     if settings.verbose {
         print_step(message);
