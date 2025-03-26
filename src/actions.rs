@@ -405,6 +405,17 @@ pub fn append_file(from: &Path, to: &Path) {
     }
 }
 
+pub fn get_env_replacement_map() -> HashMap<String, String> {
+    let mut map: HashMap<String, String> = HashMap::new();
+
+    map.insert("LOVER_NAME".to_string(), "LOVER_PKG_VERSION".to_string());
+    map.insert("LOVER_VERSION".to_string(), "LOVER_PKG_VERSION".to_string());
+    map.insert("LOVER_AUTHOR".to_string(), "LOVER_PKG_AUTHOR".to_string());
+    map.insert("LOVER_DESCRIPTION".to_string(), "LOVER_PKG_DESCRIPTION".to_string());
+    
+    map
+}
+
 pub fn get_env_map(context: Context) -> HashMap<String, String> {
     let mut map: HashMap<String, String> = HashMap::new();
 
