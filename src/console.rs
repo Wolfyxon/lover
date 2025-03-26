@@ -40,6 +40,7 @@ impl ProgressBar {
 
     pub fn update(&self, progress: usize) {
         let width = 32.0;
+        let bar_margin: usize = 40;
 
         let mut amt: f32 = 0.0;
 
@@ -47,11 +48,19 @@ impl ProgressBar {
             amt = progress as f32 / self.max as f32;
         }
 
+        let prefix_len = match &self.prefix {
+            Some(prefix) => strip_ansi_escapes::strip(prefix).len(),
+            None => 0
+        };
+
+        let pre_space_size = bar_margin.saturating_sub(prefix_len);
+
         let fill = "=".repeat( (amt * width) as usize );
         let spaces = " ".repeat( (width - amt * width) as usize );
+        let pre_space = " ".repeat(pre_space_size);
         let prefix = self.prefix.clone().unwrap_or("".to_string());
-
-        print!("\r{} [{}{}] {}/{}", prefix, fill, spaces, progress, self.max);
+        
+        print!("\r{} {} [{}{}] {}/{}", prefix, pre_space, fill, spaces, progress, self.max);
         flush();
     }
 
