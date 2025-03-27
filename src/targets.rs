@@ -5,7 +5,7 @@ use std::path::{Path, PathBuf};
 use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
-use crate::actions::{Archiver, Extractor};
+use crate::actions::{Archiver, CommandRunner, Extractor};
 use crate::{actions, appimage, config, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_success, print_warn};
 use crate::deps::Dependency;
@@ -334,7 +334,11 @@ pub fn build_windows_zip(arch: Arch) {
             rcedit_add_icon(&mut args, &pkg, &path);
 
 
-            actions::execute_wine(rcedit.to_str().unwrap(), args, false);
+            CommandRunner::new(rcedit.to_str().unwrap())
+                .add_args(args)
+                .set_quiet(true)
+                .to_wine()
+                .run();
         },
         Err(err) => print_warn(format!("EXE info could not be applied: {}\nPlease check your {}", err, config::get_config_path().to_str().unwrap())),
     };

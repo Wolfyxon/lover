@@ -1,4 +1,5 @@
 use std::{path::Path, process::exit};
+use actions::CommandRunner;
 use ansi_term::Style;
 use ansi_term::Color::{Blue, Yellow, Green};
 
@@ -433,11 +434,15 @@ fn cmd_run(_command: &Command) {
     let config = &config::get();
     let env = actions::get_env_map(actions::Context::Run);
 
+    let mut cmd = CommandRunner::new(&config.software.love);
+    cmd.envs(&env);
+    cmd.add_args(args);
+
     if config.run.prime || cmd_settings.has_flag("prime") {
-        actions::execute_prime_with_env(&config.software.love, args, env, false);
-    } else {
-        actions::execute_with_env(&config.software.love, args, env, false);
+        cmd.prime();
     }
+
+    cmd.run();
 }
 
 fn cmd_parse(_command: &Command) {
