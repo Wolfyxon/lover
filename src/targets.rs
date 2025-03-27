@@ -6,8 +6,8 @@ use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
 use crate::actions::{Archiver, CommandRunner, Extractor};
-use crate::{actions, appimage, config, files};
-use crate::console::{exit_err, print_note, print_significant, print_step, print_success, print_warn};
+use crate::{actions, appimage, config, console, files};
+use crate::console::{exit_err, print_note, print_significant, print_step, print_step_verbose, print_success, print_warn};
 use crate::deps::Dependency;
 use crate::project_config::{self, Package};
 use crate::deps;
@@ -288,6 +288,7 @@ pub fn build_windows_zip(arch: Arch) {
     let name = format!("win{}", arch.get_num_suffix());
 
     let conf = config::get();
+    let cmd_conf = console::get_command_line_settings();
     let project_conf = project_config::get();
     let pkg = project_conf.package;
     let pkg_name = &pkg.name;
@@ -314,7 +315,7 @@ pub fn build_windows_zip(arch: Arch) {
 
     print_success("The EXE should now be usable, even if something fails.");
 
-    print_step("Renaming the EXE");
+    print_step_verbose(&cmd_conf, "Renaming the EXE");
 
     let exe_out = path.join(pkg_name.to_owned() + ".exe");
     let rename_res = fs::rename(&exe_src, &exe_out);
@@ -333,6 +334,7 @@ pub fn build_windows_zip(arch: Arch) {
             args.append(&mut pkg.get_rcedit_args());
             rcedit_add_icon(&mut args, &pkg, &path);
 
+            print_step("Applying info with RCEdit");
 
             CommandRunner::new(rcedit.to_str().unwrap())
                 .add_args(args)
