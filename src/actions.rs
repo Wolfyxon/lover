@@ -328,13 +328,18 @@ impl CommandRunner {
 
         if !out.status.success() {
             if quiet {
-                let output_text = String::from_utf8(out.stdout).unwrap_or_else(|err| {
+                let stdout = String::from_utf8(out.stdout).unwrap_or_else(|err| {
                     print_warn(format!("Failed to decode stdout utf8: {}", err));
                     "".to_string()
                 });
 
+                let stderr = String::from_utf8(out.stderr).unwrap_or_else(|err| {
+                    print_warn(format!("Failed to decode stderr utf8: {}", err));
+                    "".to_string()
+                });
+
                 println!("{} {}", Self::get_exe_prefix(), cmd_str);
-                println!("{}", output_text);
+                println!("{}{}", stdout, stderr);
             }
 
             exit_err(format!("Command failed with code: {}", exit_code_text))
