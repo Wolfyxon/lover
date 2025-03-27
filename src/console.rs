@@ -93,7 +93,7 @@ pub fn get_command_line_settings() -> CommandLineSettings {
         }
     }
 
-    let verbose_flag = (&flags).contains(&"--verbose".to_string());
+    let verbose_flag = (&flags).contains(&"verbose".to_string());
 
     CommandLineSettings {
         args: args,
