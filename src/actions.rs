@@ -455,7 +455,10 @@ pub fn parse_all(root: &Path) {
     print_step("Checking validity of Lua scripts...");
 
     for script in &scripts {
-        execute(&parser, vec!["-p".to_string(), script.to_str().unwrap().to_string()], true);
+        CommandRunner::new(&parser)
+            .add_args(vec!["-p", script.to_str().unwrap()])
+            .set_quiet(true)
+            .run();
     }
 
     print_step("Checking for deprecated features...");
