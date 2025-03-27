@@ -256,6 +256,11 @@ impl CommandRunner {
         self
     }
 
+    pub fn set_quiet(&mut self, state: bool) -> &mut Self {
+        self.quiet = state;
+        self
+    }
+
     pub fn prime(&mut self) -> &mut Self {
         self.set_env("__NV_PRIME_RENDER_OFFLOAD", "1");
         self.set_env("__GLX_VENDOR_LIBRARY_NAME", "nvidia");
