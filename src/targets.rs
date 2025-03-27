@@ -369,7 +369,7 @@ fn build_love() {
     actions::parse_all(&src);
 
     Archiver::new(&src)
-        .add_progress_bar("Building .love file")
+        .add_progress_bar("Archiving game assets")
         .ignore_file(Path::new("conf.lua"))
         .archive(&output);
 
@@ -394,6 +394,7 @@ fn build_love() {
 
 fn build_linux() {
     let project_conf = project_config::get();
+    let cmd_conf = console::get_command_line_settings();
 
     let pkg_name = project_conf.package.name;
 
@@ -413,11 +414,11 @@ fn build_linux() {
     let love_inner_bin = Path::new("/bin/love");
 
     // Extracting squashfs-root
-    print_step("Extracting Love2D AppImage SquashFS");
+    print_step_verbose(&cmd_conf,"Extracting Love2D AppImage SquashFS");
 
     appimage::extract_squashfs(&love_app_img, &ext_squashfs);
 
-    print_step("Extracting LOVE binary");
+    print_step_verbose(&cmd_conf, "Extracting LOVE binary");
     appimage::extract_squashfs_file(&ext_squashfs, love_inner_bin, &love_bin);
     
     // Appending .love to the love binary
@@ -425,11 +426,11 @@ fn build_linux() {
     actions::append_file(love.as_path(), love_bin.as_path());
 
     // Injecting into SquashFS
-    print_step("Replacing the LOVE binary in SquashFS");
+    print_step_verbose(&cmd_conf, "Replacing the LOVE binary in SquashFS");
     appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin, &new_squashfs);
 
     // Cloning LOVE AppImage
-    print_step("Cloning LOVE AppImage");
+    print_step_verbose(&cmd_conf, "Cloning LOVE AppImage");
 
     match std::fs::copy(&love_app_img, &app_img) {
         Ok(_) => {},
@@ -437,7 +438,7 @@ fn build_linux() {
     }
 
     // Embedding SquashFS to the AppImage
-    print_step("Embedding SquashFS into the AppImage");
+    print_step("Embedding created SquashFS into AppImage");
     appimage::embed_squashfs(&app_img, &new_squashfs);
 }
 
