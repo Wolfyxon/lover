@@ -1,13 +1,9 @@
 use std::collections::HashMap;
-use std::fmt::format;
 use std::io::Read;
-use std::io::Stdout;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::process::Command;
-use std::process::ExitStatus;
-use std::process::Output;
 use std::process::Stdio;
 use std::time::Duration;
 use std::time::SystemTime;
