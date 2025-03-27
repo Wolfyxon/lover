@@ -1,10 +1,13 @@
 use std::collections::HashMap;
+use std::fmt::format;
 use std::io::Read;
+use std::io::Stdout;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::process::Command;
 use std::process::ExitStatus;
+use std::process::Output;
 use std::process::Stdio;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -222,6 +225,115 @@ impl Extractor {
         self.progress_bar.as_mut().map(|bar| {
             bar.finish();
         });
+    }
+}
+
+#[derive(Clone)]
+pub struct CommandRunner {
+    command: String,
+    args: Vec<String>,
+    env: HashMap<String, String>,
+    quiet: bool
+}
+
+impl CommandRunner {
+    pub fn new(command: impl Into<String>) -> Self {
+        Self {
+            command: command.into(),
+            args: Vec::new(),
+            env: HashMap::new(),
+            quiet: false,
+        }
+    }
+
+    pub fn add_args(&mut self, args: Vec<impl Into<String>>) -> &mut Self {
+        self.args.extend(args.into_iter().map(Into::into));
+        self
+    }
+
+    pub fn set_env(&mut self, key: impl Into<String>, value: impl Into<String>) -> &mut Self {
+        self.env.insert(key.into(), value.into());
+        self
+    }
+
+    pub fn prime(&mut self) -> &mut Self {
+        self.set_env("__NV_PRIME_RENDER_OFFLOAD", "1");
+        self.set_env("__GLX_VENDOR_LIBRARY_NAME", "nvidia");
+        self.set_env("__VK_LAYER_NV_optimus", "NVIDIA_only");
+        self.set_env("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/nvidia_icd.json");
+
+        self
+    }
+
+    pub fn exists(&self) -> bool {
+        return command_exists(&self.command);
+    }
+
+    pub fn to_string(&self) -> String {
+        format!("{} {}", self.command, self.args.join(" "))
+    }
+
+    fn get_exe_prefix() -> String {
+        Style::new().fg(Blue).paint("Executing >").to_string()
+    }
+
+    pub fn to_wine(&mut self) -> Self {
+        #[cfg(target_os = "windows")] {
+            return self.to_owned();
+        }
+
+        let mut new = CommandRunner::new("wine");
+        new.add_args(vec![&self.command]);
+        new.add_args(self.args.to_owned());
+
+        new
+    }
+
+    pub fn run(&self) {
+        let mut quiet = self.quiet;
+        
+        if get_command_line_settings().verbose {
+            quiet = false;
+        }
+
+        if !self.exists() {
+            exit_err(format!("Can't run '{}': not found.", &self.command));
+        }
+
+        let mut command = Command::new(&self.command);
+        let cmd_str = self.to_string();
+
+        if quiet {
+            command.stdout(Stdio::null());
+        } else {
+            println!("{} {}", Self::get_exe_prefix(), &cmd_str);
+        }
+
+        command.args(&self.args);
+        command.envs(&self.env);
+
+        let out = command.output().unwrap_or_else(|err| {
+            exit_err(format!("Failed to execute: {}:\n {}", err, &cmd_str));
+        });
+
+        let exit_code_text = match out.status.code() {
+            Some(code) => code.to_string(),
+            None => "unknown".to_string()
+        };
+
+        if !out.status.success() {
+            if quiet {
+                let output_text = String::from_utf8(out.stdout).unwrap_or_else(|err| {
+                    print_warn(format!("Failed to decode stdout utf8: {}", err));
+                    "".to_string()
+                });
+
+                println!("{} {}", Self::get_exe_prefix(), cmd_str);
+                println!("{}", output_text);
+            }
+
+            exit_err(format!("Command failed with code: {}", exit_code_text))
+        }
     }
 }
 
