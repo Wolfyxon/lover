@@ -322,6 +322,9 @@ impl CommandRunner {
             command.stdout(Stdio::null());
         } else {
             println!("{} {}", Self::get_exe_prefix(), &cmd_str);
+
+            command.stdout(Stdio::inherit());
+            command.stderr(Stdio::inherit());
         }
 
         command.args(&self.args);
