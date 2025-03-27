@@ -256,6 +256,15 @@ impl CommandRunner {
         self
     }
 
+    pub fn envs(&mut self, map: &HashMap<String, String>) {
+        for (k, v) in map {
+            self.env.insert(
+                k.to_owned(), 
+                v.to_owned()
+            );
+        }
+    }
+
     pub fn set_quiet(&mut self, state: bool) -> &mut Self {
         self.quiet = state;
         self
@@ -287,7 +296,12 @@ impl CommandRunner {
             return self.to_owned();
         }
 
-        let mut new = CommandRunner::new("wine");
+        let wine = config::get().software.wine;
+        let mut new = CommandRunner::new(wine);
+
+        new.set_env("WINEDEBUG", "-all");
+        new.envs(&self.env);
+        new.set_quiet(self.quiet);
         new.add_args(vec![&self.command]);
         new.add_args(self.args.to_owned());
 
