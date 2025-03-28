@@ -1,4 +1,4 @@
-use std::{fs, io::Write, path::{Path, PathBuf}};
+use std::{fs, io::Write, path::{Path, PathBuf}, process::exit};
 use crate::{console::{exit_err, input, input_non_empty, print_err, print_note, print_significant, print_success}, files, project_config::{self, Package, ProjectConfig}};
 
 struct ComponentFile<'a> {
@@ -39,25 +39,11 @@ pub fn extract_template(path: &Path) {
 }
 
 pub fn create(name: String, path: &Path) {
-    if path.is_file() {
-        exit_err(format!("'{}' already exists as a file in the current directory.", name));
+
+    if !validate_project_dir(path.to_path_buf()) {
+        exit(1);
     }
-
-    if !path.exists() {
-        std::fs::create_dir(path).unwrap_or_else(|err| {
-            exit_err(format!("Failed to create directory: {}", err));
-        });
-    }
-
-    let mut dir = match path.read_dir() {
-        Ok(dir) => dir,
-        Err(err) =>  exit_err(format!("Failed to read directory: {}", err))
-    };
-
-    if dir.next().is_some() {
-        exit_err(format!("Directory '{}' must be empty", name));
-    }
-
+    
     extract_template(path);
 
     /* Generating project config */
@@ -120,6 +106,30 @@ pub fn setup_init() {
     extract_template(&path);
 }
 
+pub fn validate_project_dir(path: PathBuf) -> bool {
+    if path.exists() {
+        if path.is_file() {
+            print_err("The given path is a file. You must either use an empty directory or a non existing one");
+            return false;
+        }
+    
+        match path.read_dir() {
+            Ok(reader) => {
+                if reader.count() != 0 {
+                    print_err("The project directory must be empty.");
+                    return false;
+                }
+            },
+            Err(err) => {
+                print_err(format!("Failed to read directory: {}. Consider changing the path", err));
+                return false;
+            }
+        }    
+    }
+
+    true
+}
+
 pub fn setup_dir(project: &mut ProjectConfig) -> PathBuf {
     let name = &project.package.name;
     let mut entered_path = input(format!("Where should your project files be? (default: {}): ", name));
@@ -130,31 +140,15 @@ pub fn setup_dir(project: &mut ProjectConfig) -> PathBuf {
 
     let path = Path::new(&entered_path);
 
-    if path.exists() {
-        if path.is_file() {
-            print_err("The given path is a file. You must either use an empty directory or a non existing one");
-            return setup_dir(project);
-        }
+    if !validate_project_dir(path.to_path_buf()) {
+        return setup_dir(project);
+    }
 
-        match path.read_dir() {
-            Ok(reader) => {
-                if reader.count() != 0 {
-                    print_err("The project directory must be empty.");
-                    return setup_dir(project);
-                }
-            },
-            Err(err) => {
-                print_err(format!("Failed to read directory: {}. Consider changing the path", err));
-                return setup_dir(project);
-            }
-        }
-    } else {
-        match fs::create_dir_all(path) {
-            Ok(()) => {},
-            Err(err) => {
-                print_err(format!("Failed to create directories: {}. Consider changing the path", err));
-                return setup_dir(project);
-            }
+    match fs::create_dir_all(path) {
+        Ok(()) => {},
+        Err(err) => {
+            print_err(format!("Failed to create directories: {}. Consider changing the path", err));
+            return setup_dir(project);
         }
     }
 
