@@ -15,6 +15,10 @@ fn get_template_files<'a>() -> Vec<ComponentFile<'a>> {
         ComponentFile {
             path: Path::new("src/main.lua"),
             buffer: include_bytes!("lua/template/src/main.lua")
+        },
+        ComponentFile {
+            path: Path::new("icon.png"),
+            buffer: include_bytes!("lua/template/icon.png")
         }
     ]
 }
