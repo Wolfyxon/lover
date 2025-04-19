@@ -115,7 +115,7 @@ pub fn confirm(message: impl Into<String>) -> bool {
 
     handle.read_exact(&mut ch).expect("Failed to read stdin");
 
-    String::from_utf8_lossy(&ch) == "y"
+    String::from_utf8_lossy(&ch).to_lowercase() == "y"
 }
 
 pub fn input(message: impl Into<String>) -> String {
