@@ -100,9 +100,11 @@ pub struct Software {
     pub smdhtool: String,
 
     #[serde(default = "Software::default_3dsxtool")]
+    #[serde(rename = "3dsxtool")]
     pub n3dsxtool: String, // 3dsxtool
 
     #[serde(default = "Software::default_3dslink")]
+    #[serde(rename = "3dslink")]
     pub n3dslink: String, // 3dslink
 }
 
