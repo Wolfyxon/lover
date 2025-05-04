@@ -316,12 +316,11 @@ pub fn build_windows_zip(arch: Arch) {
     print_step_verbose(&cmd_conf, "Renaming the EXE");
 
     let exe_out = path.join(pkg_name.to_owned() + ".exe");
-    let rename_res = fs::rename(&exe_src, &exe_out);
-
-    if rename_res.is_err() {
-        exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), rename_res.err().unwrap()));
-    }
-
+    
+    fs::rename(&exe_src, &exe_out).unwrap_or_else(|err| {
+        exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), err));
+    });
+    
     match check_rcedit() {
         Ok(()) => {
             let rcedit = get_rcedit_path();
