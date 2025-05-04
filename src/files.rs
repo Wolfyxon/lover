@@ -1,4 +1,4 @@
-use std::{fs::{File, OpenOptions}, path::{Path, PathBuf}};
+use std::{fs::{File, OpenOptions}, io::Read, path::{Path, PathBuf}};
 
 use crate::console::exit_err;
 
@@ -86,6 +86,27 @@ pub fn open_append(path: &Path) -> File {
         Ok(file) => file,
         Err(err) => exit_err(format!("Failed to open '{}' for appending: {}", path.to_str().unwrap(), err))
     }
+}
+
+pub fn get_len(path: &Path) -> usize {
+    let mut res: usize = 0;
+    let mut file = open(path);
+    
+    loop {
+        let mut buf: [u8; 1024] = [0; 1024];
+        
+        let bytes_read = file.read(&mut buf).unwrap_or_else(|err| {
+            exit_err(format!("Read failed: {}", err));
+        });
+
+        if bytes_read == 0 { 
+            break; 
+        } else {
+            res = res.saturating_add(bytes_read);
+        }
+    }
+    
+    res
 }
 
 // Remove [cfg(...)] if these functions are needed on both platforms
