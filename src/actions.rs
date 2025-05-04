@@ -473,9 +473,16 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
     });
 }
 
-pub fn append_file(from: &Path, to: &Path) {
+pub fn append_file(from: &Path, to: &Path, text: impl Into<String>) {
     let mut from_file = files::open(from);
     let mut to_file = files::open_append(to);
+
+    let len = files::get_len(from);
+
+    let mut bar = ProgressBar::new(len);
+    bar.set_prefix(text);
+
+    let mut progress: usize = 0;
 
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
@@ -484,7 +491,12 @@ pub fn append_file(from: &Path, to: &Path) {
             exit_err(format!("Read failed: {}", err));
         });
 
-        if bytes_read == 0 { break; }
+        if bytes_read == 0 { 
+            break; 
+        } else {
+            progress = progress.saturating_add(bytes_read);
+            bar.update(progress);
+        }
 
         let write_res = to_file.write_all(&buf[..bytes_read]);
 
@@ -492,6 +504,8 @@ pub fn append_file(from: &Path, to: &Path) {
             exit_err(format!("Write failed: {}", write_res.err().unwrap()));
         }
     }
+
+    bar.finish();
 }
 
 pub fn get_env_replacement_map() -> HashMap<String, String> {

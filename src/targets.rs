@@ -309,9 +309,7 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("'{}' could not be found.", &exe_src.to_str().unwrap()));
     }
 
-    print_step("Embedding the game's code into the love executable");
-
-    actions::append_file(love.as_path(), &exe_src);
+    actions::append_file(love.as_path(), &exe_src, "Embedding the game's code into the executable");
 
     print_success("The EXE should now be usable, even if something fails.");
 
@@ -422,8 +420,7 @@ fn build_linux() {
     appimage::extract_squashfs_file(&ext_squashfs, love_inner_bin, &love_bin);
     
     // Appending .love to the love binary
-    print_step("Embedding the game's code into the executable");
-    actions::append_file(love.as_path(), love_bin.as_path());
+    actions::append_file(love.as_path(), love_bin.as_path(), "Embedding the game's code into the love executable");
 
     // Injecting into SquashFS
     print_step_verbose(&cmd_conf, "Replacing the LOVE binary in SquashFS");
