@@ -309,7 +309,7 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("'{}' could not be found.", &exe_src.to_str().unwrap()));
     }
 
-    print_step("Embedding the game's code into the executable");
+    print_step("Embedding the game's code into the love executable");
 
     actions::append_file(love.as_path(), &exe_src);
 
