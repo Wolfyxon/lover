@@ -367,10 +367,13 @@ pub fn command_exists(command: &str) -> bool {
         return true;
     }
 
+    #[cfg(target_os = "windows")]
+    let command = format!("{}.exe", command);
+
     match std::env::var_os("PATH") {
         Some(path_env) => {
             for path_dir in std::env::split_paths(&path_env) {
-                if path_dir.join(command).is_file() {
+                if path_dir.join(&command).is_file() {
                     return true;
                 }
             }
