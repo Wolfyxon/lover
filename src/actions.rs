@@ -366,20 +366,19 @@ pub fn command_exists(command: &str) -> bool {
     if as_path.is_file() {
         return true;
     }
-    
-    let path_env_res = std::env::var_os("PATH");
 
-    if path_env_res.is_none() {
-        return false;
-    }
+    match std::env::var_os("PATH") {
+        Some(path_env) => {
+            for path_dir in std::env::split_paths(&path_env) {
+                if path_dir.join(command).is_file() {
+                    return true;
+                }
+            }
 
-    for path_dir in std::env::split_paths(&path_env_res.unwrap()) {
-        if path_dir.join(command).is_file() {
-            return true;
+            false
         }
+        None => false
     }
-
-    return false;
 }
 
 pub fn parse_all(root: &Path) {
