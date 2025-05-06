@@ -368,7 +368,11 @@ pub fn command_exists(command: &str) -> bool {
     }
 
     #[cfg(target_os = "windows")]
-    let command = format!("{}.exe", command);
+    let command = if command.ends_with(".exe") {
+        command.to_string()
+    } else {
+        format!("{}.exe", command)
+    };
 
     match std::env::var_os("PATH") {
         Some(path_env) => {
