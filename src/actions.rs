@@ -288,20 +288,22 @@ impl CommandRunner {
     }
 
     pub fn to_wine(&mut self) -> Self {
-        #[cfg(target_os = "windows")] {
+        #[cfg(target_family = "windows")] {
             return self.to_owned();
         }
 
-        let wine = config::get().software.wine;
-        let mut new = CommandRunner::new(wine);
-
-        new.set_env("WINEDEBUG", "-all");
-        new.envs(&self.env);
-        new.set_quiet(self.quiet);
-        new.add_args(vec![&self.command]);
-        new.add_args(self.args.to_owned());
-
-        new
+        #[cfg(target_family = "unix")] {
+            let wine = config::get().software.wine;
+            let mut new = CommandRunner::new(wine);
+    
+            new.set_env("WINEDEBUG", "-all");
+            new.envs(&self.env);
+            new.set_quiet(self.quiet);
+            new.add_args(vec![&self.command]);
+            new.add_args(self.args.to_owned());
+    
+            new
+        }
     }
 
     pub fn run(&self) {
