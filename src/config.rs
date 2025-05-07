@@ -122,7 +122,11 @@ impl Software {
     }
 
     fn default_love() -> String {
-        "love".to_string()
+        #[cfg(target_family = "windows")]
+        return "lovec".to_string();
+
+        #[cfg(target_family = "unix")]
+        return "love".to_string();
     }
 
     fn default_luac() -> String {
