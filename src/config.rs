@@ -90,11 +90,11 @@ pub struct Software {
     pub luac: String,
 
     #[serde(default = "Software::default_wine")]
+    #[allow(dead_code)]
     pub wine: String,
 
     #[serde(default = "Software::default_rcedit")]
     pub rcedit: String,
-
     
     #[serde(default = "Software::default_smdhtool")]
     pub smdhtool: String,
