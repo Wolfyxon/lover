@@ -205,14 +205,13 @@ pub fn get_rcedit_path() -> PathBuf {
 }
 
 pub fn check_rcedit() -> Result<(), String> {
-    let conf = config::get();
-
     let rcedit = get_rcedit_path();
     let rcedit_str = rcedit.to_str().unwrap();
 
-    let wine = conf.software.wine;
+    #[cfg(target_family = "unix")] {
+        let conf = config::get();
+        let wine = conf.software.wine;
 
-    if std::env::consts::FAMILY == "unix" {
         if !actions::command_exists(&wine) {
             return Err(format!("Wine is not installed or could not be found at path '{}'.", &wine));
         }
@@ -220,7 +219,8 @@ pub fn check_rcedit() -> Result<(), String> {
         if !rcedit.exists() {
             return Err(format!("RCEdit could not be found at path '{}'.", rcedit_str));
         }
-    } else {
+    }
+    #[cfg(target_family = "windows")] {
         if !actions::command_exists(rcedit_str) {
             return Err(format!("RCEdit is not installed or could not be found at path '{}'", rcedit_str));
         }
