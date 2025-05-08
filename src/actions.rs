@@ -485,9 +485,9 @@ pub fn append_file(from: &Path, to: &Path, text: impl Into<String>) {
     let mut from_file = files::open(from);
     let mut to_file = files::open_append(to);
 
-    let len = files::get_len(from);
+    let size = files::get_size(from);
 
-    let mut bar = ProgressBar::new(len);
+    let mut bar = ProgressBar::new(size);
     bar.set_prefix(text);
 
     let mut progress: usize = 0;
