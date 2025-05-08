@@ -257,6 +257,21 @@ impl CommandRunner {
         self
     }
 
+    pub fn get_all_search_dirs(&self) -> Vec<PathBuf> {
+        let mut res: Vec<PathBuf> = Vec::new();
+
+        match std::env::var_os("PATH") {
+            Some(paths) => {
+                res.append(&mut std::env::split_paths(&paths).into_iter().collect());
+            }, 
+            None => ()
+        }
+
+        res.append(&mut self.search_dirs.clone());
+
+        res
+    }
+
     pub fn add_args(&mut self, args: Vec<impl Into<String>>) -> &mut Self {
         self.args.extend(args.into_iter().map(Into::into));
         self
