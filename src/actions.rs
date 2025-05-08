@@ -229,6 +229,7 @@ pub struct CommandRunner {
     command: String,
     args: Vec<String>,
     env: HashMap<String, String>,
+    search_dirs: Vec<PathBuf>,
     quiet: bool
 }
 
@@ -238,8 +239,22 @@ impl CommandRunner {
             command: command.into(),
             args: Vec::new(),
             env: HashMap::new(),
+            search_dirs: Vec::new(),
             quiet: false,
         }
+    }
+
+    pub fn add_search_dir(&mut self, path: impl Into<PathBuf>) -> &mut Self {
+        self.search_dirs.push(path.into());
+        self
+    }
+
+    pub fn add_search_dirs(&mut self, paths: Vec<impl Into<PathBuf>>) -> &mut Self {
+        for path in paths {
+            self.add_search_dir(path);
+        }
+        
+        self
     }
 
     pub fn add_args(&mut self, args: Vec<impl Into<String>>) -> &mut Self {
