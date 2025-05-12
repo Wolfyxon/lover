@@ -361,7 +361,10 @@ impl CommandRunner {
             exit_err(format!("Can't run '{}': not found.", &self.command));
         }
 
-        let mut command = Command::new(&self.command);
+        let mut command = Command::new(&self.get_path().unwrap_or_else(|| {
+            exit_err(format!("Command '{}' not found. (OS PATH and Lover config was searched too)", &self.command));
+        }));
+
         let cmd_str = self.to_string();
 
         if quiet {
