@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::env::split_paths;
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -229,7 +230,7 @@ pub struct CommandRunner {
     command: String,
     args: Vec<String>,
     env: HashMap<String, String>,
-    search_dirs: Vec<PathBuf>,
+    paths: Vec<PathBuf>,
     quiet: bool
 }
 
@@ -239,35 +240,37 @@ impl CommandRunner {
             command: command.into(),
             args: Vec::new(),
             env: HashMap::new(),
-            search_dirs: Vec::new(),
+            paths: Vec::new(),
             quiet: false,
         }
     }
 
-    pub fn add_search_dir(&mut self, path: impl Into<PathBuf>) -> &mut Self {
-        self.search_dirs.push(path.into());
+    pub fn add_path(&mut self, path: impl Into<PathBuf>) -> &mut Self {
+        self.paths.push(path.into());
         self
     }
 
-    pub fn add_search_dirs(&mut self, paths: Vec<impl Into<PathBuf>>) -> &mut Self {
+    pub fn add_paths(&mut self, paths: Vec<impl Into<PathBuf>>) -> &mut Self {
         for path in paths {
-            self.add_search_dir(path);
+            self.add_path(path);
         }
         
         self
     }
 
-    pub fn get_all_search_dirs(&self) -> Vec<PathBuf> {
+    pub fn get_all_paths(&self) -> Vec<PathBuf> {
         let mut res: Vec<PathBuf> = Vec::new();
+
+        res.append(&mut self.paths.clone());
 
         match std::env::var_os("PATH") {
             Some(paths) => {
-                res.append(&mut std::env::split_paths(&paths).into_iter().collect());
+                for path in split_paths(&paths) {
+                    res.push(path);
+                }
             }, 
             None => ()
         }
-
-        res.append(&mut self.search_dirs.clone());
 
         res
     }
