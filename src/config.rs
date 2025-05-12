@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use serde::Deserialize;
 use crate::console::exit_err;
 
-const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
+//const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 
 #[derive(Deserialize)]
 pub struct Config {
@@ -96,6 +96,7 @@ pub struct Software {
     #[serde(default = "Software::default_rcedit")]
     pub rcedit: String,
     
+    /*
     #[serde(default = "Software::default_smdhtool")]
     pub smdhtool: String,
 
@@ -106,6 +107,7 @@ pub struct Software {
     #[serde(default = "Software::default_3dslink")]
     #[serde(rename = "3dslink")]
     pub n3dslink: String, // 3dslink
+    */
 }
 
 impl Software {
@@ -114,10 +116,10 @@ impl Software {
             love: Software::default_love(),
             luac: Software::default_luac(),
             wine: Software::default_wine(),
-            rcedit: Software::default_rcedit(),
+            rcedit: Software::default_rcedit(), /*
             smdhtool: Software::default_smdhtool(),
             n3dsxtool: Software::default_3dsxtool(),
-            n3dslink: Software::default_3dslink()
+            n3dslink: Software::default_3dslink() */
         }
     }
 
@@ -141,6 +143,7 @@ impl Software {
         "rcedit".to_string()
     }
 
+    /*
     fn default_smdhtool() -> String {
         DKP_TOOLS.to_owned() + "/smdhtool"
     }
@@ -151,7 +154,7 @@ impl Software {
 
     fn default_3dslink() -> String {
         DKP_TOOLS.to_owned() + "/3dslink"
-    }
+    }*/
         
 }
 
