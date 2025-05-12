@@ -266,9 +266,10 @@ impl CommandRunner {
         match std::env::var_os("PATH") {
             Some(paths) => {
                 for path in split_paths(&paths) {
-                    res.push(path);
+                    let file_path = path.join(&self.command);
+                    res.push(file_path);
                 }
-            }, 
+            },
             None => ()
         }
 
