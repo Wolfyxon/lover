@@ -276,6 +276,16 @@ impl CommandRunner {
         res
     }
 
+    pub fn get_path(&self) -> Option<PathBuf> {
+        for path in self.get_all_paths() {
+            if path.is_file() {
+                return Some(path);
+            }
+        }
+
+        None
+    }
+
     pub fn add_args(&mut self, args: Vec<impl Into<String>>) -> &mut Self {
         self.args.extend(args.into_iter().map(Into::into));
         self
