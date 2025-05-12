@@ -345,7 +345,6 @@ impl CommandRunner {
             let mut new = CommandRunner::new(wine);
     
             self.ignore_os_path = true;
-            new.paths = self.paths.clone();
 
             new.set_env("WINEDEBUG", "-all");
             new.envs(&self.env);
