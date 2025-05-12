@@ -231,7 +231,8 @@ pub struct CommandRunner {
     args: Vec<String>,
     env: HashMap<String, String>,
     paths: Vec<PathBuf>,
-    quiet: bool
+    quiet: bool,
+    ignore_os_path: bool
 }
 
 impl CommandRunner {
@@ -242,6 +243,7 @@ impl CommandRunner {
             env: HashMap::new(),
             paths: Vec::new(),
             quiet: false,
+            ignore_os_path: false
         }
     }
 
@@ -263,14 +265,16 @@ impl CommandRunner {
 
         res.append(&mut self.paths.clone());
 
-        match std::env::var_os("PATH") {
-            Some(paths) => {
-                for path in split_paths(&paths) {
-                    let file_path = path.join(&self.command);
-                    res.push(file_path);
-                }
-            },
-            None => ()
+        if !&self.ignore_os_path {
+            match std::env::var_os("PATH") {
+                Some(paths) => {
+                    for path in split_paths(&paths) {
+                        let file_path = path.join(&self.command);
+                        res.push(file_path);
+                    }
+                },
+                None => ()
+            }
         }
 
         res
@@ -340,10 +344,13 @@ impl CommandRunner {
             let wine = config::get().software.wine;
             let mut new = CommandRunner::new(wine);
     
+            self.ignore_os_path = true;
+            new.paths = self.paths.clone();
+
             new.set_env("WINEDEBUG", "-all");
             new.envs(&self.env);
             new.set_quiet(self.quiet);
-            new.add_args(vec![&self.command]);
+            new.add_args(vec![self.get_path().unwrap().to_str().unwrap()]); // TODO: Error handling
             new.add_args(self.args.to_owned());
     
             new
