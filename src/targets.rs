@@ -189,46 +189,6 @@ pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
     res
 } 
 
-pub fn get_rcedit_path() -> PathBuf {
-    let config_string_path = config::get().software.rcedit;
-    
-    let config_path = Path::new(&config_string_path);
-    
-    let dep = deps::get_dep("rcedit");
-    let dep_path = dep.get_path();
-    
-    if dep.is_installed() && !config_path.exists() {
-        return dep_path;
-    }
-
-    return config_path.to_path_buf();
-}
-
-pub fn check_rcedit() -> Result<(), String> {
-    let rcedit = get_rcedit_path();
-    let rcedit_str = rcedit.to_str().unwrap();
-
-    #[cfg(target_family = "unix")] {
-        let conf = config::get();
-        let wine = conf.software.wine;
-
-        if !actions::command_exists(&wine) {
-            return Err(format!("Wine is not installed or could not be found at path '{}'.", &wine));
-        }
-
-        if !rcedit.exists() {
-            return Err(format!("RCEdit could not be found at path '{}'.", rcedit_str));
-        }
-    }
-    #[cfg(target_family = "windows")] {
-        if !actions::command_exists(rcedit_str) {
-            return Err(format!("RCEdit is not installed or could not be found at path '{}'", rcedit_str));
-        }
-    }
-
-    Ok(())
-}
-
 pub fn rcedit_add_icon(args: &mut Vec<String>, package: &Package, path: &PathBuf) {
     let icon_str_path = &package.icon;
 

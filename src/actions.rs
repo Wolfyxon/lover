@@ -251,15 +251,7 @@ impl CommandRunner {
         self.paths.push(path.into());
         self
     }
-
-    pub fn add_paths(&mut self, paths: Vec<impl Into<PathBuf>>) -> &mut Self {
-        for path in paths {
-            self.add_path(path);
-        }
-        
-        self
-    }
-
+    
     pub fn get_all_paths(&self) -> Vec<PathBuf> {
         let mut res: Vec<PathBuf> = Vec::new();
 
