@@ -8,7 +8,7 @@ use image::{GenericImageView, ImageFormat, ImageReader};
 use crate::actions::{Archiver, CommandRunner, Extractor};
 use crate::{actions, appimage, config, console, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_step_verbose, print_success, print_warn};
-use crate::deps::Dependency;
+use crate::deps::{get_dep, Dependency};
 use crate::project_config::{self, Package};
 use crate::deps;
 
@@ -321,29 +321,26 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), err));
     });
     
-    match check_rcedit() {
-        Ok(()) => {
-            let rcedit = get_rcedit_path();
-            let exe = exe_out.to_str().unwrap().to_string();
+    let exe = exe_out.to_str().unwrap().to_string();
 
-            let mut args = vec![exe];
-            
-            args.append(&mut pkg.get_rcedit_args());
-            rcedit_add_icon(&mut args, &pkg, &path);
+    let mut args = vec![exe];
+    
+    args.append(&mut pkg.get_rcedit_args());
+    rcedit_add_icon(&mut args, &pkg, &path);
 
-            print_step("Applying info with RCEdit");
+    print_step("Applying info with RCEdit");
 
-            CommandRunner::new(rcedit.to_str().unwrap())
-                .add_args(args)
-                .set_quiet(true)
-                .to_wine()
-                .run();
-        },
-        Err(err) => print_warn(format!("EXE info could not be applied: {}\nPlease check your {}", err, config::get_config_path().to_str().unwrap())),
-    };
+    CommandRunner::new("rcedit")
+        .add_path(conf.software.rcedit)
+        .add_path(get_dep("rcedit").get_path())
+
+        .add_args(args)
+        .set_quiet(true)
+        .to_wine()
+        .run();
 
     if conf.build.zip {
-        Archiver::new(path)
+        Archiver::new(&path)
             .add_progress_bar("Archiving build files")
             .archive(build_dir.join(format!("{}_{}.zip", pkg_name, &name)))
         ;
