@@ -88,7 +88,7 @@ pub fn open_append(path: &Path) -> File {
     }
 }
 
-pub fn get_len(path: &Path) -> usize {
+pub fn get_size(path: &Path) -> usize {
     let mut res: usize = 0;
     let mut file = open(path);
     

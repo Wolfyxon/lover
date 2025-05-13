@@ -8,7 +8,7 @@ use image::{GenericImageView, ImageFormat, ImageReader};
 use crate::actions::{Archiver, CommandRunner, Extractor};
 use crate::{actions, appimage, config, console, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_step_verbose, print_success, print_warn};
-use crate::deps::Dependency;
+use crate::deps::{get_dep, Dependency};
 use crate::project_config::{self, Package};
 use crate::deps;
 
@@ -189,46 +189,6 @@ pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
     res
 } 
 
-pub fn get_rcedit_path() -> PathBuf {
-    let config_string_path = config::get().software.rcedit;
-    
-    let config_path = Path::new(&config_string_path);
-    
-    let dep = deps::get_dep("rcedit");
-    let dep_path = dep.get_path();
-    
-    if dep.is_installed() && !config_path.exists() {
-        return dep_path;
-    }
-
-    return config_path.to_path_buf();
-}
-
-pub fn check_rcedit() -> Result<(), String> {
-    let rcedit = get_rcedit_path();
-    let rcedit_str = rcedit.to_str().unwrap();
-
-    #[cfg(target_family = "unix")] {
-        let conf = config::get();
-        let wine = conf.software.wine;
-
-        if !actions::command_exists(&wine) {
-            return Err(format!("Wine is not installed or could not be found at path '{}'.", &wine));
-        }
-
-        if !rcedit.exists() {
-            return Err(format!("RCEdit could not be found at path '{}'.", rcedit_str));
-        }
-    }
-    #[cfg(target_family = "windows")] {
-        if !actions::command_exists(rcedit_str) {
-            return Err(format!("RCEdit is not installed or could not be found at path '{}'", rcedit_str));
-        }
-    }
-
-    Ok(())
-}
-
 pub fn rcedit_add_icon(args: &mut Vec<String>, package: &Package, path: &PathBuf) {
     let icon_str_path = &package.icon;
 
@@ -321,29 +281,26 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), err));
     });
     
-    match check_rcedit() {
-        Ok(()) => {
-            let rcedit = get_rcedit_path();
-            let exe = exe_out.to_str().unwrap().to_string();
+    let exe = exe_out.to_str().unwrap().to_string();
 
-            let mut args = vec![exe];
-            
-            args.append(&mut pkg.get_rcedit_args());
-            rcedit_add_icon(&mut args, &pkg, &path);
+    let mut args = vec![exe];
+    
+    args.append(&mut pkg.get_rcedit_args());
+    rcedit_add_icon(&mut args, &pkg, &path);
 
-            print_step("Applying info with RCEdit");
+    print_step("Applying info with RCEdit");
 
-            CommandRunner::new(rcedit.to_str().unwrap())
-                .add_args(args)
-                .set_quiet(true)
-                .to_wine()
-                .run();
-        },
-        Err(err) => print_warn(format!("EXE info could not be applied: {}\nPlease check your {}", err, config::get_config_path().to_str().unwrap())),
-    };
+    CommandRunner::new("rcedit")
+        .add_path(conf.software.rcedit)
+        .add_path(get_dep("rcedit").get_path())
+
+        .add_args(args)
+        .set_quiet(true)
+        .to_wine()
+        .run();
 
     if conf.build.zip {
-        Archiver::new(path)
+        Archiver::new(&path)
             .add_progress_bar("Archiving build files")
             .archive(build_dir.join(format!("{}_{}.zip", pkg_name, &name)))
         ;

@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::env::split_paths;
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
@@ -229,7 +230,9 @@ pub struct CommandRunner {
     command: String,
     args: Vec<String>,
     env: HashMap<String, String>,
-    quiet: bool
+    paths: Vec<PathBuf>,
+    quiet: bool,
+    ignore_os_path: bool
 }
 
 impl CommandRunner {
@@ -238,8 +241,45 @@ impl CommandRunner {
             command: command.into(),
             args: Vec::new(),
             env: HashMap::new(),
+            paths: Vec::new(),
             quiet: false,
+            ignore_os_path: false
         }
+    }
+
+    pub fn add_path(&mut self, path: impl Into<PathBuf>) -> &mut Self {
+        self.paths.push(path.into());
+        self
+    }
+    
+    pub fn get_all_paths(&self) -> Vec<PathBuf> {
+        let mut res: Vec<PathBuf> = Vec::new();
+
+        res.append(&mut self.paths.clone());
+
+        if !&self.ignore_os_path {
+            match std::env::var_os("PATH") {
+                Some(paths) => {
+                    for path in split_paths(&paths) {
+                        let file_path = path.join(&self.command);
+                        res.push(file_path);
+                    }
+                },
+                None => ()
+            }
+        }
+
+        res
+    }
+
+    pub fn get_path(&self) -> Option<PathBuf> {
+        for path in self.get_all_paths() {
+            if path.is_file() {
+                return Some(path);
+            }
+        }
+
+        None
     }
 
     pub fn add_args(&mut self, args: Vec<impl Into<String>>) -> &mut Self {
@@ -296,10 +336,12 @@ impl CommandRunner {
             let wine = config::get().software.wine;
             let mut new = CommandRunner::new(wine);
     
+            self.ignore_os_path = true;
+
             new.set_env("WINEDEBUG", "-all");
             new.envs(&self.env);
             new.set_quiet(self.quiet);
-            new.add_args(vec![&self.command]);
+            new.add_args(vec![self.get_path().unwrap().to_str().unwrap()]); // TODO: Error handling
             new.add_args(self.args.to_owned());
     
             new
@@ -317,7 +359,10 @@ impl CommandRunner {
             exit_err(format!("Can't run '{}': not found.", &self.command));
         }
 
-        let mut command = Command::new(&self.command);
+        let mut command = Command::new(&self.get_path().unwrap_or_else(|| {
+            exit_err(format!("Command '{}' not found. (OS PATH and Lover config was searched too)", &self.command));
+        }));
+
         let cmd_str = self.to_string();
 
         if quiet {
@@ -485,9 +530,9 @@ pub fn append_file(from: &Path, to: &Path, text: impl Into<String>) {
     let mut from_file = files::open(from);
     let mut to_file = files::open_append(to);
 
-    let len = files::get_len(from);
+    let size = files::get_size(from);
 
-    let mut bar = ProgressBar::new(len);
+    let mut bar = ProgressBar::new(size);
     bar.set_prefix(text);
 
     let mut progress: usize = 0;
