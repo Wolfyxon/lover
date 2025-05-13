@@ -8,7 +8,7 @@ use image::{GenericImageView, ImageFormat, ImageReader};
 use crate::actions::{Archiver, CommandRunner, Extractor};
 use crate::{actions, appimage, config, console, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_step_verbose, print_success, print_warn};
-use crate::deps::{get_dep, Dependency};
+use crate::deps::Dependency;
 use crate::project_config::{self, Package};
 use crate::deps;
 
@@ -40,7 +40,7 @@ impl<'a> BuildTarget<'a> {
         let mut res:Vec<String> = Vec::new();
 
         for name in &self.deps {
-            let dep = deps::get_dep(name.to_owned());
+            let dep = deps::get_dep_or_crash(name.to_owned());
 
             res.push(dep.name.to_string());
         }
@@ -70,7 +70,7 @@ impl<'a> BuildTarget<'a> {
         let mut opt: Vec<Dependency> = Vec::new();
 
         for i in &self.optional {
-            let dep = deps::get_dep(i.to_owned());
+            let dep = deps::get_dep_or_crash(i.to_owned());
 
             if !dep.is_installed() {
                 opt.push(dep);
@@ -254,7 +254,7 @@ pub fn build_windows_zip(arch: Arch) {
     let pkg_name = &pkg.name;
 
     let build_dir = &project_conf.directories.get_build_dir();
-    let zip_path = &deps::get_dep(("love-".to_string() + &name).as_str()).get_path();
+    let zip_path = &deps::get_dep_or_crash(("love-".to_string() + &name).as_str()).get_path();
     let path = build_dir.join(&name);
 
     let love = build_dir.join(format!("{}.love", &pkg_name));
@@ -292,7 +292,7 @@ pub fn build_windows_zip(arch: Arch) {
 
     CommandRunner::new("rcedit")
         .add_path(conf.software.rcedit)
-        .add_path(get_dep("rcedit").get_path())
+        .add_path(deps::get_dep_or_crash("rcedit").get_path())
 
         .add_args(args)
         .set_quiet(true)
@@ -358,7 +358,7 @@ fn build_linux() {
 
     let love = build_dir.join(format!("{}.love", &pkg_name));
 
-    let love_app_img = deps::get_dep("love-linux").get_path();
+    let love_app_img = deps::get_dep_or_crash("love-linux").get_path();
     let app_img = build_dir.join(format!("{}.AppImage", &pkg_name));
 
     let ext_squashfs = temp.join("squashfs");

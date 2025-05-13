@@ -585,7 +585,7 @@ fn cmd_target(command: &Command) {
 fn cmd_dep(command: &Command) {
     match command.get_arg("dependency") {
         Some(name) => {
-            let dep = deps::get_dep(name.as_str());
+            let dep = deps::get_dep_or_crash(name.as_str());
             let mut status = "not installed";
     
             if dep.is_installed() {
@@ -684,7 +684,7 @@ fn cmd_uninstall(command: &Command) {
 
 fn cmd_fetch(command: &Command) {
     let name = command.get_arg("name").unwrap();
-    let dep = deps::get_dep(&name);
+    let dep = deps::get_dep_or_crash(&name);
 
     print_significant("Data of dependency", name.to_owned());
 
