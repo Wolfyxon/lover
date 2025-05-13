@@ -46,7 +46,7 @@ impl<'a> BuildTarget<'a> {
         }
 
         for name in &self.previous {
-            let target = get_target_by_string(name.to_string());
+            let target = get_target_or_crash(name.to_string());
 
             for dep_name in target.get_all_dep_names() {
                 if !res.contains(&dep_name) {
@@ -152,15 +152,25 @@ pub fn gen_module() -> String {
     format!("{}\n{}\n{}\n\n", header, res, "-".repeat(header.len()))
 }
 
-pub fn get_target_by_string<'a>(name: String) -> BuildTarget<'a> {
+pub fn get_target<'a>(name: impl Into<String>) -> Option<BuildTarget<'a>> {
+    let name_str = name.into();
+    
     for target in get_targets() {
-        if target.name == name {
-            return target;
+        if target.name == name_str {
+            return Some(target);
         }
     }
 
-    exit_err(format!("Unknown target '{}'", name));
+    None
 } 
+
+pub fn get_target_or_crash<'a>(name: impl Into<String>) -> BuildTarget<'a> {
+    let name_str = name.into();
+    
+    get_target(name_str.to_owned()).unwrap_or_else(|| {
+        exit_err(format!("Unknown target '{}'", name_str));
+    })
+}
 
 pub fn get_targets_by_strings<'a>(names: Vec<String>) -> Vec<BuildTarget<'a>> {
     let mut not_found: Vec<String> = Vec::new();

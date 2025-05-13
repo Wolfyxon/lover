@@ -504,7 +504,7 @@ fn cmd_build(command: &Command) {
             if already_built.contains(dep_name) { continue; }
             already_built.push(dep_name);
 
-            let dep_target = targets::get_target_by_string(dep_name.to_string());
+            let dep_target = targets::get_target_or_crash(dep_name.to_string());
             dep_target.build();
         }
 
@@ -542,7 +542,7 @@ fn cmd_create(_command: &Command) {
 fn cmd_target(command: &Command) {
     match command.get_arg("target") {
         Some(name) => {
-            let target = targets::get_target_by_string(name);
+            let target = targets::get_target_or_crash(name);
 
             print_significant("Details of target", &target.name.to_owned());
             println!("{}\n", Style::new().italic().paint(&target.description.to_owned()));
