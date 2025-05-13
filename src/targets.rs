@@ -394,7 +394,7 @@ fn build_linux() {
         Ok(_) => {},
         Err(err) => exit_err(format!("Copy failed: {}", err))
     }
-    
+
     print_step("Embedding created SquashFS into AppImage");
     appimage::embed_squashfs(&app_img, &new_squashfs);
 }
@@ -405,4 +405,43 @@ fn build_win64() {
 
 fn build_win32() {
     build_windows_zip(Arch::X86_32);
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn check_if_targets_exist() {
+        assert!(get_target("love").is_some());
+        assert!(get_target("linux").is_some());
+        assert!(get_target("win32").is_some());
+        assert!(get_target("win64").is_some());
+    }
+
+    #[test]
+    fn check_if_pre_targets_exist() {
+        let targets = get_targets();
+
+        for target in targets {
+            for prev in target.previous {
+                assert!(get_target(prev).is_some());
+            }
+        }
+    }
+
+    #[test]
+    fn check_target_deps() {
+        let targets = get_targets();
+
+        for target in targets {
+            for dep in target.deps {
+                assert!(deps::get_dep(dep).is_some());
+            }
+
+            for dep in target.optional {
+                assert!(deps::get_dep(dep).is_some());
+            }
+        }
+    }
 }
