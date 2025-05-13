@@ -425,7 +425,7 @@ mod tests {
 
         for target in targets {
             for prev in target.previous {
-                assert!(get_target(prev).is_some());
+                assert!(get_target(prev).is_some(), "Previous target '{}' not found for '{}'", prev, target.name);
             }
         }
     }
@@ -436,11 +436,11 @@ mod tests {
 
         for target in targets {
             for dep in target.deps {
-                assert!(deps::get_dep(dep).is_some());
+                assert!(deps::get_dep(dep).is_some(), "Dependency '{}' not found for target '{}'", target.name, dep);
             }
 
             for dep in target.optional {
-                assert!(deps::get_dep(dep).is_some());
+                assert!(deps::get_dep(dep).is_some(), "Optinal dependency '{}' not found for target '{}'", dep, target.name);
             }
         }
     }
