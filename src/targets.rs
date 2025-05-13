@@ -378,30 +378,23 @@ fn build_linux() {
     let love_bin = temp.join("love");
     let love_inner_bin = Path::new("/bin/love");
 
-    // Extracting squashfs-root
     print_step_verbose(&cmd_conf,"Extracting Love2D AppImage SquashFS");
-
     appimage::extract_squashfs(&love_app_img, &ext_squashfs);
 
     print_step_verbose(&cmd_conf, "Extracting LOVE binary");
     appimage::extract_squashfs_file(&ext_squashfs, love_inner_bin, &love_bin);
-    
-    // Appending .love to the love binary
+
     actions::append_file(love.as_path(), love_bin.as_path(), "Embedding the game's code into the love executable");
 
-    // Injecting into SquashFS
     print_step_verbose(&cmd_conf, "Replacing the LOVE binary in SquashFS");
     appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin, &new_squashfs);
 
-    // Cloning LOVE AppImage
     print_step_verbose(&cmd_conf, "Cloning LOVE AppImage");
-
     match std::fs::copy(&love_app_img, &app_img) {
         Ok(_) => {},
         Err(err) => exit_err(format!("Copy failed: {}", err))
     }
-
-    // Embedding SquashFS to the AppImage
+    
     print_step("Embedding created SquashFS into AppImage");
     appimage::embed_squashfs(&app_img, &new_squashfs);
 }
