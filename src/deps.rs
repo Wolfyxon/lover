@@ -217,25 +217,23 @@ pub fn get_deps<'a>() -> Vec<Dependency<'a>>{
     ]
 }
 
-pub fn get_dep(name: &str) -> Dependency {
-    get_dep_by_string(name.to_string())
-}
+pub fn get_dep<'a>(name: impl Into<String>) -> Dependency<'a> {
+    let name_str = name.into();
 
-pub fn get_dep_by_string<'a>(name: String) -> Dependency<'a> {
     for dep in get_deps() {
-        if dep.name.to_lowercase() == name.to_lowercase() {
+        if dep.name.to_lowercase() == name_str.to_owned().to_lowercase() {
             return dep;
         }
     }
 
-    exit_err(format!("Unknown dependency '{}'", name));
+    exit_err(format!("Unknown dependency '{}'", &name_str));
 }
 
-pub fn get_deps_by_strings<'a>(names: Vec<String>) -> Vec<Dependency<'a>> {
+pub fn get_deps_by_strings<'a>(names: Vec<impl Into<String>>) -> Vec<Dependency<'a>> {
     let mut res: Vec<Dependency<'a>> = Vec::new();
 
     for name in names {
-        res.push(get_dep_by_string(name));
+        res.push(get_dep(name));
     }
 
     res

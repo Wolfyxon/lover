@@ -40,7 +40,7 @@ impl<'a> BuildTarget<'a> {
         let mut res:Vec<String> = Vec::new();
 
         for name in &self.deps {
-            let dep = deps::get_dep(name);
+            let dep = deps::get_dep(name.to_owned());
 
             res.push(dep.name.to_string());
         }
@@ -70,7 +70,7 @@ impl<'a> BuildTarget<'a> {
         let mut opt: Vec<Dependency> = Vec::new();
 
         for i in &self.optional {
-            let dep = deps::get_dep(i);
+            let dep = deps::get_dep(i.to_owned());
 
             if !dep.is_installed() {
                 opt.push(dep);
