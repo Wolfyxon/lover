@@ -254,7 +254,8 @@ pub fn build_windows_zip(arch: Arch) {
     let pkg_name = &pkg.name;
 
     let build_dir = &project_conf.directories.get_build_dir();
-    let zip_path = &deps::get_dep_or_crash(("love-".to_string() + &name).as_str()).get_path();
+    let zip_path = &deps::get_dep_or_crash(format!("love-{}", &name)).get_path();
+    
     let path = build_dir.join(&name);
 
     let love = build_dir.join(format!("{}.love", &pkg_name));
