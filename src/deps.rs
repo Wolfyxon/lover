@@ -344,3 +344,21 @@ pub fn fetch_gh_release(owner: &str, repo: &str, release: &str) -> GitHubRelease
 pub fn fetch_gh_latest_release(owner: &str, repo: &str) -> GitHubRelease {
     fetch_gh_release(owner, repo, "latest")
 }
+
+mod tests {
+    use super::*;
+
+    #[test]
+    fn check_patterns() {
+        for dep in get_deps() {
+            match dep.mode {
+                RepoDownload::LatestRelease(pattern) => {
+                    Regex::new(pattern).unwrap_or_else(|err| {
+                        panic!("Invalid regex for dep: '{}': {}: {}", dep.name, err, pattern);
+                    });
+                }
+                _ => ()
+            }
+        }
+    }
+}
