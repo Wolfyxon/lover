@@ -5,6 +5,7 @@ authors = ["Wolfyxon"]
 repository = "https://github.com/wolfyxon/lover"
 documentation = "https://github.com/Wolfyxon/lover/wiki"
 edition = "2021"
+build = "src/build.rs"
 
 [profile.release]
 strip = true

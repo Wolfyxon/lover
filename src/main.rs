@@ -354,7 +354,12 @@ fn show_help() {
 }
 
 fn show_version() {
-    println!("Lover {}", env!("CARGO_PKG_VERSION"));
+    let _end = "";
+
+    #[cfg(debug_assertions)]
+    let _end = option_env!("GIT_HASH").unwrap_or("debug");
+
+    println!("Lover {} {}", env!("CARGO_PKG_VERSION"), _end);
 }
 
 fn cmd_help(command: &Command) {
