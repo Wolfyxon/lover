@@ -82,7 +82,7 @@ Also this tool does not require installing as much software as Love2D Universal 
 This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
 
 ## Example outputs
-(Note that this may not always be up to date)
+(Note that this may not always be up to date)  
 (Also normally this is colored)
 
 `lover help`
@@ -118,10 +118,12 @@ For additional help, see the wiki: https://github.com/Wolfyxon/lover/wiki
 ```
 > Initializing build of: win64, linux
 OK: All dependencies are installed.
+
 > Building target: love
 Warning: 'luac' not found. Skipping luac parse.
 >> Archiving game assets                            [==============================] 1/1
 OK: Successfully built 'love'
+
 > Building target: win64
 >> Extracting Windows Love2D files                  [==============================] 14/14
 >> Embedding game into the love executable          [==============================] 783/783
@@ -129,10 +131,12 @@ OK: The EXE should now be usable, even if something fails.
 >> Converting icon to the ICO format
 >> Applying info with RCEdit
 OK: Successfully built 'win64'
+
 > Building target: linux
 >> Embedding game into the love executable          [==============================] 783/783
 >> Embedding created SquashFS into AppImage
 OK: Successfully built 'linux'
+
 ```
 
 ## Used crates
