@@ -56,6 +56,7 @@ pub fn create(name: String, path: &Path) {
 
     let pkg = Package {
             name: name.to_owned(),
+            copyright: None,
             author: "".to_string(),
             description: "".to_string(),
             version: Package::default_version(),

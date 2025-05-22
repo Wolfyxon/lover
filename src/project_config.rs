@@ -69,6 +69,7 @@ impl ProjectConfig {
 #[derive(PartialEq)]
 pub struct Package {
     pub name: String,
+    pub copyright: Option<String>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -90,6 +91,7 @@ impl Package {
     pub fn new(name: String) -> Self {
         Self {
             name: name,
+            copyright: None,
             description: String::new(),
             author: String::new(),
             version: Self::default_version(),
@@ -107,6 +109,9 @@ impl Package {
         map.insert("FileVersion", self.version.to_owned());
         map.insert("ProductVersion", self.version.to_owned());
         
+        self.copyright.to_owned().map(|c| {
+            map.insert("LegalCopyright", c);
+        });
 
         for (k, v) in map {
             res.append(&mut vec![
