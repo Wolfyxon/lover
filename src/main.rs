@@ -499,6 +499,8 @@ fn cmd_build(command: &Command) {
 
     files::create_dir(&project_conf.directories.get_temp_dir());
 
+    println!();
+
     let mut already_built: Vec<&str> = Vec::new();
 
     for target in &targets {

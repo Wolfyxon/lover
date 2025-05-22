@@ -87,7 +87,7 @@ impl<'a> BuildTarget<'a> {
             println!("\n (use `lover install <name>` to install them)");
         }
 
-        print_success(format!("Successfully built '{}'", self.name));
+        print_success(format!("Successfully built '{}' \n", self.name));
     }
 }
 
