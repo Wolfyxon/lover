@@ -386,7 +386,7 @@ fn build_linux() {
 
     actions::append_file(love.as_path(), love_bin.as_path(), "Embedding game into the love executable");
 
-    print_step_verbose(&cmd_conf, "Replacing the LOVE binary in SquashFS");
+    print_step("Replacing the LOVE binary in SquashFS");
     appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin, &new_squashfs);
 
     print_step_verbose(&cmd_conf, "Cloning LOVE AppImage");
