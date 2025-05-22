@@ -59,7 +59,7 @@ impl ProgressBar {
         let pre_space_size = bar_margin.saturating_sub(prefix_len);
 
         let fill = "=".repeat( (amt * width) as usize );
-        let spaces = " ".repeat( (width - amt * width) as usize );
+        let spaces = " ".repeat( (width - amt * width).ceil() as usize );
         let pre_space = " ".repeat(pre_space_size);
         let prefix = self.prefix.clone().unwrap_or("".to_string());
         
