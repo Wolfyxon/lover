@@ -75,11 +75,65 @@ Read [the documentation](https://doc.rust-lang.org/cargo/) for more info.
 ## Why?
 I wanted to create a simple expandable and universal system for building, running and managing Love2D projects.
 
-This is a replacement for my previous project [Love2D Universal](https://github.com/Wolfyxon/love2d-universal) which utilized a single Makefile, however a global system-wide tool is a way better approach.
+This is a replacement for my previous project [Love2D Universal](https://github.com/Wolfyxon/love2d-universal) which utilized a single Makefile, however a global system-wide tool written in a more advanced language like Rust is a way better approach.
 A single script setup for a large project is not a good idea, as organization is not great for such big scripts and implementing a lot of advanced features is not easy. 
-Also this tool does not require installing as much software as Love2D Universal and has a nice error handling and warnings.
+Also this tool does not require installing as much software as Love2D Universal and has nice error handling and warnings.
 
 This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
+
+## Example outputs
+(Note that this may not always be up to date)
+(Also normally this is colored)
+
+`lover help`
+```
+Usage: lover <command> [<arguments>]... 
+
+Lover is a open source cross-platform build system for Love2D projects.
+https://github.com/Wolfyxon/lover
+
+Available commands:
+
+  help:      Shows help.
+  version:   Shows the current Lover version.
+  new:       Initializes a new Love2D project.
+  create:    Runs an interactive project setup
+  run:       Runs the game.
+  parse:     Checks the validity of Lua scripts.
+  build:     Packages the game.
+  clean:     Removes compiled build files.
+  target:    Lists or shows info of available build targets.
+  dep:       Lists or shows info of available dependencies.
+  install:   Installs dependencies.
+  uninstall: Removes installed dependencies.
+  fetch:     Fetches a dependency. Mostly for testing
+  env:       Shows a list of available Lover constants and their values.
+  module:    Shows the extra code injected into your game when building. Mostly for testing
+
+Use `lover help <command>` to see the usage of a specific command.
+For additional help, see the wiki: https://github.com/Wolfyxon/lover/wiki
+```
+
+`lover build win64 linux`
+```
+> Initializing build of: win64, linux
+OK: All dependencies are installed.
+> Building target: love
+Warning: 'luac' not found. Skipping luac parse.
+>> Archiving game assets                            [==============================] 1/1
+OK: Successfully built 'love'
+> Building target: win64
+>> Extracting Windows Love2D files                  [==============================] 14/14
+>> Embedding game into the love executable          [==============================] 783/783
+OK: The EXE should now be usable, even if something fails.
+>> Converting icon to the ICO format
+>> Applying info with RCEdit
+OK: Successfully built 'win64'
+> Building target: linux
+>> Embedding game into the love executable          [==============================] 783/783
+>> Embedding created SquashFS into AppImage
+OK: Successfully built 'linux'
+```
 
 ## Used crates
 - `reqwest`: Sending HTTP requests and downloading files
