@@ -546,7 +546,7 @@ pub fn append_file(from: &Path, to: &Path, text: impl Into<String>) {
     let size = files::get_size(from);
 
     let mut bar = ProgressBar::new(size);
-    bar.set_prefix(text);
+    bar.set_prefix(format!("{} {}", console::get_step_prefix(), text.into()));
 
     let mut progress: usize = 0;
 
