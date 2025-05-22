@@ -232,6 +232,7 @@ pub struct CommandRunner {
     env: HashMap<String, String>,
     paths: Vec<PathBuf>,
     quiet: bool,
+    required: bool,
     ignore_os_path: bool
 }
 
@@ -243,8 +244,14 @@ impl CommandRunner {
             env: HashMap::new(),
             paths: Vec::new(),
             quiet: false,
+            required: true,
             ignore_os_path: false
         }
+    }
+
+    pub fn unrequire(&mut self) -> &mut Self {
+        self.required = false;  
+        self
     }
 
     pub fn add_path(&mut self, path: impl Into<PathBuf>) -> &mut Self {
@@ -338,6 +345,7 @@ impl CommandRunner {
     
             self.ignore_os_path = true;
 
+            new.required = self.required;
             new.set_env("WINEDEBUG", "-all");
             new.envs(&self.env);
             new.set_quiet(self.quiet);
@@ -356,12 +364,17 @@ impl CommandRunner {
         }
 
         if !self.exists() {
-            exit_err(format!("Can't run '{}': not found.", &self.command));
+            let err = format!("Command '{}' not found. (OS PATH and Lover config was searched too)", &self.command);
+            
+            if self.required {
+                exit_err(err);
+            } else {
+                print_warn(err);
+                return;
+            }
         }
 
-        let mut command = Command::new(&self.get_path().unwrap_or_else(|| {
-            exit_err(format!("Command '{}' not found. (OS PATH and Lover config was searched too)", &self.command));
-        }));
+        let mut command = Command::new(&self.get_path().unwrap());
 
         let cmd_str = self.to_string();
 

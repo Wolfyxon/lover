@@ -304,7 +304,7 @@ pub fn build_windows_zip(arch: Arch) {
     CommandRunner::new("rcedit")
         .add_path(conf.software.rcedit)
         .add_path(deps::get_dep_or_crash("rcedit").get_path())
-
+        .unrequire()
         .add_args(args)
         .set_quiet(true)
         .to_wine()
