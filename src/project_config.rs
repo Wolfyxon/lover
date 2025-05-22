@@ -106,7 +106,6 @@ impl Package {
         map.insert("ProductName", self.name.to_owned());    
         map.insert("FileDescription", self.description.to_owned());
         map.insert("CompanyName", self.author.to_owned());    
-        map.insert("FileVersion", self.version.to_owned());
         map.insert("ProductVersion", self.version.to_owned());
         
         self.copyright.to_owned().map(|c| {
@@ -120,6 +119,10 @@ impl Package {
                 v
             ]);
         }
+
+        // `--set-version-string FileVersion` doesn't work
+        res.push("--set-file-version".to_string());
+        res.push(self.version.to_owned());
 
         res
     }
