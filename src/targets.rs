@@ -381,12 +381,12 @@ fn build_linux() {
     print_step_verbose(&cmd_conf,"Extracting Love2D AppImage SquashFS");
     appimage::extract_squashfs(&love_app_img, &ext_squashfs);
 
-    print_step_verbose(&cmd_conf, "Extracting LOVE binary");
+    print_step_verbose(&cmd_conf, "Extracting LOVE binary from the AppImage");
     appimage::extract_squashfs_file(&ext_squashfs, love_inner_bin, &love_bin);
 
-    actions::append_file(love.as_path(), love_bin.as_path(), "Embedding game into the love executable");
+    actions::append_file(love.as_path(), love_bin.as_path(), "Embedding game into the LOVE executable");
 
-    print_step("Replacing the LOVE binary in SquashFS");
+    print_step("Replacing the LOVE binary in the SquashFS");
     appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin, &new_squashfs);
 
     print_step_verbose(&cmd_conf, "Cloning LOVE AppImage");
@@ -395,7 +395,7 @@ fn build_linux() {
         Err(err) => exit_err(format!("Copy failed: {}", err))
     }
 
-    print_step("Embedding created SquashFS into AppImage");
+    print_step("Embedding created SquashFS into the AppImage");
     appimage::embed_squashfs(&app_img, &new_squashfs);
 }
 
