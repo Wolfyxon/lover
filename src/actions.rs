@@ -91,6 +91,10 @@ impl Archiver {
             }
     
             if ignore {
+                self.progress_bar.as_mut().map(|bar| {
+                    bar.max -= 1;
+                });
+                
                 continue
             }
     
