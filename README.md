@@ -4,12 +4,6 @@ Lover is a open source command line build system and runner for [Love2D](https:/
 [Wiki](https://github.com/Wolfyxon/lover/wiki) | [CLI usage](https://github.com/Wolfyxon/lover/wiki/Using-Lover) | [Constants](https://github.com/Wolfyxon/lover/wiki/Constants) | [Downloads](https://github.com/Wolfyxon/lover/releases/latest)
 
 ## Features
-### Easy cross-platform building
-You can easily build your game for all supported platforms with a single command.
-
-### Automatic dependency management
-Love binaries required for building are downloaded automatically and can easily be managed by using Lover commands.
-
 ### Default environment variables
 You can access certain constants like the game's version by the use of `os.getenv()`.
 ```lua
@@ -17,14 +11,37 @@ local version = os.getenv("LOVER_PKG_VERSION")
 ```
 [learn more](https://github.com/Wolfyxon/lover/wiki/Constants)
 
-### Simple command line interface
-Lover has a simple and easy to use command syntax (at least I hope).
+### Easy cross-platform building
+You can easily build your game for all supported platforms with a single command.
+
+`lover build <platform>...`
+
+Example:
+```
+lover build linux
+```
+```
+lover build win32 win64 linux
+```
+
+### Automatic dependency management
+Love binaries required for building are downloaded automatically and can easily be managed by using Lover commands.
+
+- `lover install <name>` to install
+- `lover uninstall <name>` to remove
+- `lover dep <name>` to get details
+- `lover dep` to list
+
+Example:
+```
+lover install love-win64
+```
 
 ## Supported platforms
-- ✅ **Full support**: The platform is fully supported and should work
+- ✅ **Full support**: The platform is fully supported and should work. Treated with the highest priority
 - 🟡 **Partial support**: The platform mostly works but you may encounter issues
 - 📁 **Planned**: Support will be implemented in future
-- ⭕ **Not yet needed**: The platform is not widely used. If you want support for it [you can open an issue](https://github.com/Wolfyxon/lover/issues/new) and it will be implemented.
+- ⭕ **Not yet needed**: The platform is not widely used. If you want support for it [you can open an issue](https://github.com/Wolfyxon/lover/issues/new).
 - ❗ **Testers/maintainers needed**: someone is needed to test and/or maintain the platform
 - ❌ **Impossible**: The platform is currently impossible to implement
 
@@ -56,30 +73,6 @@ The `love` target is runnable on all platforms, but require [LÖVE](https://love
 | Windows  | x86_64 | ✅     |
 | Windows  | x86_32 | ⭕     |
 | MacOS    |        | ❗     |
-
-## Compiling
-Lover is written in **Rust** and managed by **Cargo**. 
-
-Install Cargo on your system then open the terminal in the Lover's source directory and run:
-```
-cargo build
-```
-or
-```
-cargo run
-```
-to just run it.
-
-Read [the documentation](https://doc.rust-lang.org/cargo/) for more info.
-
-## Why?
-I wanted to create a simple expandable and universal system for building, running and managing Love2D projects.
-
-This is a replacement for my previous project [Love2D Universal](https://github.com/Wolfyxon/love2d-universal) which utilized a single Makefile, however a global system-wide tool written in a more advanced language like Rust is a way better approach.
-A single script setup for a large project is not a good idea, as organization is not great for such big scripts and implementing a lot of advanced features is not easy. 
-Also this tool does not require installing as much software as Love2D Universal and has nice error handling and warnings.
-
-This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
 
 ## Example outputs
 (Note that this may not always be up to date)  
@@ -138,6 +131,30 @@ OK: Successfully built 'win64'
 OK: Successfully built 'linux'
 
 ```
+
+## Why?
+I wanted to create a simple expandable and universal system for building, running and managing Love2D projects.
+
+This is a replacement for my previous project [Love2D Universal](https://github.com/Wolfyxon/love2d-universal) which utilized a single Makefile, however a global system-wide tool written in a more advanced language like Rust is a way better approach.
+A single script setup for a large project is not a good idea, as organization is not great for such big scripts and implementing a lot of advanced features is not easy. 
+Also this tool does not require installing as much software as Love2D Universal and has nice error handling and warnings.
+
+This tool is also very similar to [Cargo](https://github.com/rust-lang/cargo/) which manages Rust projects.
+
+## Compiling
+Lover is written in **Rust** and managed by **Cargo**. 
+
+Install Cargo on your system then open the terminal in the Lover's source directory and run:
+```
+cargo build
+```
+or
+```
+cargo run
+```
+to just run it.
+
+Read [the documentation](https://doc.rust-lang.org/cargo/) for more info.
 
 ## Used crates
 - `reqwest`: Sending HTTP requests and downloading files
