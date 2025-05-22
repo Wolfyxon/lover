@@ -323,7 +323,7 @@ impl CommandRunner {
     }
 
     pub fn exists(&self) -> bool {
-        return command_exists(&self.command);
+        return self.get_path().is_some();
     }
 
     pub fn to_string(&self) -> String {
