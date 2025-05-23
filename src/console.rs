@@ -25,7 +25,7 @@ pub struct ProgressBar {
     pub max: usize,
     pub prefix: Option<String>,
     pub suffix: Option<String>,
-    pub convert: fn(unit: usize) -> usize
+    pub convert: fn(unit: f32) -> f32
 }
 
 impl ProgressBar {
@@ -38,7 +38,7 @@ impl ProgressBar {
         }
     }
 
-    pub fn set_converter(&mut self, func: fn(unit: usize) -> usize) -> &mut Self {
+    pub fn set_converter(&mut self, func: fn(unit: f32) -> f32) -> &mut Self {
         self.convert = func;
         self
     }
@@ -79,8 +79,8 @@ impl ProgressBar {
         let prefix = self.prefix.clone().unwrap_or("".to_string());
         let suffix = self.suffix.clone().unwrap_or("".to_string());
 
-        let disp_progress = (self.convert)(progress);
-        let disp_max = (self.convert)(self.max);
+        let disp_progress = (self.convert)(progress as f32);
+        let disp_max = (self.convert)(self.max as f32);
         
         print!("\r{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max} {suffix}");
         flush();
