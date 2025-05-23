@@ -1235,7 +1235,7 @@ dependencies = [
 
 [[package]]
 name = "lover"
-version = "2.1.2"
+version = "2.2.0"
 dependencies = [
  "ansi_term",
  "backhand",
