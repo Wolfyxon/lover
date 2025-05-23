@@ -345,8 +345,8 @@ pub fn fetch_gh_latest_release(owner: &str, repo: &str) -> GitHubRelease {
     fetch_gh_release(owner, repo, "latest")
 }
 
+#[cfg(test)]
 mod tests {
-    #[allow(unused_imports)] // Rust, are you dumb? Iit literally doesn't compile without this import
     use super::*;
 
     #[test]
