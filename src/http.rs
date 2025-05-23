@@ -79,6 +79,8 @@ pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<
 
     let mut bar = ProgressBar::new(len);
     bar.set_prefix(alias);
+    bar.set_converter(|u| u / 1024.0 / 1024.0);
+    bar.set_suffix("MB");
 
     let mut bytes: usize = 0;
     
