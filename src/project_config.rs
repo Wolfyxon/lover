@@ -342,3 +342,34 @@ pub fn get() -> ProjectConfig {
     parsed.validate();
     parsed
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn parse_valid() {
+        let project = ProjectConfig::parse_str(include_str!("testData/projects/generic.toml")).unwrap();
+
+        assert_eq!(project.package.name, "Some game");
+        assert_eq!(project.package.version, "1.2");
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_syntax_error() {
+        ProjectConfig::parse_str(include_str!("testData/projects/invalidSyntax.toml")).unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_missing_name() {
+        ProjectConfig::parse_str(include_str!("testData/projects/missingName.toml")).unwrap();
+    }
+
+    #[test]
+    #[should_panic]
+    fn parse_empty() {
+        ProjectConfig::parse_str("").unwrap();
+    }
+}
