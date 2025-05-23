@@ -69,8 +69,11 @@ impl ProgressBar {
         let spaces = " ".repeat( (width - amt * width).ceil() as usize );
         let pre_space = " ".repeat(pre_space_size);
         let prefix = self.prefix.clone().unwrap_or("".to_string());
+
+        let disp_progress = (self.convert)(progress);
+        let disp_max = (self.convert)(self.max);
         
-        print!("\r{} {} [{}{}] {}/{}", prefix, pre_space, fill, spaces, (self.convert)(progress), (self.convert)(self.max));
+        print!("\r{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max}");
         flush();
     }
 
