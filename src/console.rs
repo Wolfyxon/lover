@@ -24,6 +24,7 @@ impl CommandLineSettings {
 pub struct ProgressBar {
     pub max: usize,
     pub prefix: Option<String>,
+    pub suffix: Option<String>,
     pub convert: fn(unit: usize) -> usize
 }
 
@@ -32,6 +33,7 @@ impl ProgressBar {
         ProgressBar {
             max: max,
             prefix: None,
+            suffix: None,
             convert: |unit| unit
         }
     }
@@ -43,6 +45,11 @@ impl ProgressBar {
 
     pub fn set_prefix(&mut self, prefix: impl Into<String>) {
         self.prefix = Some(prefix.into());
+    }
+
+    pub fn set_suffix(&mut self, suffix: impl Into<String>) -> &mut Self {
+        self.suffix = Some(suffix.into());
+        self
     }
 
     pub fn update(&self, progress: usize) {
@@ -69,11 +76,12 @@ impl ProgressBar {
         let spaces = " ".repeat( (width - amt * width).ceil() as usize );
         let pre_space = " ".repeat(pre_space_size);
         let prefix = self.prefix.clone().unwrap_or("".to_string());
+        let suffix = self.suffix.clone().unwrap_or("".to_string());
 
         let disp_progress = (self.convert)(progress);
         let disp_max = (self.convert)(self.max);
         
-        print!("\r{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max}");
+        print!("\r{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max} {suffix}");
         flush();
     }
 
