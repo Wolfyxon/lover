@@ -23,15 +23,22 @@ impl CommandLineSettings {
 
 pub struct ProgressBar {
     pub max: usize,
-    pub prefix: Option<String>
+    pub prefix: Option<String>,
+    pub convert: fn(unit: usize) -> usize
 }
 
 impl ProgressBar {
     pub fn new(max: usize) -> Self {
         ProgressBar {
             max: max,
-            prefix: None
+            prefix: None,
+            convert: |unit| unit
         }
+    }
+
+    pub fn set_converter(&mut self, func: fn(unit: usize) -> usize) -> &mut Self {
+        self.convert = func;
+        self
     }
 
     pub fn set_prefix(&mut self, prefix: impl Into<String>) {
@@ -63,7 +70,7 @@ impl ProgressBar {
         let pre_space = " ".repeat(pre_space_size);
         let prefix = self.prefix.clone().unwrap_or("".to_string());
         
-        print!("\r{} {} [{}{}] {}/{}", prefix, pre_space, fill, spaces, progress, self.max);
+        print!("\r{} {} [{}{}] {}/{}", prefix, pre_space, fill, spaces, (self.convert)(progress), (self.convert)(self.max));
         flush();
     }
 
