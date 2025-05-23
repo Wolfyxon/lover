@@ -280,7 +280,7 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("'{}' could not be found.", &exe_src.to_str().unwrap()));
     }
 
-    actions::append_file(love.as_path(), &exe_src, "Embedding game into the love executable");
+    actions::append_file(love.as_path(), &exe_src, "Embedding game into the LOVE executable");
 
     print_success("The EXE should now be usable, even if something fails.");
 
