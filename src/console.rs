@@ -2,6 +2,7 @@ use std::io::{stdin, stdout, BufRead, Read, Write};
 use std::process::exit;
 use ansi_term::Style;
 use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue, Purple};
+use termsize::Size;
 
 use crate::config;
 
@@ -54,8 +55,10 @@ impl ProgressBar {
     }
 
     pub fn update(&self, progress: usize) {
-        let width = 30.0;
-        let mut bar_margin: usize = 50;
+        let term_width = termsize::get().unwrap_or(Size {rows: 1, cols: 200}).cols;
+
+        let mut bar_margin: usize = (term_width as f32 * 0.3).max(42.0) as usize;
+        let width = (term_width as f32 * 0.2).min(30.0);
 
         let mut amt: f32 = 0.0;
 
