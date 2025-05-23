@@ -164,6 +164,22 @@ pub fn get_target<'a>(name: impl Into<String>) -> Option<BuildTarget<'a>> {
     None
 } 
 
+pub fn get_platform_target_name() -> String {
+    #[cfg(target_os = "windows")] {
+        #[cfg(target_arch = "x86")]
+        return "win32".to_string();
+
+        #[cfg(target_arch = "x86_64")]
+        return "win64".to_string();
+    }
+    #[cfg(target_os = "linux")] {
+        return "linux".to_string();
+    }
+
+    #[allow(unreachable_code)]
+    return "love".to_string();
+}
+
 pub fn get_target_or_crash<'a>(name: impl Into<String>) -> BuildTarget<'a> {
     let name_str = name.into();
     
