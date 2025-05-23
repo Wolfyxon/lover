@@ -469,7 +469,7 @@ fn cmd_parse(_command: &Command) {
 
 fn cmd_build(command: &Command) {
     let project_conf = project_config::get();
-    let mut target_names = project_conf.build.default;
+    let mut target_names = project_conf.build.get_default_targets();
 
     let args = command.get_args();
     

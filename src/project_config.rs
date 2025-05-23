@@ -1,6 +1,6 @@
 use std::{collections::HashMap, env, path::PathBuf};
 use serde::{Deserialize, Serialize};
-use crate::console::{exit_err, print_warn};
+use crate::{console::{exit_err, print_warn}, targets};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
@@ -218,21 +218,31 @@ impl Run {
 #[derive(Serialize)]
 #[derive(PartialEq)]
 pub struct Build {
-    #[serde(default = "Build::default_default")]
-    pub default: Vec<String>
+    pub default: Option<Vec<String>>
 }
 
 impl Build {
     fn default() -> Self {
         Self {
-            default: Self::default_default()
+            default: None
         }
     }
 
-    fn default_default() -> Vec<String> {
-        vec!["love".to_string()]
-    }
+    pub fn get_default_targets(&self) -> Vec<String> {
+        let platform_targets = vec![targets::get_platform_target_name()];
 
+        match &self.default {
+            Some(list) => {
+                if list.is_empty() {
+                    platform_targets
+                } else {
+                    list.to_owned()
+                }
+            }
+            None => platform_targets
+        }
+    }
+    
     pub fn is_default(&self) -> bool {
         return self == &Self::default();
     }
