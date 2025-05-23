@@ -1,5 +1,5 @@
 use std::{fs, io::Write, path::{Path, PathBuf}, process::exit};
-use crate::{console::{exit_err, input, input_non_empty, print_err, print_note, print_significant, print_success}, files, project_config::{self, Package, ProjectConfig}};
+use crate::{console::{exit_err, input, input_non_empty, print_err, print_note, print_success}, files, project_config::{self, Package, ProjectConfig}};
 
 struct ComponentFile<'a> {
     path: &'a Path,
@@ -76,10 +76,6 @@ pub fn create(name: String, path: &Path) {
 }
 
 pub fn setup() {
-    print_significant("Welcome to the Lover project creator", "");
-    println!("You'll be asked a few questions for your project settings and then everything will be set up for you.");
-    println!("If a question has '(default: ...)' or '(optional)', just press enter enter if you don't want to change it.");
-    println!("Use ^C to abort (press Ctr+C in your terminal)");
     print_note(format!("All settings can be changed at any time you want in the {} file.", project_config::PROJECT_FILE));
     println!();
 
