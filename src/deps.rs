@@ -362,4 +362,20 @@ mod tests {
             }
         }
     }
+
+    #[test]
+    fn deserialize_releases() {
+        let data = vec![
+            include_str!("testData/releases/lover.json"),
+            include_str!("testData/releases/love.json"),
+            include_str!("testData/releases/rcedit.json")
+        ];
+
+        for s in data {
+            let _: GitHubRelease = serde_json::from_str(s).unwrap_or_else(|err| {
+                println!("{}", s);
+                panic!("Deserialization failed: {}", err)
+            });
+        }
+    }
 }
