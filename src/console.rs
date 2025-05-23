@@ -79,8 +79,9 @@ impl ProgressBar {
         let prefix = self.prefix.clone().unwrap_or("".to_string());
         let suffix = self.suffix.clone().unwrap_or("".to_string());
 
-        let disp_progress = (self.convert)(progress as f32);
-        let disp_max = (self.convert)(self.max as f32);
+        let zero_factor = 1000.0; 
+        let disp_progress = ((self.convert)(progress as f32) * zero_factor).round() / zero_factor;
+        let disp_max = ((self.convert)(self.max as f32) * zero_factor).round() / zero_factor;
         
         print!("\r{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max} {suffix}");
         flush();
