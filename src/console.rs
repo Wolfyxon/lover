@@ -39,6 +39,29 @@ impl ProgressBar {
         }
     }
 
+    pub fn memory_mode(&mut self) -> &mut Self {
+        let kb = 1024.0;
+        let mb = kb * 1024.0;
+        let gb = mb * 1024.0;
+
+        let max = self.max as f32;
+
+        if max > gb {
+            self.set_converter(|u| u / gb);
+            self.set_suffix("GB");
+        } else if max > mb {
+            self.set_converter(|u| u / mb);
+            self.set_suffix("MB");
+        } else if max > kb {
+            self.set_converter(|u| u / kb);
+            self.set_suffix("KB");
+        } else {
+            self.set_suffix("B");
+        }
+
+        self
+    }
+
     pub fn set_converter(&mut self, func: fn(unit: f32) -> f32) -> &mut Self {
         self.convert = func;
         self
