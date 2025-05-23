@@ -43,8 +43,9 @@ impl ProgressBar {
         self
     }
 
-    pub fn set_prefix(&mut self, prefix: impl Into<String>) {
+    pub fn set_prefix(&mut self, prefix: impl Into<String>) -> &mut Self {
         self.prefix = Some(prefix.into());
+        self
     }
 
     pub fn set_suffix(&mut self, suffix: impl Into<String>) -> &mut Self {
