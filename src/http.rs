@@ -10,11 +10,9 @@ pub struct Downloadable {
 }
 
 impl<'a> Downloadable {
-    pub fn request(url: String) -> Self {
-        let res = get_request(url.to_owned().as_str());
-
+    pub fn request(url: impl Into<String>) -> Self {
         Self {
-            response: res,
+            response: get_request(url)
             //url: url
         }
     }
@@ -32,32 +30,36 @@ pub fn get_user_agent() -> String {
     format!("Lover/{}", env!("CARGO_PKG_VERSION"))
 }
 
-pub fn fetch_text(url: &str) -> String {
+pub fn fetch_text(url: impl Into<String>) -> String {
+    let url_str = url.into();
+
     let res = Client::new()
-        .get(url)
+        .get(&url_str)
         .header("User-Agent", get_user_agent())
         .send();
 
     if res.is_err() {
-        exit_err(format!("Failed to request '{}': {}", url, res.err().unwrap()));
+        exit_err(format!("Failed to request '{}': {}", &url_str, res.err().unwrap()));
     } 
 
     match res.unwrap().text() {
         Ok(text) => text,
-        Err(err) => exit_err(format!("Failed to get text from '{}': {}", url, err))
+        Err(err) => exit_err(format!("Failed to get text from '{}': {}", &url_str, err))
     }
 }
 
-pub fn fetch_struct<T: DeserializeOwned>(url: &str) -> T {
-    match serde_json::from_str(fetch_text(url).as_str()) {
+pub fn fetch_struct<T: DeserializeOwned>(url: impl Into<String>) -> T {
+    let url_str = url.into();
+
+    match serde_json::from_str(&fetch_text(url_str.to_owned())) {
         Ok(parsed) => parsed,
-        Err(err) => exit_err(format!("Struct parse error of '{}': {}", url, err))
+        Err(err) => exit_err(format!("Struct parse error of '{}': {}", url_str, err))
     }
 }
 
-pub fn get_request(url: &str) -> Response {
+pub fn get_request(url: impl Into<String>) -> Response {
     let client = Client::new()
-        .get(url)
+        .get(url.into())
         .header("User-Agent", get_user_agent());
 
     match client.send() {
