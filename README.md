@@ -114,21 +114,22 @@ OK: All dependencies are installed.
 
 > Building target: love
 Warning: 'luac' not found. Skipping luac parse.
->> Archiving game assets                            [==============================] 1/1
-OK: Successfully built 'love'
+>> Archiving game assets                            [==============================] 1/1 
+OK: Successfully built 'love' 
 
 > Building target: win64
->> Extracting Windows Love2D files                  [==============================] 14/14
->> Embedding game into the love executable          [==============================] 783/783
+>> Extracting Windows Love2D files                  [==============================] 14/14 
+>> Embedding game into the LOVE executable          [==============================] 0.763/0.763 KB
 OK: The EXE should now be usable, even if something fails.
 >> Converting icon to the ICO format
 >> Applying info with RCEdit
-OK: Successfully built 'win64'
+OK: Successfully built 'win64' 
 
 > Building target: linux
->> Embedding game into the love executable          [==============================] 783/783
->> Embedding created SquashFS into AppImage
-OK: Successfully built 'linux'
+>> Embedding game into the LOVE executable          [==============================] 0.763/0.763 KB
+>> Replacing the LOVE binary in the SquashFS
+>> Embedding created SquashFS into the AppImage
+OK: Successfully built 'linux' 
 
 ```
 
