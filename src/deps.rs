@@ -1,8 +1,8 @@
-use std::{fs, path::PathBuf};
+use std::{fs, path::PathBuf, process::exit};
 use regex::Regex;
 use serde::Deserialize;
 
-use crate::{config, console::{self, confirm_or_exit, exit_err, print_note, print_step, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
+use crate::{config, console::{self, confirm_or_exit, exit_err, print_err, print_note, print_step, print_success, print_warn, ProgressBar}, http::{self, Downloadable}};
 
 pub enum RepoDownload<'a> {
     LatestRelease(&'a str), // file pattern
@@ -230,10 +230,23 @@ pub fn get_dep<'a>(name: impl Into<String>) -> Option<Dependency<'a>> {
 }
 
 pub fn get_dep_or_crash<'a>(name: impl Into<String>) -> Dependency<'a> {
-    let name_str = name.into();
+    let name_str: String = name.into();
 
     get_dep(name_str.to_owned()).unwrap_or_else(|| {
-        exit_err(format!("Unknown dependency '{}'", name_str));
+        print_err(format!("Unknown dependency '{}' \n", &name_str));
+
+        for d in get_deps() {
+            let front_match = d.name.starts_with(&name_str) || d.name.ends_with(&name_str);
+            let back_match = name_str.starts_with(&d.name) || name_str.ends_with(&d.name);
+
+            if front_match || back_match  {
+                println!("Did you mean '{}'? \n", d.name);
+            }
+        }
+
+        println!("Use `lover dep` to see available dependencies");
+
+        exit(1);
     })
 }
 
