@@ -36,25 +36,22 @@ pub fn fetch_text(url: impl Into<String>) -> String {
     let res = Client::new()
         .get(&url_str)
         .header("User-Agent", get_user_agent())
-        .send();
+        .send()
+        .unwrap_or_else(|err| {
+            exit_err(format!("Failed to request '{}': {}", &url_str, err));
+        });
 
-    if res.is_err() {
-        exit_err(format!("Failed to request '{}': {}", &url_str, res.err().unwrap()));
-    } 
-
-    match res.unwrap().text() {
-        Ok(text) => text,
-        Err(err) => exit_err(format!("Failed to get text from '{}': {}", &url_str, err))
-    }
+    res.text().unwrap_or_else(|err| {
+        exit_err(format!("Failed to get text from '{}': {}", &url_str, err));
+    })
 }
 
 pub fn fetch_struct<T: DeserializeOwned>(url: impl Into<String>) -> T {
     let url_str = url.into();
 
-    match serde_json::from_str(&fetch_text(url_str.to_owned())) {
-        Ok(parsed) => parsed,
-        Err(err) => exit_err(format!("Struct parse error of '{}': {}", url_str, err))
-    }
+    serde_json::from_str(&fetch_text(url_str.to_owned())).unwrap_or_else(|err| {
+        exit_err(format!("Struct parse error of '{}': {}", url_str, err));
+    })
 }
 
 pub fn get_request(url: impl Into<String>) -> Response {
@@ -62,17 +59,15 @@ pub fn get_request(url: impl Into<String>) -> Response {
         .get(url.into())
         .header("User-Agent", get_user_agent());
 
-    match client.send() {
-        Ok(res) => res,
-        Err(err) => exit_err(format!("Request failed: {}", err))
-    }
+    client.send().unwrap_or_else(|err| {
+        exit_err(format!("Request failed: {}", err));
+    })
 }
 
 pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<String>) {
-    let mut file = match File::create(path) {
-        Ok(file) => file,
-        Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)) 
-    };
+    let mut file = File::create(path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err));
+    });
 
     let len = match response.content_length() {
         Some(len) => len as usize,
@@ -89,20 +84,16 @@ pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
 
-        let bytes_read = match response.read(&mut buf) {
-            Ok(bytes) => bytes,
-            Err(err) => exit_err(format!("Read failed: {}", err)) 
-        };
+        let bytes_read = response.read(&mut buf).unwrap_or_else(|err| {
+            exit_err(format!("Read failed: {}", err));
+        });
 
         if bytes_read == 0 { break; }
 
-        match file.write_all(&buf[..bytes_read]) {
-            Ok(_) => {},
-            Err(err) => {
-                bar.finish();
-                exit_err(format!("Write failed: {}", err));
-            }
-        };
+        file.write_all(&buf[..bytes_read]).unwrap_or_else(|err| {
+            bar.finish();
+            exit_err(format!("Write failed: {}", err));
+        });
 
         bytes += bytes_read;
 
