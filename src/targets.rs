@@ -317,14 +317,18 @@ pub fn build_windows_zip(arch: Arch) {
 
     print_step("Applying info with RCEdit");
 
-    CommandRunner::new("rcedit")
+    let mut cmd = CommandRunner::new("rcedit")
         .add_path(conf.software.rcedit)
         .add_path(deps::get_dep_or_crash("rcedit").get_path())
         .unrequire()
         .add_args(args)
         .set_quiet(true)
-        .to_wine()
-        .run();
+        .to_wine();
+        
+    #[cfg(target_family = "unix")]
+    cmd.set_error_hint("Try using another Wine version.");
+
+    cmd.run();
 
     if conf.build.zip {
         Archiver::new(&path)
