@@ -109,7 +109,10 @@ impl ProgressBar {
         let disp_progress = ((self.convert)(progress as f32) * zero_factor).round() / zero_factor;
         let disp_max = ((self.convert)(self.max as f32) * zero_factor).round() / zero_factor;
         
-        print!("\r{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max} {suffix}");
+        let bar_string = format!("{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max} {suffix}");
+        let clear_space = " ".repeat(term_width.saturating_sub(bar_string.len() as u16) as usize);
+
+        print!("\r{}{}", bar_string, clear_space);
         flush();
     }
 
