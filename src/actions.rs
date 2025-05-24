@@ -239,6 +239,7 @@ pub struct CommandRunner {
     quiet: bool,
     required: bool,
     ignore_os_path: bool,
+    ignore: bool,
     error_hint: Option<String>
 }
 
@@ -252,6 +253,7 @@ impl CommandRunner {
             quiet: false,
             required: true,
             ignore_os_path: false,
+            ignore: false,
             error_hint: None
         }
     }
@@ -341,6 +343,21 @@ impl CommandRunner {
         Style::new().fg(Blue).paint("Executing >").to_string()
     }
 
+    pub fn check_exists(&self) -> bool {
+        if !self.exists() {
+            let err = format!("'{}' not found. (OS PATH and Lover config was searched too)", &self.command);
+            
+            if self.required {
+                exit_err(err);
+            } else {
+                print_warn(err);
+                return false;
+            }
+        }
+
+        return true;
+    } 
+
     pub fn to_wine(&mut self) -> Self {
         #[cfg(target_family = "windows")] {
             return self.to_owned();
@@ -351,6 +368,11 @@ impl CommandRunner {
             let mut new = CommandRunner::new(wine);
     
             self.ignore_os_path = true;
+
+            if !self.check_exists() {
+                self.ignore = true;
+                return self.to_owned();
+            }
 
             new.required = self.required;
             new.set_env("WINEDEBUG", "-all");
@@ -369,21 +391,14 @@ impl CommandRunner {
     }
 
     pub fn run(&self) {
+        if self.ignore || !self.check_exists() {
+            return;
+        }
+        
         let mut quiet = self.quiet;
         
         if get_command_line_settings().verbose {
             quiet = false;
-        }
-
-        if !self.exists() {
-            let err = format!("Command '{}' not found. (OS PATH and Lover config was searched too)", &self.command);
-            
-            if self.required {
-                exit_err(err);
-            } else {
-                print_warn(err);
-                return;
-            }
         }
 
         let mut command = Command::new(&self.get_path().unwrap());
