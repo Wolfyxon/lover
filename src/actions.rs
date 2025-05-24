@@ -18,6 +18,7 @@ use crate::config;
 use crate::console;
 use crate::console::exit_err;
 use crate::console::get_command_line_settings;
+use crate::console::print_err;
 use crate::console::print_step_verbose;
 use crate::console::print_success_verbose;
 use crate::console::ProgressBar;
@@ -237,7 +238,8 @@ pub struct CommandRunner {
     paths: Vec<PathBuf>,
     quiet: bool,
     required: bool,
-    ignore_os_path: bool
+    ignore_os_path: bool,
+    error_hint: Option<String>
 }
 
 impl CommandRunner {
@@ -249,7 +251,8 @@ impl CommandRunner {
             paths: Vec::new(),
             quiet: false,
             required: true,
-            ignore_os_path: false
+            ignore_os_path: false,
+            error_hint: None
         }
     }
 
@@ -360,6 +363,11 @@ impl CommandRunner {
         }
     }
 
+    pub fn set_error_hint(&mut self, text: impl Into<String>) -> &mut Self {
+        self.error_hint = Some(text.into());
+        self
+    }
+
     pub fn run(&self) {
         let mut quiet = self.quiet;
         
@@ -419,7 +427,10 @@ impl CommandRunner {
                 println!("{}{}", stdout, stderr);
             }
 
-            exit_err(format!("Command failed with code: {}", exit_code_text))
+            println!();
+            print_err(format!("Command failed with code: {}", exit_code_text));
+
+            self.error_hint.as_ref().map(|hint| println!("{}", hint));
         }
     }
 }
