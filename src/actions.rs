@@ -578,9 +578,8 @@ pub fn append_file(from: &Path, to: &Path, text: impl Into<String>) {
     let mut bar = ProgressBar::new(size);
 
     bar.set_prefix(format!("{} {}", console::get_step_prefix(), text.into()));
-    bar.set_suffix("KB");
-    bar.set_converter(|u| u / 1024.0);
-
+    bar.memory_mode();
+    
     let mut progress: usize = 0;
 
     loop {
