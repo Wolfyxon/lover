@@ -40,20 +40,20 @@ impl ProgressBar {
     }
 
     pub fn memory_mode(&mut self) -> &mut Self {
-        let kb = 1024.0;
-        let mb = kb * 1024.0;
-        let gb = mb * 1024.0;
+        const KB: f32 = 1024.0;
+        const MB: f32 = KB * 1024.0;
+        const GB: f32 = MB * 1024.0;
 
         let max = self.max as f32;
 
-        if max > gb {
-            self.set_converter(|u| u / gb);
+        if max > GB {
+            self.set_converter(|u| u / GB);
             self.set_suffix("GB");
-        } else if max > mb {
-            self.set_converter(|u| u / mb);
+        } else if max > MB {
+            self.set_converter(|u| u / MB);
             self.set_suffix("MB");
-        } else if max > kb {
-            self.set_converter(|u| u / kb);
+        } else if max > KB {
+            self.set_converter(|u| u / KB);
             self.set_suffix("KB");
         } else {
             self.set_suffix("B");
