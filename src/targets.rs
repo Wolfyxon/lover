@@ -410,10 +410,9 @@ fn build_linux() {
     appimage::replace_file_in_squashfs(&ext_squashfs, &love_bin, love_inner_bin, &new_squashfs);
 
     print_step_verbose(&cmd_conf, "Cloning LOVE AppImage");
-    match std::fs::copy(&love_app_img, &app_img) {
-        Ok(_) => {},
-        Err(err) => exit_err(format!("Copy failed: {}", err))
-    }
+    std::fs::copy(&love_app_img, &app_img).unwrap_or_else(|err| {
+        exit_err(format!("Copy failed: {}", err));
+    });
 
     print_step("Embedding created SquashFS into the AppImage");
     appimage::embed_squashfs(&app_img, &new_squashfs);
