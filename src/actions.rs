@@ -378,7 +378,11 @@ impl CommandRunner {
             new.set_env("WINEDEBUG", "-all");
             new.envs(&self.env);
             new.set_quiet(self.quiet);
-            new.add_args(vec![self.get_path().unwrap().to_str().unwrap()]); // TODO: Error handling
+            
+            new.add_args(vec![self.get_path()
+                                    .expect("Path retrieval failed despite previous checks").to_str()
+                                    .expect("Path to str failed")]);
+            
             new.add_args(self.args.to_owned());
     
             new
