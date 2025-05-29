@@ -389,6 +389,7 @@ impl CommandRunner {
         }
     }
 
+    #[allow(unused)]
     pub fn set_error_hint(&mut self, text: impl Into<String>) -> &mut Self {
         self.error_hint = Some(text.into());
         self
