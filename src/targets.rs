@@ -317,6 +317,7 @@ pub fn build_windows_zip(arch: Arch) {
 
     print_step("Applying info with RCEdit");
 
+    #[allow(unused_mut)]
     let mut cmd = CommandRunner::new("rcedit")
         .add_path(conf.software.rcedit)
         .add_path(deps::get_dep_or_crash("rcedit").get_path())
