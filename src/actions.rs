@@ -422,9 +422,19 @@ impl CommandRunner {
         command.args(&self.args);
         command.envs(&self.env);
 
-        let out = command.output().unwrap_or_else(|err| {
-            exit_err(format!("Failed to execute: {}:\n {}", err, &cmd_str));
-        });
+        let out = match command.output() {
+            Ok(out) => out,
+            Err(err) => {
+                let msg = format!("Failed to execute: {}:\n {}", err, &cmd_str);
+
+                if self.required {
+                    exit_err(msg);
+                } else {
+                    print_err(msg);
+                    return;
+                }
+            }
+        };
 
         let exit_code_text = match out.status.code() {
             Some(code) => code.to_string(),
