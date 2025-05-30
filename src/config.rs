@@ -177,13 +177,11 @@ pub fn get() -> Config {
 
     let path: PathBuf = get_config_path();
     
-    let string = match std::fs::read_to_string(&path) {
-        Ok(string) => string,
-        Err(err) => exit_err(format!("Failed to open config at '{}': {}", &path.display(), err))
-    };
+    let string = std::fs::read_to_string(&path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to open config at '{}': {}", &path.display(), err));
+    });
 
-    match Config::parse_str(string.as_str()) {
-        Ok(parsed) => parsed,
-        Err(err) =>  exit_err(format!("Config parse error: {}", err))
-    }
+    Config::parse_str(string.as_str()).unwrap_or_else(|err| {
+        exit_err(format!("Config parse error: {}", err));
+    })
 }

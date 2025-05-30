@@ -3,18 +3,16 @@ use std::{fs::{File, OpenOptions}, io::Read, path::{Path, PathBuf}};
 use crate::console::exit_err;
 
 pub fn get_file_tree(root: &Path) -> Vec<PathBuf> {
-    let paths = match std::fs::read_dir(root) {
-        Ok(paths) => paths,
-        Err(err) => exit_err(format!("Failed to get file tree: {}", err))
-    };
+    let paths = std::fs::read_dir(root).unwrap_or_else(|err| {
+        exit_err(format!("Failed to get file tree: {}", err));
+    });
 
     let mut res: Vec<PathBuf> = Vec::new();
 
     for entry_res in paths {
-        let entry = match entry_res {
-            Ok(entry) => entry,
-            Err(err) => exit_err(format!("File tree read error: {}", err))
-        };
+        let entry = entry_res.unwrap_or_else(|err| {
+            exit_err(format!("File tree read error: {}", err));
+        });
 
         let path = entry.path();
 
@@ -57,35 +55,31 @@ pub fn create_dir(path: &Path) {
 }
 
 pub fn create(path: &Path) -> File {
-    match File::create(path) {
-        Ok(file) => file,
-        Err(err) => exit_err(format!("Failed to create '{}': {}", path.to_str().unwrap(), err))
-    }
+    File::create(path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to create '{}': {}", path.to_str().unwrap(), err));
+    })
 }
 
 pub fn open(path: &Path) -> File {
-    match File::open(path) {
-        Ok(file) => file,
-        Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err))
-    }
+    File::open(path).unwrap_or_else(|err| {
+         exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err));
+    })
 }
 
 pub fn open_rw(path: &Path) -> File {
     let mut options = OpenOptions::new();
 
-    match options.read(true).write(true).open(path) {
-        Ok(file) => file,
-        Err(err) => exit_err(format!("Failed to open '{}' with read and write: {}", path.to_str().unwrap(), err))
-    }
+    options.read(true).write(true).open(path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to open '{}' with read and write: {}", path.to_str().unwrap(), err));
+    })
 }
 
 pub fn open_append(path: &Path) -> File {
     let mut options = OpenOptions::new();
 
-    match options.append(true).open(path) {
-        Ok(file) => file,
-        Err(err) => exit_err(format!("Failed to open '{}' for appending: {}", path.to_str().unwrap(), err))
-    }
+    options.append(true).open(path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to open '{}' for appending: {}", path.to_str().unwrap(), err));
+    })
 }
 
 pub fn get_size(path: &Path) -> usize {

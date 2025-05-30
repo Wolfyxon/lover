@@ -329,15 +329,13 @@ pub fn get() -> ProjectConfig {
         exit_err(format!("Could not find {} in the current or parent directories.", PROJECT_FILE));
     });
 
-    let string = match std::fs::read_to_string(&path) {
-        Ok(string) => string,
-        Err(err) => exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)) 
-    };
+    let string = std::fs::read_to_string(&path).unwrap_or_else(|err| {
+         exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)); 
+    });
 
-    let parsed = match ProjectConfig::parse_str(string.as_str()) {
-        Ok(parsed) => parsed,
-        Err(err) => exit_err(format!("Project config parse error: {}", err)) 
-    };
+    let parsed = ProjectConfig::parse_str(string.as_str()).unwrap_or_else(|err| {
+        exit_err(format!("Project config parse error: {}", err))
+    });
 
     parsed.validate();
     parsed
