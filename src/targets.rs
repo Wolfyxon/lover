@@ -6,6 +6,7 @@ use image::imageops::FilterType;
 use image::{GenericImageView, ImageFormat, ImageReader};
 
 use crate::actions::{Archiver, CommandRunner, Extractor};
+use crate::config::Config;
 use crate::{actions, appimage, config, console, files};
 use crate::console::{exit_err, print_note, print_significant, print_step, print_step_verbose, print_success, print_warn};
 use crate::deps::Dependency;
@@ -308,18 +309,27 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), err));
     });
     
-    let exe = exe_out.to_str().unwrap().to_string();
-
-    let mut args = vec![exe];
-    
-    args.append(&mut pkg.get_rcedit_args());
-    rcedit_add_icon(&mut args, &pkg, &path);
-
     print_step("Applying info with RCEdit");
+    apply_rcedit(&exe_out, &path, &conf, &pkg);
+
+    if conf.build.zip {
+        Archiver::new(&path)
+            .add_progress_bar("Archiving build files")
+            .archive(build_dir.join(format!("{}_{}.zip", pkg_name, &name)))
+        ;
+    }
+    
+}
+
+fn apply_rcedit(exe: &PathBuf, project_root: &PathBuf, config: &Config, package: &Package) {
+    let mut args = vec![exe.to_str().unwrap().to_string()];
+
+    args.append(&mut package.get_rcedit_args());
+    rcedit_add_icon(&mut args, &package, &project_root);
 
     #[allow(unused_mut)]
     let mut cmd = CommandRunner::new("rcedit")
-        .add_path(conf.software.rcedit)
+        .add_path(config.software.rcedit.to_owned())
         .add_path(deps::get_dep_or_crash("rcedit").get_path())
         .unrequire()
         .add_args(args)
@@ -330,14 +340,6 @@ pub fn build_windows_zip(arch: Arch) {
     cmd.set_error_hint("Try using another Wine version.");
 
     cmd.run();
-
-    if conf.build.zip {
-        Archiver::new(&path)
-            .add_progress_bar("Archiving build files")
-            .archive(build_dir.join(format!("{}_{}.zip", pkg_name, &name)))
-        ;
-    }
-    
 }
 
 fn build_virtual() {
