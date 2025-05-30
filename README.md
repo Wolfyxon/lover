@@ -51,8 +51,8 @@ lover install love-win64
 | Universal LOVE file |        | `love`  | ✅     |
 | Linux AppImage      | x86_64 | `linux` | ✅     |
 | Linux AppImage      | x86_32 |         | ❌     |
-| Windows             | x86_64 | `win64` | ✅     |
-| Windows             | x86_32 | `win32` | ✅     |
+| Windows EXE         | x86_64 | `win64` | ✅     |
+| Windows EXE         | x86_32 | `win32` | ✅     |
 | MacOS               |        |         | ❗     |
 | Web                 |        |         | 📁     |
 | Android             |        |         | 📁     |
