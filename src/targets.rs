@@ -297,10 +297,11 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("'{}' could not be found.", &exe_src.to_str().unwrap()));
     }
 
+    print_step("Applying info with RCEdit");
+    apply_rcedit(&exe_src, &path, &conf, &pkg);
+
     actions::append_file(love.as_path(), &exe_src, "Embedding game into the LOVE executable");
-
-    print_success("The EXE should now be usable, even if something fails.");
-
+    
     print_step_verbose(&cmd_conf, "Renaming the EXE");
 
     let exe_out = path.join(pkg_name.to_owned() + ".exe");
@@ -309,9 +310,6 @@ pub fn build_windows_zip(arch: Arch) {
         exit_err(format!("Failed to rename {}: {}", exe_src.to_str().unwrap(), err));
     });
     
-    print_step("Applying info with RCEdit");
-    apply_rcedit(&exe_out, &path, &conf, &pkg);
-
     if conf.build.zip {
         Archiver::new(&path)
             .add_progress_bar("Archiving build files")
