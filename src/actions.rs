@@ -6,9 +6,6 @@ use std::path::{Path, PathBuf};
 use std::fs::File;
 use std::process::Command;
 use std::process::Stdio;
-use std::time::Duration;
-use std::time::SystemTime;
-use std::time::UNIX_EPOCH;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
@@ -25,7 +22,6 @@ use crate::console::ProgressBar;
 use crate::console::{print_warn, print_success, print_step};
 use crate::files;
 use crate::files::get_file_tree;
-use crate::project_config::ProjectConfig;
 
 pub enum Context {
     Run,
