@@ -25,7 +25,7 @@ use crate::console::ProgressBar;
 use crate::console::{print_warn, print_success, print_step};
 use crate::files;
 use crate::files::get_file_tree;
-use crate::project_config;
+use crate::project_config::ProjectConfig;
 
 pub enum Context {
     Run,
@@ -632,24 +632,23 @@ pub fn get_env_replacement_map() -> HashMap<String, String> {
     map
 }
 
-pub fn get_env_map(context: Context) -> HashMap<String, String> {
+pub fn get_env_map(project: &ProjectConfig, context: Context) -> HashMap<String, String> {
     let mut map: HashMap<String, String> = HashMap::new();
 
-    let project_conf = project_config::get();
-    let env = project_conf.env;
-    let pkg = project_conf.package;
+    let env = &project.env;
+    let pkg = &project.package;
 
     let ctx_map = match context {
-        Context::Build => env.build,
-        Context::Run => env.run
-    };
+        Context::Build => &env.build,
+        Context::Run => &env.run
+    }.to_owned();
 
     for (k, v) in ctx_map {
         map.insert(k, v);
     }
 
-    for (k, v) in env.global {
-        map.insert(k, v);
+    for (k, v) in &env.global {
+        map.insert(k.to_owned(), v.to_owned());
     }
 
     let ctx_str = match context {
@@ -666,10 +665,10 @@ pub fn get_env_map(context: Context) -> HashMap<String, String> {
     map.insert("LOVER_TIMESTAMP".to_string(), timestamp.to_string());
 
     map.insert("LOVER_PKG_DISPLAY_NAME".to_string(), pkg.get_display_name());
-    map.insert("LOVER_PKG_VERSION".to_string(), pkg.version);
-    map.insert("LOVER_PKG_NAME".to_string(), pkg.name);
-    map.insert("LOVER_PKG_AUTHOR".to_string(), pkg.author);
-    map.insert("LOVER_PKG_DESCRIPTION".to_string(), pkg.description);
+    map.insert("LOVER_PKG_VERSION".to_string(), pkg.version.to_owned());
+    map.insert("LOVER_PKG_NAME".to_string(), pkg.name.to_owned());
+    map.insert("LOVER_PKG_AUTHOR".to_string(), pkg.author.to_owned());
+    map.insert("LOVER_PKG_DESCRIPTION".to_string(), pkg.description.to_owned());
     
     return map;
 }
