@@ -4,6 +4,7 @@ use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::fs::File;
+use std::process::exit;
 use std::process::Command;
 use std::process::Stdio;
 use ansi_term::Style;
@@ -457,6 +458,10 @@ impl CommandRunner {
             print_err(format!("Command failed with code: {}", exit_code_text));
 
             self.error_hint.as_ref().map(|hint| println!("{}", hint));
+
+            if self.required {
+                exit(1);
+            }
         }
     }
 }
