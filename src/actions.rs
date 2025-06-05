@@ -665,6 +665,7 @@ pub fn get_env_map(context: Context) -> HashMap<String, String> {
     map.insert("LOVER_CONTEXT".to_string(), ctx_str);
     map.insert("LOVER_TIMESTAMP".to_string(), timestamp.to_string());
 
+    map.insert("LOVER_PKG_DISPLAY_NAME".to_string(), pkg.get_display_name());
     map.insert("LOVER_PKG_VERSION".to_string(), pkg.version);
     map.insert("LOVER_PKG_NAME".to_string(), pkg.name);
     map.insert("LOVER_PKG_AUTHOR".to_string(), pkg.author);
