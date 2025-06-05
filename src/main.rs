@@ -728,7 +728,7 @@ fn cmd_env(_command: &Command) {
 
     if !cmd_settings.has_flag("no-hint") {
         println!("");
-        print_note("Use `os.getenv(\"name\")` in your game to access each value.");
+        print_note("Use `os.getenv(\"name\")` in your game to access each value. Use --no-hint to hide this");
     }
 }
 
