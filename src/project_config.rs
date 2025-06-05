@@ -70,6 +70,7 @@ impl ProjectConfig {
 pub struct Package {
     pub name: String,
     pub copyright: Option<String>,
+    pub display_name: Option<String>,
 
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
@@ -91,6 +92,7 @@ impl Package {
     pub fn new(name: String) -> Self {
         Self {
             name: name,
+            display_name: None,
             copyright: None,
             description: String::new(),
             author: String::new(),
@@ -99,13 +101,17 @@ impl Package {
         }
     }
 
+    pub fn get_display_name(&self) -> String {
+        self.display_name.to_owned().unwrap_or(format!("{} {}", self.name, self.version))
+    }
+
     pub fn get_rcedit_args(&self) -> Vec<String> {
         let mut res: Vec<String> = Vec::new();
         let mut map: HashMap<&str, String> = HashMap::new();
 
         map.insert("ProductName", self.name.to_owned());    
-        map.insert("FileDescription", self.description.to_owned());
-        map.insert("CompanyName", self.author.to_owned());    
+        map.insert("FileDescription", self.get_display_name());
+        map.insert("CompanyName", self.author.to_owned()); 
         map.insert("ProductVersion", self.version.to_owned());
         
         self.copyright.to_owned().map(|c| {
