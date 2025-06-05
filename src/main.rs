@@ -437,7 +437,7 @@ fn cmd_run(_command: &Command) {
     args.append(run_args);
     
     let config = &config::get();
-    let env = actions::get_env_map(&project_conf, actions::Context::Run);
+    let env = project_conf.get_env_map(actions::Context::Run);
 
     let mut cmd = CommandRunner::new(&config.software.love);
 
@@ -718,7 +718,9 @@ fn cmd_fetch(command: &Command) {
 }
 
 fn cmd_env(_command: &Command) {
-    for (k, v) in actions::get_env_map(&project_config::get(), actions::Context::Run) {
+    let project = project_config::get();
+
+    for (k, v) in project.get_env_map(actions::Context::Run) {
         println!("{}: {}", k, v);
     }
 

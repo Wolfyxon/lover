@@ -1,6 +1,6 @@
-use std::{collections::HashMap, env, path::PathBuf};
+use std::{collections::HashMap, env, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
 use serde::{Deserialize, Serialize};
-use crate::{console::{exit_err, print_warn}, targets};
+use crate::{actions::Context, console::{exit_err, print_warn}, targets};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
@@ -61,6 +61,47 @@ impl ProjectConfig {
             run: Run::default(),
             build: Build::default()
         }
+    }
+
+    pub fn get_env_map(&self, context: Context) -> HashMap<String, String> {
+        let mut map: HashMap<String, String> = HashMap::new();
+    
+        let env = &self.env;
+        let pkg = &self.package;
+    
+        let ctx_map = match context {
+            Context::Build => &env.build,
+            Context::Run => &env.run
+        }.to_owned();
+    
+        for (k, v) in ctx_map {
+            map.insert(k, v);
+        }
+    
+        for (k, v) in &env.global {
+            map.insert(k.to_owned(), v.to_owned());
+        }
+    
+        let ctx_str = match context {
+            Context::Build => "build",
+            Context::Run => "run"
+        }.to_string();
+    
+        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_else(|err| {
+            print_warn(format!("Error getting UNIX timestamp: {}.\nLOVER_TIMESTAMP will be equal to 0", err));
+            Duration::from_secs(0)
+        }).as_secs();
+    
+        map.insert("LOVER_CONTEXT".to_string(), ctx_str);
+        map.insert("LOVER_TIMESTAMP".to_string(), timestamp.to_string());
+    
+        map.insert("LOVER_PKG_DISPLAY_NAME".to_string(), pkg.get_display_name());
+        map.insert("LOVER_PKG_VERSION".to_string(), pkg.version.to_owned());
+        map.insert("LOVER_PKG_NAME".to_string(), pkg.name.to_owned());
+        map.insert("LOVER_PKG_AUTHOR".to_string(), pkg.author.to_owned());
+        map.insert("LOVER_PKG_DESCRIPTION".to_string(), pkg.description.to_owned());
+        
+        return map;
     }
 }
 

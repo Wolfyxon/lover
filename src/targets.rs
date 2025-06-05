@@ -138,7 +138,9 @@ pub fn get_targets<'a>() -> Vec<BuildTarget<'a>> {
 }
 
 pub fn gen_module() -> String {
-    let map = actions::get_env_map(&project_config::get(), actions::Context::Build);
+    let project = project_config::get();
+
+    let map = project.get_env_map(actions::Context::Build);
     let mut res = include_str!("lua/env.lua").to_string();
 
     res += "loverConsts = {\n";
