@@ -27,7 +27,7 @@ pub struct ProjectConfig {
 }
 
 impl ProjectConfig {
-    pub fn new(name: String) -> Self {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
             package: Package::new(name),
             directories: Directories::default(),
@@ -130,9 +130,9 @@ pub struct Package {
 }
 
 impl Package {
-    pub fn new(name: String) -> Self {
+    pub fn new(name: impl Into<String>) -> Self {
         Self {
-            name: name,
+            name: name.into(),
             display_name: None,
             copyright: None,
             description: String::new(),
