@@ -16,6 +16,7 @@ use crate::config;
 use crate::console;
 use crate::console::exit_err;
 use crate::console::get_command_line_settings;
+use crate::console::get_step_prefix;
 use crate::console::print_err;
 use crate::console::print_step_verbose;
 use crate::console::print_success_verbose;
@@ -23,6 +24,7 @@ use crate::console::ProgressBar;
 use crate::console::{print_warn, print_success, print_step};
 use crate::files;
 use crate::files::get_file_tree;
+use crate::project_config;
 
 pub enum Context {
     Run,
@@ -499,6 +501,48 @@ pub fn command_exists(command: &str) -> bool {
         }
         None => false
     }
+}
+
+pub fn compile() {
+    let mut compiler = CommandRunner::new("luajit");
+    compiler.set_quiet(true);
+    compiler.check_exists();
+    
+    let project = project_config::get();
+    let src = project.directories.get_source_dir();
+    let build = project.directories.get_build_dir();
+    let dir = project.directories.get_temp_dir().join("compiled");
+
+    let all_scripts = files::get_file_tree_of_type(&src, "lua");
+
+    let scripts: Vec<&PathBuf> = all_scripts
+        .iter()
+        .filter(|path| !path.starts_with(&build))
+        .collect();
+    
+    let mut bar = ProgressBar::new(scripts.len());
+    bar.set_prefix(get_step_prefix() + " Compiling scripts");
+    
+    let mut progress: usize = 0;
+
+    for script in scripts {
+        let new_path = dir.join(PathBuf::from_iter(script.components().skip(src.components().count())));
+
+        files::create_dir(&new_path.parent().unwrap());
+
+        let cmd = compiler.with_args(vec![
+            "-b".to_string(),
+            script.display().to_string(), 
+            new_path.display().to_string()
+        ]);
+
+        cmd.run();
+
+        progress = progress.saturating_add(1);
+        bar.update(progress);
+    }
+
+    bar.finish();
 }
 
 pub fn parse_all(root: &Path) {
