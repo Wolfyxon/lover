@@ -255,6 +255,13 @@ impl CommandRunner {
         }
     }
 
+    pub fn with_args(&self, args: Vec<impl Into<String>>) -> Self {
+        let mut new = self.clone();
+        new.add_args(args);
+
+        new
+    }
+
     pub fn unrequire(&mut self) -> &mut Self {
         self.required = false;  
         self
