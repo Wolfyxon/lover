@@ -21,9 +21,9 @@ pub enum Arch {
 impl Arch {
     pub fn get_num_suffix(&self) -> String {
         match &self {
-            Self::X86_64 => "64".to_string(),
-            Self::X86_32 => "32".to_string()
-        }
+            Self::X86_64 => "64",
+            Self::X86_32 => "32"
+        }.to_string()
     }
 
     pub fn to_short_string(&self) -> String {
