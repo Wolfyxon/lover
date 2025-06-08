@@ -18,6 +18,20 @@ pub enum Arch {
     X86_32
 }
 
+pub enum OS {
+    Windows,
+    Linux
+}
+
+impl OS {
+    pub fn to_string(&self) -> String {
+        match &self {
+            Self::Windows => "windows",
+            Self::Linux => "linux"
+        }.to_string()
+    }
+}
+
 impl Arch {
     pub fn get_num_suffix(&self) -> String {
         match &self {
