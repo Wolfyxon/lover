@@ -13,5 +13,6 @@
 *.AppImage
 
 # Other
+*.temp
 *.sig
 *~
