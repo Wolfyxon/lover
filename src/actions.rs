@@ -26,6 +26,7 @@ use crate::files;
 use crate::files::get_file_tree;
 use crate::project_config;
 use crate::targets::Arch;
+use crate::targets::OS;
 
 pub enum Context {
     Run,
@@ -504,7 +505,7 @@ pub fn command_exists(command: &str) -> bool {
     }
 }
 
-pub fn compile(arch: Arch) {
+pub fn compile(arch: Arch, os: OS) {
     let mut compiler = CommandRunner::new("luajit");
     compiler.set_quiet(true);
     compiler.check_exists();
@@ -537,7 +538,10 @@ pub fn compile(arch: Arch) {
             new_path.display().to_string(),
 
             "-a".to_string(),
-            arch.to_short_string()
+            arch.to_short_string(),
+
+            "-o".to_string(),
+            os.to_string()
         ]);
 
         cmd.run();
