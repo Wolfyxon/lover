@@ -41,7 +41,8 @@ impl GitHubRelease {
 #[derive(Clone)]
 pub struct GithubReleaseAsset {
     pub browser_download_url: String,
-    pub name: String
+    pub name: String,
+    //pub digest: String // sha256
 }
 
 impl GithubReleaseAsset {
