@@ -513,7 +513,8 @@ pub fn compile(arch: Arch, os: OS) {
     let project = project_config::get();
     let src = project.directories.get_source_dir();
     let build = project.directories.get_build_dir();
-    let dir = project.directories.get_temp_dir().join("compiled");
+    let comp_dir = project.directories.get_temp_dir().join("compiled_lua");
+    let dir = comp_dir.join(format!("{}-{}", os.to_string(), arch.to_short_string()));
 
     let all_scripts = files::get_file_tree_of_type(&src, "lua");
 
