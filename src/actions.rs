@@ -509,8 +509,6 @@ pub fn compile(arch: Arch) {
     compiler.set_quiet(true);
     compiler.check_exists();
 
-    compiler.add_args(vec!["-a".to_string(), arch.to_short_string()]);
-    
     let project = project_config::get();
     let src = project.directories.get_source_dir();
     let build = project.directories.get_build_dir();
@@ -536,7 +534,10 @@ pub fn compile(arch: Arch) {
         let cmd = compiler.with_args(vec![
             "-b".to_string(),
             script.display().to_string(), 
-            new_path.display().to_string()
+            new_path.display().to_string(),
+
+            "-a".to_string(),
+            arch.to_short_string()
         ]);
 
         cmd.run();
