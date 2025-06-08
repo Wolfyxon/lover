@@ -25,6 +25,13 @@ impl Arch {
             Self::X86_32 => "32".to_string()
         }
     }
+
+    pub fn to_short_string(&self) -> String {
+        match &self {
+            Self::X86_64 => "x64",
+            Self::X86_32 => "x86"
+        }.to_string()
+    }
 }
 
 pub struct BuildTarget<'a> {
