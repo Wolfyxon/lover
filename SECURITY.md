@@ -7,6 +7,8 @@
 Do not disclose the vulnerability before it's fully patched.
 
 ## Supported versions
+These versions will be patched if there's a security vulnerability.
+
 - ✅ Latest release
 - ✅ Latest pre-release (unless a newer full release is available)
 - ✅ Latest source code, all branches
