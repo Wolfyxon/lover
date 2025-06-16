@@ -2,7 +2,7 @@ use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
-use crate::files;
+use crate::files::{self, compare_paths};
 
 #[derive(Serialize, Deserialize)]
 pub struct ProjectMeta {
@@ -28,7 +28,64 @@ impl ProjectMeta {
             files: entries
         })
     }
+
+    pub fn get_changed_files(&self, other: &Self) -> Vec<PathBuf> {
+        let mut res: Vec<PathBuf> = Vec::new();
+
+        for entry_a in &self.files {            
+            let mut found = false;
+            
+            for entry_b in &other.files {
+                if entry_a.is_changed(entry_b) {
+                    found = true;
+                    res.push(entry_a.path.to_owned());
+                    break;
+                } else if entry_a.path_eq(entry_b) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if !found {
+                res.push(entry_a.path.to_owned());
+            }
+        }
+
+        for entry_b in &other.files {
+            let mut found = false;
+            
+            for entry_a in &self.files {
+                if entry_b.path_eq(entry_a) {
+                    found = true;
+                    break;
+                }
+            }
+
+            if !found && !res.contains(&entry_b.path) {
+                res.push(entry_b.path.to_owned());
+            }
+        }
+
+        res
+    }
 }
+
+/*
+impl PartialEq for ProjectMeta {
+    fn eq(&self, other: &ProjectMeta) -> bool {
+        for self_entry in &self.files {
+            let mut found = false;
+            
+            for entry in &other.files {
+                
+            }
+
+            if !found
+        }
+
+        true
+    }
+}*/
 
 #[derive(Serialize, Deserialize)]
 pub struct FileEntry {
@@ -49,5 +106,13 @@ impl FileEntry {
 
             Err(err) => Err(err.to_string())
         }
+    }
+
+    pub fn path_eq(&self, other: &Self) -> bool {
+        files::compare_paths(&self.path, &other.path)
+    }
+
+    pub fn is_changed(&self, recent: &Self) -> bool {
+        self.path_eq(recent) && self.hash != recent.hash
     }
 }
