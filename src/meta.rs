@@ -13,6 +13,21 @@ impl ProjectMeta {
     pub fn parse(string: impl Into<String>) -> Result<Self, toml::de::Error> {
         toml::from_str(string.into().as_str())
     }
+    
+    pub fn new(source: impl Into<String>) -> Result<Self, String> {
+        let source = source.into();
+
+        let tree = files::get_file_tree(&source);
+        let mut entries: Vec<FileEntry> = Vec::new();
+
+        for path in tree {
+            entries.push(FileEntry::new(path, &source)?);
+        }
+
+        Ok(Self {
+            files: entries
+        })
+    }
 }
 
 #[derive(Serialize, Deserialize)]
