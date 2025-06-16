@@ -32,8 +32,8 @@ impl ProjectMeta {
 
 #[derive(Serialize, Deserialize)]
 pub struct FileEntry {
-    path: PathBuf,
-    hash: String
+    pub path: PathBuf,
+    pub hash: String
 }
 
 impl FileEntry {
