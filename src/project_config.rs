@@ -1,6 +1,6 @@
-use std::{collections::HashMap, env, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
+use std::{collections::HashMap, env, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
 use serde::{Deserialize, Serialize};
-use crate::{actions::Context, console::{exit_err, print_warn}, meta::ProjectMeta, targets};
+use crate::{actions::Context, console::{exit_err, print_warn}, files, meta::ProjectMeta, targets};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
@@ -44,7 +44,31 @@ impl ProjectConfig {
         ProjectMeta::new(self.directories.get_source_dir())
     }
 
-    // TODO: get_cached_meta()
+    pub fn get_cached_meta(&self) -> Option<ProjectMeta> {
+        let path = self.directories.get_temp_dir().join("meta.toml");
+
+        if !path.exists() {
+            return None;
+        }
+
+        let mut file = files::open(path);
+        let mut text = String::new();
+
+        let read_res = file.read_to_string(&mut text);
+
+        if read_res.is_err() {
+            print_warn(format!("Failed to read meta cache: {}. Assuming it doesn't exist.", read_res.unwrap_err().to_string()));
+            return None;
+        }
+
+        let parse_res = ProjectMeta::parse(text);
+
+        if parse_res.is_err() {
+            print_warn(format!("Failed to parse meta cache: {}. Assuming it doesn't exist.", parse_res.as_ref().err().unwrap().to_string()));
+        }
+
+        Some(parse_res.unwrap())
+    }
 
     pub fn validate(&self) {
         let mut errors: Vec<&str> = Vec::new();
