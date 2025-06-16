@@ -122,24 +122,12 @@ pub fn skip_path(path: impl Into<PathBuf>, path_to_skip: impl Into<PathBuf>) -> 
     PathBuf::from_iter(path.components().skip(path_to_skip.components().count()))
 }
 
-// Remove [cfg(...)] if these functions are needed on both platforms
-#[cfg(unix)]
-pub fn to_unix_path(string: String) -> String {
-    string.replace("\\", "/")
-}
-
-#[cfg(windows)]
-pub fn to_windows_path(string: String) -> String {
-    string.replace("/", "\\")
-}
-//////////////////////////////////////////////////////////////////////
-
 pub fn to_current_os_path(string: String) -> String {
     #[cfg(windows)]
-    return to_windows_path(string);
+    return string.replace("/", "\\");
 
     #[cfg(unix)]
-    return to_unix_path(string);
+    return string.replace("\\", "/");
 }
 
 pub fn compare_paths(a: impl Into<PathBuf>, b: impl Into<PathBuf>) -> bool {
