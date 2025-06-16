@@ -4,8 +4,7 @@ use crate::{actions::Context, console::{exit_err, print_warn}, targets};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
-#[derive(Deserialize)]
-#[derive(Serialize)]
+#[derive(Serialize, Deserialize)]
 pub struct ProjectConfig {
     pub package: Package,
 
@@ -105,9 +104,7 @@ impl ProjectConfig {
     }
 }
 
-#[derive(Deserialize)]
-#[derive(Serialize)]
-#[derive(PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub struct Package {
     pub name: String,
     pub copyright: Option<String>,
@@ -187,9 +184,7 @@ impl Package {
     }
 }
 
-#[derive(Deserialize)]
-#[derive(Serialize)]
-#[derive(PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub struct Directories {
     #[serde(default = "Directories::default_source")]
     pub source: String,
@@ -237,9 +232,7 @@ impl Directories {
     }
 }
 
-#[derive(Deserialize)]
-#[derive(Serialize)]
-#[derive(PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub struct Run {
     #[serde(default = "Run::default_default_run_args")]
     pub default_args: Vec<String>
@@ -261,9 +254,7 @@ impl Run {
     }
 }
 
-#[derive(Deserialize)]
-#[derive(Serialize)]
-#[derive(PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub struct Build {
     pub default: Option<Vec<String>>
 }
@@ -295,9 +286,7 @@ impl Build {
     }
 }
 
-#[derive(Deserialize)]
-#[derive(Serialize)]
-#[derive(PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq)]
 pub struct Env {
     #[serde(default = "Env::default_any_env")]
     pub global: HashMap<String, String>,

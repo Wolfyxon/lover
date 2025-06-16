@@ -37,8 +37,7 @@ impl GitHubRelease {
     }
 }
 
-#[derive(Deserialize)]
-#[derive(Clone)]
+#[derive(Deserialize, Clone)]
 pub struct GithubReleaseAsset {
     pub browser_download_url: String,
     pub name: String,
