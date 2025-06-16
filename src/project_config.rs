@@ -44,8 +44,12 @@ impl ProjectConfig {
         ProjectMeta::new(self.directories.get_source_dir())
     }
 
+    pub fn get_meta_path(&self) -> PathBuf {
+        self.directories.get_temp_dir().join("meta.toml")
+    }
+
     pub fn get_cached_meta(&self) -> Option<ProjectMeta> {
-        let path = self.directories.get_temp_dir().join("meta.toml");
+        let path = self.get_meta_path();
 
         if !path.exists() {
             return None;
