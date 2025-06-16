@@ -1,8 +1,8 @@
-use std::path::PathBuf;
+use std::{fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::files::{self, compare_paths};
+use crate::{console::{exit_err, print_warn}, files::{self, compare_paths}};
 
 #[derive(Serialize, Deserialize)]
 pub struct ProjectMeta {
@@ -67,6 +67,16 @@ impl ProjectMeta {
         }
 
         res
+    }
+
+    pub fn try_save(&self, path: impl Into<PathBuf>) {
+        let text = toml::to_string(&self).unwrap_or_else(|err| {
+            exit_err(format!("Failed to deserialize project meta: {err}. Please report a bug."));
+        });
+
+        let _ = fs::write(path.into(), text).map_err(|err| {
+            print_warn(format!("Failed to save project meta: {}", err));
+        });
     }
 }
 
