@@ -80,23 +80,6 @@ impl ProjectMeta {
     }
 }
 
-/*
-impl PartialEq for ProjectMeta {
-    fn eq(&self, other: &ProjectMeta) -> bool {
-        for self_entry in &self.files {
-            let mut found = false;
-            
-            for entry in &other.files {
-                
-            }
-
-            if !found
-        }
-
-        true
-    }
-}*/
-
 #[derive(Serialize, Deserialize)]
 pub struct FileEntry {
     pub path: PathBuf,
