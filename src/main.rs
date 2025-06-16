@@ -19,6 +19,7 @@ mod deps;
 mod targets;
 mod lovebrew_bundler;
 mod appimage;
+mod meta;
 
 struct Command<'a> {
     alias: String,
