@@ -104,7 +104,14 @@ pub fn get_size(path: &Path) -> usize {
 }
 
 pub fn skip_path(path: impl Into<PathBuf>, path_to_skip: impl Into<PathBuf>) -> PathBuf {
-    PathBuf::from_iter(path.into().components().skip(path_to_skip.into().components().count()))
+    let path: PathBuf = path.into();
+    let path_to_skip: PathBuf = path_to_skip.into();
+    
+    if !path.starts_with(&path_to_skip) {
+        return path;
+    }
+    
+    PathBuf::from_iter(path.components().skip(path_to_skip.components().count()))
 }
 
 // Remove [cfg(...)] if these functions are needed on both platforms
