@@ -1,6 +1,6 @@
 use std::{collections::HashMap, env, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
 use serde::{Deserialize, Serialize};
-use crate::{actions::Context, console::{exit_err, print_warn}, targets};
+use crate::{actions::Context, console::{exit_err, print_warn}, meta::ProjectMeta, targets};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
@@ -39,6 +39,12 @@ impl ProjectConfig {
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(string)
     }
+
+    pub fn get_meta(&self) -> Result<ProjectMeta, String> {
+        ProjectMeta::new(self.directories.get_source_dir())
+    }
+
+    // TODO: get_cached_meta()
 
     pub fn validate(&self) {
         let mut errors: Vec<&str> = Vec::new();
