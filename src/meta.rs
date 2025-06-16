@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use serde::{Deserialize, Serialize};
 
@@ -14,7 +14,7 @@ impl ProjectMeta {
         toml::from_str(string.into().as_str())
     }
     
-    pub fn new(source: impl Into<String>) -> Result<Self, String> {
+    pub fn new(source: impl Into<PathBuf>) -> Result<Self, String> {
         let source = source.into();
 
         let tree = files::get_file_tree(&source);
