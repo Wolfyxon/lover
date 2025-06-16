@@ -2,7 +2,9 @@ use std::{fs::{File, OpenOptions}, io::Read, path::{Path, PathBuf}};
 
 use crate::console::exit_err;
 
-pub fn get_file_tree(root: &Path) -> Vec<PathBuf> {
+pub fn get_file_tree(root: impl Into<PathBuf>) -> Vec<PathBuf> {
+    let root = root.into();
+
     let paths = std::fs::read_dir(root).unwrap_or_else(|err| {
         exit_err(format!("Failed to get file tree: {}", err));
     });
@@ -27,8 +29,8 @@ pub fn get_file_tree(root: &Path) -> Vec<PathBuf> {
     res
 }
 
-pub fn get_file_tree_of_type(root: &Path, extension: &str) -> Vec<PathBuf> {
-    let tree = get_file_tree(root);
+pub fn get_file_tree_of_type(root: impl Into<PathBuf>, extension: &str) -> Vec<PathBuf> {
+    let tree = get_file_tree(root.into());
     let mut res: Vec<PathBuf> = Vec::new();
 
     for path in tree {
@@ -46,45 +48,51 @@ pub fn get_file_tree_of_type(root: &Path, extension: &str) -> Vec<PathBuf> {
     res
 }
 
-pub fn create_dir(path: &Path) {
-    let res = std::fs::create_dir_all(path);
-
-    if res.is_err() {
-        exit_err(format!("Failed to create directory '{}': {}", path.to_str().unwrap(), res.err().unwrap()));
-    }
-}
-
-pub fn create(path: &Path) -> File {
-    File::create(path).unwrap_or_else(|err| {
-        exit_err(format!("Failed to create '{}': {}", path.to_str().unwrap(), err));
+pub fn create_dir(path: impl Into<PathBuf>) {
+    let path = path.into();
+    
+    std::fs::create_dir_all(&path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to create directory '{}': {}", path.display(), err));
     })
 }
 
-pub fn open(path: &Path) -> File {
-    File::open(path).unwrap_or_else(|err| {
-         exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err));
+pub fn create(path: impl Into<PathBuf>) -> File {
+    let path = path.into();
+
+    File::create(&path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to create '{}': {}", path.display(), err));
     })
 }
 
-pub fn open_rw(path: &Path) -> File {
+pub fn open(path: impl Into<PathBuf>) -> File {
+    let path = path.into();
+
+    File::open(&path).unwrap_or_else(|err| {
+         exit_err(format!("Failed to open '{}': {}", path.display(), err));
+    })
+}
+
+pub fn open_rw(path: impl Into<PathBuf>) -> File {
+    let path = path.into();
     let mut options = OpenOptions::new();
 
-    options.read(true).write(true).open(path).unwrap_or_else(|err| {
-        exit_err(format!("Failed to open '{}' with read and write: {}", path.to_str().unwrap(), err));
+    options.read(true).write(true).open(&path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to open '{}' with read and write: {}", path.display(), err));
     })
 }
 
-pub fn open_append(path: &Path) -> File {
+pub fn open_append(path: impl Into<PathBuf>) -> File {
+    let path = path.into();
     let mut options = OpenOptions::new();
 
-    options.append(true).open(path).unwrap_or_else(|err| {
-        exit_err(format!("Failed to open '{}' for appending: {}", path.to_str().unwrap(), err));
+    options.append(true).open(&path).unwrap_or_else(|err| {
+        exit_err(format!("Failed to open '{}' for appending: {}", path.display(), err));
     })
 }
 
-pub fn get_size(path: &Path) -> usize {
+pub fn get_size(path: impl Into<PathBuf>) -> usize {
     let mut res: usize = 0;
-    let mut file = open(path);
+    let mut file = open(path.into());
     
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
@@ -110,7 +118,7 @@ pub fn skip_path(path: impl Into<PathBuf>, path_to_skip: impl Into<PathBuf>) -> 
     if !path.starts_with(&path_to_skip) {
         return path;
     }
-    
+
     PathBuf::from_iter(path.components().skip(path_to_skip.components().count()))
 }
 
@@ -134,9 +142,9 @@ pub fn to_current_os_path(string: String) -> String {
     return to_unix_path(string);
 }
 
-pub fn compare_paths(a: &Path, b: &Path) -> bool {
-    let a_str = a.to_str().unwrap().to_string();
-    let b_str = b.to_str().unwrap().to_string();
+pub fn compare_paths(a: impl Into<PathBuf>, b: impl Into<PathBuf>) -> bool {
+    let a_str = a.into().to_str().unwrap().to_string();
+    let b_str = b.into().to_str().unwrap().to_string();
     
     return to_current_os_path(a_str) == to_current_os_path(b_str);
 }
