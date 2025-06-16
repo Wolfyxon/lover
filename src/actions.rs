@@ -100,9 +100,9 @@ impl Archiver {
                 continue
             }
     
-            let out_path = PathBuf::from_iter(path.components().skip(self.dir.components().count()));
+            let out_path = files::skip_path(&path, &self.dir);
             let mut file = File::open(path).unwrap();
-                
+            
             file.read_to_end(&mut buffer).unwrap();
             zip.start_file_from_path(out_path, options).unwrap();
             zip.write_all(&buffer).unwrap();

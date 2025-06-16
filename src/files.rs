@@ -103,6 +103,10 @@ pub fn get_size(path: &Path) -> usize {
     res
 }
 
+pub fn skip_path(path: impl Into<PathBuf>, path_to_skip: impl Into<PathBuf>) -> PathBuf {
+    PathBuf::from_iter(path.into().components().skip(path_to_skip.into().components().count()))
+}
+
 // Remove [cfg(...)] if these functions are needed on both platforms
 #[cfg(unix)]
 pub fn to_unix_path(string: String) -> String {
