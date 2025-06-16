@@ -172,3 +172,4 @@ Read [the documentation](https://doc.rust-lang.org/cargo/) for more info.
 - `regex`: Using regular expressions on strings
 - `ansi_term`: Styling terminal output
 - `backhand`: Modifying, creating and parsing SquashFS
+- `sha256`: Hashing files
