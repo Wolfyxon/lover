@@ -9,6 +9,7 @@ use std::process::Command;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
+use regex::Regex;
 use zip::write::SimpleFileOptions;
 use zip::ZipArchive;
 
@@ -691,4 +692,75 @@ pub fn get_env_replacement_map() -> HashMap<String, String> {
     map.insert("LOVER_DESCRIPTION".to_string(), "LOVER_PKG_DESCRIPTION".to_string());
     
     map
+}
+
+pub fn get_comment_locations(code: impl Into<String>) -> Vec<(usize, usize)> {
+    let code: String = code.into();
+    let mut res: Vec<(usize, usize)> = Vec::new();
+
+    let mut in_string = false;
+    let mut in_ml_string = false;
+    let mut escaped = false;
+
+    let mut comment: Option<(usize, usize)> = None;
+    let mut comment_ml = false;
+
+    let chars: Vec<char> = code.chars().collect();
+
+    for (i, char) in chars.iter().enumerate() {
+        let next = chars.get(i + 1);
+        let cmt_begin = *char == '-' && next.is_some() && *next.unwrap() == '-';
+        let ml_begin = *char == '[' && next.is_some() && *next.unwrap() == '[';
+        let ml_end = *char == ']' && next.is_some() && *next.unwrap() == ']';
+
+        if !escaped && comment.is_none() {
+            if *char == '\\' {
+                escaped = true;
+                continue;
+            }
+            
+            if !in_ml_string {
+                if *char == '"' || *char == '\'' {
+                    in_string = !in_string;
+                }
+
+                if !in_string && ml_begin {
+                    in_ml_string = true;
+                }
+            } else {
+                if !in_string && ml_end {
+                    in_ml_string = false;
+                }
+            }
+        }
+
+        if !in_string && !in_ml_string && comment.is_none() && cmt_begin {
+            comment = Some((i, i));
+        }
+
+        if comment.is_some() {
+            let (begin, mut end) = comment.unwrap();
+
+            if ml_begin && (end - begin == 2) {
+                comment_ml = true;
+            }
+
+            if (!comment_ml && *char == '\n') || (comment_ml && ml_end) {
+                if comment_ml && ml_end {
+                    end += 2;
+                }
+
+                res.push((begin, end));
+                comment = None;
+                comment_ml = false;
+                continue;
+            }
+
+            comment = Some((begin, end + 1));
+        }
+
+        escaped = false;
+    }
+
+    res
 }
