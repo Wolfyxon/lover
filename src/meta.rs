@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 
 use serde::{Deserialize, Serialize};
 
-use crate::{console::{exit_err, print_warn}, files::{self, compare_paths}};
+use crate::{console::{exit_err, print_warn}, files};
 
 #[derive(Serialize, Deserialize)]
 pub struct ProjectMeta {
