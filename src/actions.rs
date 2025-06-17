@@ -9,7 +9,6 @@ use std::process::Command;
 use std::process::Stdio;
 use ansi_term::Style;
 use ansi_term::Color::Blue;
-use regex::Regex;
 use zip::write::SimpleFileOptions;
 use zip::ZipArchive;
 
