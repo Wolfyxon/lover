@@ -1,3 +1,5 @@
+-- Do not touch any comments here this or the unit test will go mad
+
 --[[
     This contains a bunch of useless comments
 ]]
