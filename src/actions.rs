@@ -764,3 +764,36 @@ pub fn get_comment_locations(code: impl Into<String>) -> Vec<(usize, usize)> {
 
     res
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_comment_finding() {
+        let code = include_str!("testData/projects/project/src/unoptimized.lua").to_string();
+
+        let sure = vec![
+            "-- Do not touch any comments here this or the unit test will go mad",
+            "--[[\n    This contains a bunch of useless comments\n]]",
+            "-- this prints \"Hi\" on the screen",
+        ];
+
+        let mut found: Vec<String> = Vec::new();
+
+        for (begin, end) in get_comment_locations(&code) {
+            let cmt = code[begin..end].to_string();
+            
+            println!("= {} {} ==================", begin, end);
+            println!("<<{}>>", &cmt);
+
+            found.push(cmt);
+        }
+
+        assert_eq!(found.len(), sure.len(), "Comment amount differs");
+        
+        for comment in found {
+            assert!(sure.contains(&comment.as_str()), "Extra comment: \n{}", comment);
+        }
+    }
+}
