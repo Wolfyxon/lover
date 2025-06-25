@@ -1,4 +1,4 @@
-use std::fs;
+use std::fs::{self, Permissions};
 use std::io::{BufReader, Read, Write};
 use std::path::{Path, PathBuf};
 
@@ -8,7 +8,7 @@ use image::{GenericImageView, ImageFormat, ImageReader};
 use crate::actions::{Archiver, CommandRunner, Extractor};
 use crate::config::Config;
 use crate::{actions, appimage, config, console, files};
-use crate::console::{exit_err, print_note, print_significant, print_step, print_step_verbose, print_success, print_warn};
+use crate::console::{exit_err, print_note, print_significant, print_step, print_step_verbose, print_success, print_warn, CommandLineSettings};
 use crate::deps::Dependency;
 use crate::project_config::{self, Package};
 use crate::deps;
@@ -440,6 +440,26 @@ fn build_linux() {
 
     print_step("Embedding created SquashFS into the AppImage");
     appimage::embed_squashfs(&app_img, &new_squashfs);
+
+    #[cfg(target_family = "unix")]
+    apply_exec_perms(&cmd_conf, &app_img).unwrap_or_else(|err| {
+        print_warn(format!("Failed to assign executable permission: {}", err));
+    });
+}
+
+#[cfg(target_family = "unix")]
+fn apply_exec_perms(cmd_conf: &CommandLineSettings, exe: &PathBuf) -> Result<(), String> {
+    use std::os::unix::fs::PermissionsExt;
+
+    print_step_verbose(&cmd_conf, "Assigning exec permissions");
+
+    let meta = fs::metadata(&exe).map_err(|err| err.to_string())?;
+    let mut perms = meta.permissions();
+    perms.set_mode(perms.mode() | 0o755);
+
+    fs::set_permissions(&exe, perms).map_err(|err| err.to_string())?;
+
+    Ok(())
 }
 
 fn build_win64() {
