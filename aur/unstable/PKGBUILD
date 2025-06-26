@@ -1,7 +1,7 @@
 # Maintainer: Wolfyxon <wolfyxon@gmail.com>
 
 pkgname=lover-git
-pkgver=2.0.r6.g2c1127f
+pkgver=2.2.0.r44.gd98ef8e
 pkgrel=1
 pkgdesc="Love2D build system and runner written in Rust"
 arch=("x86_64")
