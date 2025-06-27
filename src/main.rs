@@ -233,7 +233,8 @@ fn get_commands<'a>() -> Vec<Command<'a>> {
             ],
             flags: vec![
                 CommandFlag::new_only_full("no-parse", "Skips the parsing process"),
-                CommandFlag::new_only_full("prime", "Runs the game on the dedicated GPU")
+                CommandFlag::new_only_full("prime", "Runs the game on the dedicated GPU"),
+                CommandFlag::new_only_full("no-prime", "Doesn't run the game on the dedicated GPU if configured")
             ]
         },
         Command {
@@ -450,7 +451,7 @@ fn cmd_run(_command: &Command) {
     cmd.envs(&env);
     cmd.add_args(args);
 
-    if config.run.prime || cmd_settings.has_flag("prime") {
+    if (config.run.prime || cmd_settings.has_flag("prime")) && !cmd_settings.has_flag("no-prime") {
         cmd.prime();
     }
 
