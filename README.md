@@ -4,8 +4,10 @@ Lover is a open source command line build system and runner for [Love2D](https:/
 [Wiki](https://github.com/Wolfyxon/lover/wiki) |
 [Example project](https://github.com/Wolfyxon/lover-example) |
 [CLI usage](https://github.com/Wolfyxon/lover/wiki/Using-Lover) |
-[Constants](https://github.com/Wolfyxon/lover/wiki/Constants) |
-[Downloads](https://github.com/Wolfyxon/lover/releases/latest) |
+[Constants](https://github.com/Wolfyxon/lover/wiki/Constants)
+
+[Installation](https://github.com/Wolfyxon/lover/wiki/Installation) |
+[Downloads](https://github.com/Wolfyxon/lover/releases/latest)
 
 ## Features
 ### Default environment variables
