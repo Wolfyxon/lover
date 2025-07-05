@@ -459,12 +459,11 @@ fn cmd_run(_command: &Command) {
 }
 
 fn cmd_parse(_command: &Command) {
-    let parser = config::get().software.luac;
     let src = project_config::get().directories.get_source_dir();
 
-    if !actions::command_exists(&parser) {
-        exit_err(format!("Cannot parse: '{}' not found.", parser));
-    }
+    actions::get_parser().unwrap_or_else(|| {
+        exit_err(format!("Cannot parse. Luac Lua parser not found."));
+    });
 
     actions::parse_all(&src);
 }
