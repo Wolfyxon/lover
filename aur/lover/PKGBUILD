@@ -12,7 +12,7 @@ depends=("openssl" "xz" "bzip2" "gcc-libs" "glibc")
 makedepends=("cargo")
 optdepends=("wine: RCEdit support")
 options=(!debug !lto)
-source=("$url/archive/refs/tags/v$pkgver.tar.gz")
+source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
 sha256sums=("3c785b81360580b0a59eb572f14c46389f94a6e4499b4eb31447a14253043a93")
 
 prepare() {
