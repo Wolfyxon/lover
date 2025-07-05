@@ -125,18 +125,14 @@ impl Software {
 
     fn default_love() -> String {
         #[cfg(target_family = "windows")]
-        return "lovec.exe".to_string();
+        return "lovec".to_string();
 
         #[cfg(target_family = "unix")]
         return "love".to_string();
     }
 
     fn default_luac() -> String {
-        #[cfg(target_family = "windows")]
-        return "luac.exe".to_string();
-
-        #[cfg(not(target_family = "windows"))]
-        return "luac".to_string();
+        "luac".to_string()
     }
 
     fn default_wine() -> String {
@@ -144,7 +140,7 @@ impl Software {
     }
 
     fn default_rcedit() -> String {
-        "rcedit.exe".to_string()
+        "rcedit".to_string()
     }
 
     /*

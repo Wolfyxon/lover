@@ -286,7 +286,12 @@ impl CommandRunner {
                 Some(paths) => {
                     for path in split_paths(&paths) {
                         let file_path = path.join(&self.command);
-                        res.push(file_path);
+                        res.push(file_path.clone());
+
+                        #[cfg(target_family = "windows")]
+                        {
+                            res.push(file_path.with_extension("exe"));
+                        }
                     }
                 },
                 None => ()
