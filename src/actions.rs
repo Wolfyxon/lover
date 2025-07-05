@@ -482,34 +482,6 @@ impl CommandRunner {
     }
 }
 
-pub fn command_exists(command: &str) -> bool {
-    let as_path = Path::new(command);
-    
-    if as_path.is_file() {
-        return true;
-    }
-
-    #[cfg(target_os = "windows")]
-    let command = if command.ends_with(".exe") {
-        command.to_string()
-    } else {
-        format!("{}.exe", command)
-    };
-
-    match std::env::var_os("PATH") {
-        Some(path_env) => {
-            for path_dir in std::env::split_paths(&path_env) {
-                if path_dir.join(&command).is_file() {
-                    return true;
-                }
-            }
-
-            false
-        }
-        None => false
-    }
-}
-
 pub fn compile(arch: Arch, os: OS) {
     let mut compiler = CommandRunner::new("luajit");
     compiler.set_quiet(true);
