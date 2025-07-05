@@ -1,0 +1,34 @@
+# Maintainer: Wolfyxon <wolfyxon@gmail.com>
+
+pkgname=lover
+pkgver=2.2.1
+pkgrel=1
+pkgdesc="Love2D build system and runner written in Rust"
+arch=("x86_64")
+url="https://github.com/Wolfyxon/lover"
+license=("LGPL-2.1-only")
+depends=("openssl" "xz" "bzip2" "gcc-libs" "glibc")
+makedepends=("cargo")
+optdepends=("wine: RCEdit support")
+options=(!debug !lto)
+source=("$url/archive/refs/tags/v$pkgver.tar.gz")
+sha256sums=("SKIP")
+
+prepare() {
+    export RUSTUP_TOOLCHAIN=stable
+    
+    cd $srcdir/$pkgname-$pkgver
+    cargo fetch --locked --target "$(rustc -vV | sed -n 's/host: //p')"
+}
+
+build() {
+    export RUSTUP_TOOLCHAIN=stable
+    export CARGO_TARGET_DIR=target
+    
+    cd $srcdir/$pkgname-$pkgver
+    cargo build --frozen --release --all-features
+}
+
+package() {
+	install -Dm755 $srcdir/$pkgname-$pkgver/target/release/lover $pkgdir/usr/bin/lover
+}
