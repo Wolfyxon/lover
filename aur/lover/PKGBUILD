@@ -4,6 +4,7 @@ pkgname=lover
 pkgver=2.2.1
 pkgrel=1
 pkgdesc="Love2D build system and runner written in Rust"
+conflicts=("lover-git")
 arch=("x86_64")
 url="https://github.com/Wolfyxon/lover"
 license=("LGPL-2.1-only")
