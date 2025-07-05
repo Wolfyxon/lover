@@ -560,19 +560,20 @@ pub fn compile(arch: Arch, os: OS) {
 }
 
 pub fn parse_all(root: &Path) {
-    let parser = config::get().software.luac;
-    let scripts = files::get_file_tree_of_type(root, "lua");
+    let parser = CommandRunner::new(config::get().software.luac);
 
-    if !command_exists(&parser) {
-        print_warn(format!("'{}' not found. Skipping luac parse.", &parser));
+    if !parser.exists() {
+        print_warn(format!("luac Lua parser not found. Skipping."));
         return;
     }
+
+    let scripts = files::get_file_tree_of_type(root, "lua");
 
     print_step("Checking validity of Lua scripts...");
 
     for script in &scripts {
-        CommandRunner::new(&parser)
-            .add_args(vec!["-p", script.to_str().unwrap()])
+            parser
+            .with_args(vec!["-p", script.to_str().unwrap()])
             .set_quiet(true)
             .run();
     }
