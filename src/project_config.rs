@@ -1,6 +1,7 @@
 use std::{collections::HashMap, env, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
 use serde::{Deserialize, Serialize};
 use crate::{actions::Context, console::{exit_err, print_warn}, files, meta::ProjectMeta, targets};
+use globset::{Glob, GlobSetBuilder};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
@@ -41,7 +42,7 @@ impl ProjectConfig {
     }
 
     pub fn get_meta(&self) -> Result<ProjectMeta, String> {
-        ProjectMeta::new(self.directories.get_source_dir())
+        ProjectMeta::new(self.directories.get_root_dir())
     }
 
     pub fn get_meta_path(&self) -> PathBuf {
@@ -77,10 +78,8 @@ impl ProjectConfig {
     pub fn validate(&self) {
         let mut errors: Vec<&str> = Vec::new();
 
-        if self.directories.source == self.directories.build {
-            errors.push("Do not attempt to use the same directory for build and source files!");
-        }
-
+        //TODO: add more validation checks
+        
         if !errors.is_empty() {
             exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
         }
@@ -220,8 +219,8 @@ impl Package {
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub struct Directories {
-    #[serde(default = "Directories::default_source")]
-    pub source: String,
+    #[serde(default = "Directories::default_exclude")]
+    pub exclude: Vec<String>,
 
     #[serde(default = "Directories::default_build")]
     pub build: String,
@@ -230,13 +229,13 @@ pub struct Directories {
 impl Directories {
     fn default() -> Self {
         Self {
-            source: Self::default_source(),
+            exclude: Self::default_exclude(),
             build: Self::default_build()
         }
     }
 
-    fn default_source() -> String {
-        "src".to_string()
+    fn default_exclude() -> Vec<String> {
+        Vec::new()
     }
 
     fn default_build() -> String {
@@ -257,8 +256,61 @@ impl Directories {
         self.get_build_dir().join("temp")
     }
 
-    pub fn get_source_dir(&self) -> PathBuf {
-        self.get_root_dir().join(&self.source)    
+
+    //`only_ignored == true` -> returns only the ignored files
+    //`only_ignored == false` -> returns non-ignored files
+    fn filter_files(&self, only_ignored: bool) -> Vec<PathBuf> {
+        let root = self.get_root_dir();
+        //TODO: Improve explicitly allowed.
+        let allowed = ["main.lua", "conf.lua"];
+
+        let mut builder = GlobSetBuilder::new();
+
+        for pat in &self.exclude {
+            match Glob::new(pat) {
+                Ok(glob) => {
+                    builder.add(glob);
+                }
+                Err(err) => {
+                    eprintln!("Warning: invalid ignore pattern `{}`: {}", pat, err);
+                }
+            }
+        }
+
+        if let Ok(glob) = Glob::new("**/.git/**") {
+            builder.add(glob);
+        };
+
+        let exclude_set = builder.build().expect("Building globset should fail.");
+
+        files::get_file_tree(self.get_root_dir())
+            .into_iter()
+            .filter(|path| {
+                let rel_path = path
+                    .strip_prefix(&root)
+                    .expect("all paths must be under root")
+                    .to_string_lossy()
+                    .replace('\\', "/");
+
+                let is_allowed = allowed.iter().any(|allowed| rel_path == *allowed);
+                let is_ignored =  exclude_set.is_match(&rel_path);
+
+                if only_ignored {
+                    is_ignored && !is_allowed
+                } else {
+                    !is_ignored || is_allowed
+                }
+            })
+            .collect()
+    }
+
+    pub fn get_ignored_files(&self) -> Vec<PathBuf> {
+        self.filter_files(true)
+    }
+
+    ///Returns files that aren't excluded from the build
+    pub  fn get_files(&self) -> Vec<PathBuf> {
+        self.filter_files(false)
     }
 
     pub fn is_default(&self) -> bool {
