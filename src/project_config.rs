@@ -292,12 +292,17 @@ impl Directories {
         files::get_file_tree(self.get_root_dir())
             .into_iter()
             .filter(|path| {
+                //Ignore files in build directory
+                if path.starts_with(&self.get_build_dir()) {
+                    return only_ignored;
+                }
+
                 let rel_path = path
                     .strip_prefix(&root)
                     .expect("all paths must be under root")
                     .to_string_lossy()
-                    .replace('\\', "/");
-
+                    .replace("\\", "/");
+            
                 let is_allowed = allowed.iter().any(|allowed| rel_path == *allowed);
                 let is_ignored = exclude_set.is_match(&rel_path);
                 let has_start = has_ignore_marker(path);

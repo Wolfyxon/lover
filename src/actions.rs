@@ -81,30 +81,19 @@ impl Archiver {
         let mut progress: usize = 0;
 
         self.progress_bar.as_mut().map(|bar| {
-            bar.max = tree.len();
+            bar.max = tree.len() - self.ignored_files.len();
         });
     
         print_step_verbose(
             &get_command_line_settings(), 
             format!("Archiving '{}' into '{}'...", &self.dir.to_str().unwrap(), output_dir.to_str().unwrap())
         );
-        
+
+        let ignored_set: std::collections::HashSet<PathBuf> = self.ignored_files.iter().map(|p| self.dir.join(p)).collect();
+
         for path in tree {
-            let mut ignore = false;
-    
-            for ignored_path in &self.ignored_files {
-                if path.as_path() == &self.dir.join(ignored_path) {
-                    ignore = true;
-                    break;
-                }
-            }
-    
-            if ignore {
-                self.progress_bar.as_mut().map(|bar| {
-                    bar.max -= 1;
-                });
-                
-                continue
+            if ignored_set.contains(&path) {
+                continue;
             }
     
             let out_path = files::skip_path(&path, &self.dir);
