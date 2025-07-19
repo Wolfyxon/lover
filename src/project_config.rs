@@ -1,4 +1,4 @@
-use std::{collections::HashMap, env, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
+use std::{collections::HashMap, env, fs::File, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
 use serde::{Deserialize, Serialize};
 use crate::{actions::Context, console::{exit_err, print_warn}, files, meta::ProjectMeta, targets};
 use globset::{Glob, GlobSetBuilder};
@@ -268,12 +268,8 @@ impl Directories {
 
         for pat in &self.exclude {
             match Glob::new(pat) {
-                Ok(glob) => {
-                    builder.add(glob);
-                }
-                Err(err) => {
-                    eprintln!("Warning: invalid ignore pattern `{}`: {}", pat, err);
-                }
+                Ok(glob) => { builder.add(glob); }
+                Err(err) => eprintln!("Warning: invalid ignore pattern `{}`: {}", pat, err),
             }
         }
 
@@ -282,6 +278,16 @@ impl Directories {
         };
 
         let exclude_set = builder.build().expect("Building globset should fail.");
+
+        // Helper to check for marker at start of file
+        fn has_ignore_marker(path: &std::path::Path) -> bool {
+            const START: &str = "---@lover:ignoreFile";
+            let mut buffer = [0u8; START.len()];
+            match File::open(path).and_then(|mut f| f.read_exact(&mut buffer)) {
+                Ok(_) => std::str::from_utf8(&buffer).map(|s| s == START).unwrap_or(false),
+                Err(_) => false,
+            }
+        }
 
         files::get_file_tree(self.get_root_dir())
             .into_iter()
@@ -293,12 +299,15 @@ impl Directories {
                     .replace('\\', "/");
 
                 let is_allowed = allowed.iter().any(|allowed| rel_path == *allowed);
-                let is_ignored =  exclude_set.is_match(&rel_path);
+                let is_ignored = exclude_set.is_match(&rel_path);
+                let has_start = has_ignore_marker(path);
+
+                let ignored = is_ignored || has_start;
 
                 if only_ignored {
-                    is_ignored && !is_allowed
+                    ignored && !is_allowed
                 } else {
-                    !is_ignored || is_allowed
+                    !ignored || is_allowed
                 }
             })
             .collect()
