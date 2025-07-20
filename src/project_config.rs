@@ -269,7 +269,7 @@ impl Directories {
         for pat in &self.exclude {
             match Glob::new(pat) {
                 Ok(glob) => { builder.add(glob); }
-                Err(err) => eprintln!("Warning: invalid ignore pattern `{}`: {}", pat, err),
+                Err(err) => print_warn(format!("Warning: invalid ignore pattern `{}`: {}", pat, err)),
             }
         }
 
@@ -277,9 +277,8 @@ impl Directories {
             builder.add(glob);
         };
 
-        let exclude_set = builder.build().expect("Building globset should fail.");
+        let exclude_set = builder.build().expect("Building globset shouldn't fail.");
 
-        // Helper to check for marker at start of file
         fn has_ignore_marker(path: &std::path::Path) -> bool {
             const START: &str = "---@lover:ignoreFile";
             let mut buffer = [0u8; START.len()];
