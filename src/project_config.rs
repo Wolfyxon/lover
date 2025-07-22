@@ -42,7 +42,7 @@ impl ProjectConfig {
     }
 
     pub fn get_meta(&self) -> Result<ProjectMeta, String> {
-        ProjectMeta::new(self.directories.get_root_dir())
+        ProjectMeta::new(self.directories.get_source_dir())
     }
 
     pub fn get_meta_path(&self) -> PathBuf {
@@ -78,7 +78,9 @@ impl ProjectConfig {
     pub fn validate(&self) {
         let mut errors: Vec<&str> = Vec::new();
 
-        //TODO: add more validation checks
+        if self.directories.source == self.directories.build {
+            errors.push("Do not attempt to use the same directory for build and source files!");
+        }
         
         if !errors.is_empty() {
             exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
@@ -219,6 +221,9 @@ impl Package {
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub struct Directories {
+    #[serde(default = "Directories::default_source")]
+    pub source: String,
+
     #[serde(default = "Directories::default_exclude")]
     pub exclude: Vec<String>,
 
@@ -229,9 +234,14 @@ pub struct Directories {
 impl Directories {
     fn default() -> Self {
         Self {
+            source: Self::default_source(),
             exclude: Self::default_exclude(),
             build: Self::default_build()
         }
+    }
+
+    fn default_source() -> String {
+        "src".to_string()
     }
 
     fn default_exclude() -> Vec<String> {
@@ -256,11 +266,14 @@ impl Directories {
         self.get_build_dir().join("temp")
     }
 
+    pub fn get_source_dir(&self) -> PathBuf {
+        self.get_root_dir().join(&self.source)
+    }
 
     //`only_ignored == true` -> returns only the ignored files
     //`only_ignored == false` -> returns non-ignored files
     fn filter_files(&self, only_ignored: bool) -> Vec<PathBuf> {
-        let root = self.get_root_dir();
+        let src = self.get_source_dir();
         //TODO: Improve explicitly allowed.
         let allowed = ["main.lua", "conf.lua"];
 
@@ -269,7 +282,7 @@ impl Directories {
         for pat in &self.exclude {
             match Glob::new(pat) {
                 Ok(glob) => { builder.add(glob); }
-                Err(err) => print_warn(format!("Warning: invalid ignore pattern `{}`: {}", pat, err)),
+                Err(err) => print_warn(format!("Invalid ignore pattern `{}`: {}", pat, err)),
             }
         }
 
@@ -288,7 +301,7 @@ impl Directories {
             }
         }
 
-        files::get_file_tree(self.get_root_dir())
+        files::get_file_tree(self.get_source_dir())
             .into_iter()
             .filter(|path| {
                 //Ignore files in build directory
@@ -297,8 +310,8 @@ impl Directories {
                 }
 
                 let rel_path = path
-                    .strip_prefix(&root)
-                    .expect("all paths must be under root")
+                    .strip_prefix(&src)
+                    .expect("All paths must be under source")
                     .to_string_lossy()
                     .replace("\\", "/");
             

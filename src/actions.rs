@@ -484,12 +484,12 @@ pub fn compile(arch: Arch, os: OS) {
     compiler.check_exists();
 
     let project = project_config::get();
-    let root = project.directories.get_root_dir();
+    let src = project.directories.get_source_dir();
     let build = project.directories.get_build_dir();
     let comp_dir = project.directories.get_temp_dir().join("compiled_lua");
     let dir = comp_dir.join(format!("{}-{}", os.to_string(), arch.to_short_string()));
 
-    let all_scripts = files::get_file_tree_of_type(&root, "lua");
+    let all_scripts = files::get_file_tree_of_type(&src, "lua");
 
     let scripts: Vec<&PathBuf> = all_scripts
         .iter()
@@ -502,7 +502,7 @@ pub fn compile(arch: Arch, os: OS) {
     let mut progress: usize = 0;
 
     for script in scripts {
-        let new_path = dir.join(PathBuf::from_iter(script.components().skip(root.components().count())));
+        let new_path = dir.join(PathBuf::from_iter(script.components().skip(src.components().count())));
 
         files::create_dir(&new_path.parent().unwrap());
 

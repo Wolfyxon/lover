@@ -369,7 +369,7 @@ fn build_virtual() {
 
 fn build_love() {
     let config = project_config::get();
-    let root = config.directories.get_root_dir();
+    let src = config.directories.get_source_dir();
     let build = config.directories.get_build_dir();
     let temp = config.directories.get_temp_dir();
 
@@ -377,17 +377,17 @@ fn build_love() {
 
     let output = build.join(config.package.name + ".love");
     
-    actions::parse_all(&root);
+    actions::parse_all(&src);
 
-    Archiver::new(&root)
+    Archiver::new(&src)
         .add_progress_bar("Archiving game assets")
         .ignore_file(Path::new("conf.lua"))
         .ignore_files(&ignored_files)
         .archive(&output);
 
-    //Immprove the seach by not loading the entire tree
+    //Improve the search by not loading the entire tree
     //Also untested
-    let in_conf_path = files::get_file_tree(&root).into_iter().find(|path| {
+    let in_conf_path = files::get_file_tree(&src).into_iter().find(|path| {
         path.is_file()
             && path.file_name() == Some(std::ffi::OsStr::new("conf.lua"))
             && !path.starts_with(&build)
