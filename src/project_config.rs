@@ -1,6 +1,7 @@
-use std::{collections::HashMap, env, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
+use std::{collections::HashMap, env, fs::File, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
 use serde::{Deserialize, Serialize};
 use crate::{actions::Context, console::{exit_err, print_warn}, files, meta::ProjectMeta, targets};
+use globset::{Glob, GlobSetBuilder};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 
@@ -80,7 +81,7 @@ impl ProjectConfig {
         if self.directories.source == self.directories.build {
             errors.push("Do not attempt to use the same directory for build and source files!");
         }
-
+        
         if !errors.is_empty() {
             exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
         }
@@ -223,6 +224,9 @@ pub struct Directories {
     #[serde(default = "Directories::default_source")]
     pub source: String,
 
+    #[serde(default = "Directories::default_exclude")]
+    pub exclude: Vec<String>,
+
     #[serde(default = "Directories::default_build")]
     pub build: String,
 }
@@ -231,12 +235,17 @@ impl Directories {
     fn default() -> Self {
         Self {
             source: Self::default_source(),
+            exclude: Self::default_exclude(),
             build: Self::default_build()
         }
     }
 
     fn default_source() -> String {
         "src".to_string()
+    }
+
+    fn default_exclude() -> Vec<String> {
+        Vec::new()
     }
 
     fn default_build() -> String {
@@ -258,7 +267,76 @@ impl Directories {
     }
 
     pub fn get_source_dir(&self) -> PathBuf {
-        self.get_root_dir().join(&self.source)    
+        self.get_root_dir().join(&self.source)
+    }
+
+    //`only_ignored == true` -> returns only the ignored files
+    //`only_ignored == false` -> returns non-ignored files
+    fn filter_files(&self, only_ignored: bool) -> Vec<PathBuf> {
+        let src = self.get_source_dir();
+        //TODO: Improve explicitly allowed.
+        let allowed = ["main.lua", "conf.lua"];
+
+        let mut builder = GlobSetBuilder::new();
+
+        for pat in &self.exclude {
+            match Glob::new(pat) {
+                Ok(glob) => { builder.add(glob); }
+                Err(err) => print_warn(format!("Invalid ignore pattern `{}`: {}", pat, err)),
+            }
+        }
+
+        if let Ok(glob) = Glob::new("**/.git/**") {
+            builder.add(glob);
+        };
+
+        let exclude_set = builder.build().expect("Building globset shouldn't fail.");
+
+        fn has_ignore_marker(path: &std::path::Path) -> bool {
+            const START: &str = "---@lover:ignoreFile";
+            let mut buffer = [0u8; START.len()];
+            match File::open(path).and_then(|mut f| f.read_exact(&mut buffer)) {
+                Ok(_) => std::str::from_utf8(&buffer).map(|s| s == START).unwrap_or(false),
+                Err(_) => false,
+            }
+        }
+
+        files::get_file_tree(self.get_source_dir())
+            .into_iter()
+            .filter(|path| {
+                //Ignore files in build directory
+                if path.starts_with(&self.get_build_dir()) {
+                    return only_ignored;
+                }
+
+                let rel_path = path
+                    .strip_prefix(&src)
+                    .expect("All paths must be under source")
+                    .to_string_lossy()
+                    .replace("\\", "/");
+            
+                let is_allowed = allowed.iter().any(|allowed| rel_path == *allowed);
+                let is_ignored = exclude_set.is_match(&rel_path);
+                let has_start = has_ignore_marker(path);
+
+                let ignored = is_ignored || has_start;
+
+                if only_ignored {
+                    ignored && !is_allowed
+                } else {
+                    !ignored || is_allowed
+                }
+            })
+            .collect()
+    }
+
+    pub fn get_ignored_files(&self) -> Vec<PathBuf> {
+        self.filter_files(true)
+    }
+
+    ///Returns files that aren't excluded from the build
+    pub  fn get_files(&self) -> Vec<PathBuf> {
+        self.filter_files(false)
     }
 
     pub fn is_default(&self) -> bool {

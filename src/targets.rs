@@ -373,6 +373,8 @@ fn build_love() {
     let build = config.directories.get_build_dir();
     let temp = config.directories.get_temp_dir();
 
+    let ignored_files = config.directories.get_ignored_files();
+
     let output = build.join(config.package.name + ".love");
     
     actions::parse_all(&src);
@@ -380,9 +382,16 @@ fn build_love() {
     Archiver::new(&src)
         .add_progress_bar("Archiving game assets")
         .ignore_file(Path::new("conf.lua"))
+        .ignore_files(&ignored_files)
         .archive(&output);
 
-    let in_conf_path = src.join("conf.lua");
+    //Improve the search by not loading the entire tree
+    //Also untested
+    let in_conf_path = files::get_file_tree(&src).into_iter().find(|path| {
+        path.is_file()
+            && path.file_name() == Some(std::ffi::OsStr::new("conf.lua"))
+            && !path.starts_with(&build)
+    });
     let out_conf_path = temp.join("conf.lua");
 
     let mut buf: Vec<u8> = Vec::new();
@@ -390,8 +399,8 @@ fn build_love() {
 
     buf.append(&mut module);
 
-    if in_conf_path.exists() {
-        let mut in_file = files::open(&in_conf_path);
+    if let Some(conf_path) = in_conf_path {
+        let mut in_file = files::open(&conf_path);
         in_file.read_to_end(&mut buf).unwrap();
     }
 
