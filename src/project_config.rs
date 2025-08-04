@@ -293,16 +293,6 @@ impl Directories {
 
         let exclude_set = builder.build().expect("Building globset shouldn't fail.");
 
-        fn has_ignore_marker(path: &std::path::Path) -> bool {
-            
-            let mut buffer = [0u8; IGNORE_MARKER.len()];
-            
-            match File::open(path).and_then(|mut f| f.read_exact(&mut buffer)) {
-                Ok(_) => std::str::from_utf8(&buffer).map(|s| s == IGNORE_MARKER).unwrap_or(false),
-                Err(_) => false,
-            }
-        }
-
         files::get_file_tree(self.get_source_dir())
             .into_iter()
             .filter(|path| {
@@ -319,7 +309,7 @@ impl Directories {
             
                 let is_allowed = allowed.iter().any(|allowed| rel_path == *allowed);
                 let is_ignored = exclude_set.is_match(&rel_path);
-                let has_start = has_ignore_marker(path);
+                let has_start = Self::has_ignore_marker(path);
 
                 let ignored = is_ignored || has_start;
 
@@ -330,6 +320,15 @@ impl Directories {
                 }
             })
             .collect()
+    }
+
+    pub fn has_ignore_marker(path: &std::path::Path) -> bool {
+        let mut buffer = [0u8; IGNORE_MARKER.len()];
+        
+        match File::open(path).and_then(|mut f| f.read_exact(&mut buffer)) {
+            Ok(_) => std::str::from_utf8(&buffer).map(|s| s == IGNORE_MARKER).unwrap_or(false),
+            Err(_) => false,
+        }
     }
 
     pub fn get_ignored_files(&self) -> Vec<PathBuf> {
