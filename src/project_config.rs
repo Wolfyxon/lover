@@ -1,9 +1,10 @@
 use std::{collections::HashMap, env, fs::File, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
 use serde::{Deserialize, Serialize};
-use crate::{actions::Context, console::{exit_err, print_warn}, files, meta::ProjectMeta, targets};
 use globset::{Glob, GlobSetBuilder};
+use crate::{actions::Context, console::{exit_err, print_warn}, files, meta::ProjectMeta, targets};
 
 pub const PROJECT_FILE: &str = "lover.toml";
+const IGNORE_MARKER: &str = "---@lover:ignoreFile";
 
 #[derive(Serialize, Deserialize)]
 pub struct ProjectConfig {
@@ -293,10 +294,11 @@ impl Directories {
         let exclude_set = builder.build().expect("Building globset shouldn't fail.");
 
         fn has_ignore_marker(path: &std::path::Path) -> bool {
-            const START: &str = "---@lover:ignoreFile";
-            let mut buffer = [0u8; START.len()];
+            
+            let mut buffer = [0u8; IGNORE_MARKER.len()];
+            
             match File::open(path).and_then(|mut f| f.read_exact(&mut buffer)) {
-                Ok(_) => std::str::from_utf8(&buffer).map(|s| s == START).unwrap_or(false),
+                Ok(_) => std::str::from_utf8(&buffer).map(|s| s == IGNORE_MARKER).unwrap_or(false),
                 Err(_) => false,
             }
         }
@@ -334,7 +336,6 @@ impl Directories {
         self.filter_files(true)
     }
 
-    ///Returns files that aren't excluded from the build
     pub  fn get_files(&self) -> Vec<PathBuf> {
         self.filter_files(false)
     }
