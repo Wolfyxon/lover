@@ -569,6 +569,14 @@ mod tests {
     }
 
     #[test]
+    fn backwards_compatibility() {
+        let project = 
+            ProjectConfig::parse_str(include_str!("testData/projects/generic.toml")).unwrap();
+        
+        assert_eq!(project.paths.main, "src");
+    }
+
+    #[test]
     #[should_panic]
     fn parse_syntax_error() {
         ProjectConfig::parse_str(include_str!("testData/projects/invalidSyntax.toml")).unwrap();
