@@ -151,8 +151,32 @@ pub fn to_current_os_path(string: String) -> String {
 }
 
 pub fn compare_paths(a: impl Into<PathBuf>, b: impl Into<PathBuf>) -> bool {
-    let a_c = fs::canonicalize(a.into());
-    let b_c = fs::canonicalize(b.into());
-    
-    return (a_c.is_ok() && b_c.is_ok()) && (a_c.unwrap() == b_c.unwrap());
+    let a_buf: PathBuf = a.into();
+    let b_buf: PathBuf = b.into();
+
+    if a_buf.exists() && b_buf.exists() {
+        let a_c = fs::canonicalize(a_buf);
+        let b_c = fs::canonicalize(b_buf);
+        
+        return (a_c.is_ok() && b_c.is_ok()) && (a_c.unwrap() == b_c.unwrap());
+    } else {
+        let a_str = a_buf.to_str().unwrap().to_string();
+        let b_str = b_buf.to_str().unwrap().to_string();
+
+        return to_current_os_path(a_str) == to_current_os_path(b_str);
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_compare_paths() {
+        assert!(compare_paths("nonexistent.txt", "nonexistent.txt"));
+        assert!(compare_paths("src", "./src"));
+        assert!(compare_paths("src/testData/", "src/testData"));
+        
+        assert!(!compare_paths("src/", "src/lua"));
+    }
 }
