@@ -1,12 +1,16 @@
 use actions::CommandRunner;
 use ansi_term::Color::{Blue, Green, Yellow};
 use ansi_term::Style;
+use config::Config;
+use project_config::ProjectConfig;
+use std::env;
+use std::path::PathBuf;
 use std::{path::Path, process::exit};
 
 mod console;
 use console::{
     confirm_or_exit, exit_err, get_command_line_settings, print_err, print_note, print_significant,
-    print_step, print_success, print_warn,
+    print_step, print_success, print_warn, CommandLineSettings,
 };
 use deps::DependencyInstance;
 use targets::get_targets;
@@ -432,20 +436,19 @@ fn cmd_version(_command: &Command) {
     show_version();
 }
 
-fn cmd_run(_command: &Command) {
-    let mut project_conf = project_config::get();
-    let main = project_conf.paths.get_main_dir();
-    let root = project_conf.paths.get_root_dir();
-    let cmd_settings = get_command_line_settings();
-
-    let main_script_path = project_conf.paths.find_main_script().unwrap_or_else(|| {
-        exit_err(format!(
-            "Could not find 'main.lua'. Your game needs it to run"
-        ));
+fn run_with_project(cmd: &mut CommandRunner, cmd_settings: &CommandLineSettings, project: &mut ProjectConfig, run_args: &mut Vec<String>) -> PathBuf {
+    let main_script_path = project.paths.find_main_script().unwrap_or_else(|| {
+        exit_err("Could not find 'main.lua'. Your game needs it to run.");
     });
+
+    let main = project.paths.get_main_dir();
+    let root = project.paths.get_root_dir();
+
+    print_significant("Running", main.to_str().unwrap());
 
     let main_script_parent_res = main_script_path.parent();
 
+    // TODO: clean this up
     if main_script_parent_res.is_some() {
         let main_script_parent = main_script_parent_res.unwrap();
 
@@ -472,33 +475,77 @@ fn cmd_run(_command: &Command) {
         }
     }
 
-    print_significant("Running", main.to_str().unwrap());
-
-    if !cmd_settings.has_flag("no-parse") {
-        actions::parse_all(&main);
-    }
-
-    let mut args = vec![main.to_str().unwrap().to_string()];
-    let mut run_args: &mut Vec<String> = &mut std::env::args().skip(2).into_iter().collect();
-
-    if run_args.len() == 0 {
-        run_args = &mut project_conf.run.default_args;
-    }
-
-    args.append(run_args);
-
-    let config = &config::get();
-    let env = project_conf.get_env_map(actions::Context::Run);
-
-    let mut cmd = config.get_love_command();
+    let env = project.get_env_map(actions::Context::Run);
     cmd.envs(&env);
-    cmd.add_args(args);
 
-    if (config.run.prime || cmd_settings.has_flag("prime")) && !cmd_settings.has_flag("no-prime") {
+    if run_args.is_empty() {
+        run_args.extend(project.run.default_args.to_owned());
+    }
+    
+
+    main
+}
+
+fn run_without_project(cmd_settings: &CommandLineSettings) -> PathBuf {
+    let current_dir = env::current_dir().unwrap_or_else(|err| {
+        exit_err(format!("Unable to get the current working directory: {}", err));
+    });
+
+    let main_script_path = project_config::Paths::find_main_script_at(".").unwrap_or_else(|| {
+        exit_err("Could not find 'main.lua'. Your game needs it to run.");
+    });
+
+    let main_script_str = files::skip_path_string(&main_script_path, &current_dir);
+
+    let main = main_script_path.parent().unwrap_or_else(|| {
+        exit_err(format!("Unable to resolve parent path of: {}", main_script_str));
+    });
+
+    let main_str = files::skip_path_string(&main, &current_dir);
+
+    print_significant("Running", main_str);
+    println!("Found 'main.lua' at '{}'. Assuming it's the game's main directory.", main_script_str);
+    
+    checked_parse(cmd_settings, &main);
+
+    main.to_path_buf()
+}
+
+fn cmd_run(_command: &Command) {
+    let conf = config::get();
+    let cmd_settings = get_command_line_settings();
+
+    let project_path = project_config::find_project_config();
+    let mut cmd = conf.get_love_command();
+
+    let mut run_args: Vec<String> = std::env::args().skip(2).into_iter().collect();
+
+    let main: PathBuf = match project_path {
+        Some(path) => {
+            let mut project = ProjectConfig::parse_file(path);
+            run_with_project(&mut cmd, &cmd_settings, &mut project, &mut run_args)
+        },
+
+        None => {
+            print_warn("'lover.toml' not found. You're missing out on many features!");
+            run_without_project(&cmd_settings)
+        },
+    };
+
+    if (conf.run.prime || cmd_settings.has_flag("prime")) && !cmd_settings.has_flag("no-prime") {
         cmd.prime();
     }
 
+    cmd.add_arg(main.to_str().unwrap());
+    cmd.add_args(run_args);
+
     cmd.run();
+}
+
+fn checked_parse(cmd_settings: &CommandLineSettings, root: impl Into<PathBuf>) {
+    if !cmd_settings.has_flag("no-parse") {
+        actions::parse_all(root);
+    }
 }
 
 fn cmd_parse(_command: &Command) {
