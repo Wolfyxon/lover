@@ -69,7 +69,7 @@ lover install love-win64
 
 Please also see [the compatibility matrix](https://github.com/Wolfyxon/lover/wiki/Building#support).
 
-The `love` target is runnable on all platforms, but require [LÖVE](https://love2d.org/) to be installed.
+The `love` target is runnable on all platforms, but requires [LÖVE](https://love2d.org/) to be installed.
 
 ### Lover tool
 | Platform | Arch   | Status |
