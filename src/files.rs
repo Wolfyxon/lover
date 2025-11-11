@@ -142,6 +142,11 @@ pub fn skip_path(path: impl Into<PathBuf>, path_to_skip: impl Into<PathBuf>) -> 
     PathBuf::from_iter(path.components().skip(path_to_skip.components().count()))
 }
 
+pub fn skip_path_string(path: impl Into<PathBuf>, path_to_skip: impl Into<PathBuf>) -> String {
+    let skipped = skip_path(path, path_to_skip);
+    return skipped.to_str().unwrap().to_string();
+}
+
 pub fn to_current_os_path(string: String) -> String {
     #[cfg(windows)]
     return string.replace("/", "\\");
