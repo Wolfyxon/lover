@@ -490,14 +490,7 @@ fn cmd_run(_command: &Command) {
     let config = &config::get();
     let env = project_conf.get_env_map(actions::Context::Run);
 
-    let mut cmd = CommandRunner::new(&config.software.love);
-
-    #[cfg(target_os = "windows")]
-    {
-        cmd.add_path("C:\\Program Files\\LOVE\\lovec.exe");
-        cmd.add_path("C:\\Program Files\\LOVE\\love.exe");
-    }
-
+    let mut cmd = config.get_love_command();
     cmd.envs(&env);
     cmd.add_args(args);
 

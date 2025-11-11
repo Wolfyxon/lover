@@ -1,4 +1,4 @@
-use crate::console::exit_err;
+use crate::{actions::CommandRunner, console::exit_err};
 use serde::Deserialize;
 use std::path::PathBuf;
 
@@ -31,6 +31,19 @@ impl Config {
 
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(string)
+    }
+
+    pub fn get_love_command(&self) -> CommandRunner {
+        #[allow(unused_mut)]
+        let mut cmd = CommandRunner::new(&self.software.love);
+
+        #[cfg(target_os = "windows")]
+        {
+            cmd.add_path("C:\\Program Files\\LOVE\\lovec.exe");
+            cmd.add_path("C:\\Program Files\\LOVE\\love.exe");
+        }
+
+        cmd
     }
 
     fn default_verbose_logging() -> bool {
