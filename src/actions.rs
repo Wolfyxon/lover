@@ -37,8 +37,9 @@ impl Context {
     pub fn to_string(&self) -> String {
         match self {
             Self::Build => "build",
-            Self::Run => "run"
-        }.to_string()
+            Self::Run => "run",
+        }
+        .to_string()
     }
 }
 

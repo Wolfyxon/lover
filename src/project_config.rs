@@ -10,9 +10,9 @@ use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     env,
-    fs::{self, File},
+    fs::File,
     io::Read,
-    path::{Path, PathBuf},
+    path::PathBuf,
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -39,7 +39,7 @@ pub struct ProjectConfig {
     #[serde(skip_serializing_if = "Env::is_default")]
     pub env: Env,
 
-    directories: Option<Paths> // old 'paths'
+    directories: Option<Paths>, // old 'paths'
 }
 
 impl ProjectConfig {
@@ -86,7 +86,7 @@ impl ProjectConfig {
                 err
             ));
         });
-    
+
         ProjectConfig::parse_str(string.as_str())
             .unwrap_or_else(|err| exit_err(format!("Project config parse error: {}", err)))
     }

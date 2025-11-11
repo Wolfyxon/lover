@@ -1,7 +1,7 @@
 use std::{
     fs::{self, File, OpenOptions},
     io::Read,
-    path::{Path, PathBuf},
+    path::PathBuf,
 };
 
 use crate::console::exit_err;

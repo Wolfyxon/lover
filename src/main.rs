@@ -1,7 +1,6 @@
 use actions::CommandRunner;
 use ansi_term::Color::{Blue, Green, Yellow};
 use ansi_term::Style;
-use config::Config;
 use project_config::ProjectConfig;
 use std::env;
 use std::path::PathBuf;
@@ -436,7 +435,12 @@ fn cmd_version(_command: &Command) {
     show_version();
 }
 
-fn run_with_project(cmd: &mut CommandRunner, cmd_settings: &CommandLineSettings, project: &mut ProjectConfig, run_args: &mut Vec<String>) -> PathBuf {
+fn run_with_project(
+    cmd: &mut CommandRunner,
+    cmd_settings: &CommandLineSettings,
+    project: &mut ProjectConfig,
+    run_args: &mut Vec<String>,
+) -> PathBuf {
     let main_script_path = project.paths.find_main_script().unwrap_or_else(|| {
         exit_err("Could not find 'main.lua'. Your game needs it to run.");
     });
@@ -481,14 +485,16 @@ fn run_with_project(cmd: &mut CommandRunner, cmd_settings: &CommandLineSettings,
     if run_args.is_empty() {
         run_args.extend(project.run.default_args.to_owned());
     }
-    
 
     main
 }
 
 fn run_without_project(cmd_settings: &CommandLineSettings) -> PathBuf {
     let current_dir = env::current_dir().unwrap_or_else(|err| {
-        exit_err(format!("Unable to get the current working directory: {}", err));
+        exit_err(format!(
+            "Unable to get the current working directory: {}",
+            err
+        ));
     });
 
     let main_script_path = project_config::Paths::find_main_script_at(".").unwrap_or_else(|| {
@@ -498,14 +504,20 @@ fn run_without_project(cmd_settings: &CommandLineSettings) -> PathBuf {
     let main_script_str = files::skip_path_string(&main_script_path, &current_dir);
 
     let main = main_script_path.parent().unwrap_or_else(|| {
-        exit_err(format!("Unable to resolve parent path of: {}", main_script_str));
+        exit_err(format!(
+            "Unable to resolve parent path of: {}",
+            main_script_str
+        ));
     });
 
     let main_str = files::skip_path_string(&main, &current_dir);
 
     print_significant("Running", main_str);
-    println!("Found 'main.lua' at '{}'. Assuming it's the game's main directory.", main_script_str);
-    
+    println!(
+        "Found 'main.lua' at '{}'. Assuming it's the game's main directory.",
+        main_script_str
+    );
+
     checked_parse(cmd_settings, &main);
 
     main.to_path_buf()
@@ -524,12 +536,12 @@ fn cmd_run(_command: &Command) {
         Some(path) => {
             let mut project = ProjectConfig::parse_file(path);
             run_with_project(&mut cmd, &cmd_settings, &mut project, &mut run_args)
-        },
+        }
 
         None => {
             print_warn("'lover.toml' not found. You're missing out on many features!");
             run_without_project(&cmd_settings)
-        },
+        }
     };
 
     if (conf.run.prime || cmd_settings.has_flag("prime")) && !cmd_settings.has_flag("no-prime") {
