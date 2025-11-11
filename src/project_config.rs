@@ -302,7 +302,7 @@ impl Paths {
     }
 
     fn default_main() -> String {
-        "src".to_string()
+        "".to_string()
     }
 
     fn default_exclude() -> Vec<String> {
