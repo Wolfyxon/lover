@@ -434,16 +434,44 @@ fn cmd_version(_command: &Command) {
 
 fn cmd_run(_command: &Command) {
     let mut project_conf = project_config::get();
-    let src = project_conf.paths.get_main_dir();
+    let main = project_conf.paths.get_main_dir();
     let cmd_settings = get_command_line_settings();
 
-    print_significant("Running", src.to_str().unwrap());
+    let main_script_path = project_conf.paths.find_main_script().unwrap_or_else(|| {
+        exit_err(format!("Could not find 'main.lua'. Your game needs it to run"));
+    });
 
-    if !cmd_settings.has_flag("no-parse") {
-        actions::parse_all(&src);
+    let main_script_parent_res = main_script_path.parent();
+
+    // TODO: print paths as relative
+    if main_script_parent_res.is_some() {
+        let main_script_parent = main_script_parent_res.unwrap();
+
+        if !files::compare_paths(main_script_parent, &main) {
+            let main_script_str = main_script_path.to_str().unwrap();
+            let main_script_parent_str = main_script_parent.to_str().unwrap();
+
+            print_err("'main.lua' is not in the project's main directory");
+            eprintln!("Main directory: {}", &main.to_str().unwrap());
+            eprintln!("main.lua location: {}", main_script_str);
+            eprintln!("");
+            eprintln!("Move it or change your main directory in lover.toml:");
+            eprintln!("");
+            eprintln!("[paths]");
+            eprintln!("main = \"{}\"", main_script_parent_str);
+            eprintln!("");
+
+            exit(1);
+        }
     }
 
-    let mut args = vec![src.to_str().unwrap().to_string()];
+    print_significant("Running", main.to_str().unwrap());
+
+    if !cmd_settings.has_flag("no-parse") {
+        actions::parse_all(&main);
+    }
+
+    let mut args = vec![main.to_str().unwrap().to_string()];
     let mut run_args: &mut Vec<String> = &mut std::env::args().skip(2).into_iter().collect();
 
     if run_args.len() == 0 {
