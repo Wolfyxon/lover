@@ -76,6 +76,21 @@ impl ProjectConfig {
         }
     }
 
+    pub fn parse_file(path: impl Into<PathBuf>) -> Self {
+        let path: PathBuf = path.into();
+
+        let string = std::fs::read_to_string(&path).unwrap_or_else(|err| {
+            exit_err(format!(
+                "Failed to open '{}': {}",
+                path.to_str().unwrap(),
+                err
+            ));
+        });
+    
+        ProjectConfig::parse_str(string.as_str())
+            .unwrap_or_else(|err| exit_err(format!("Project config parse error: {}", err)))
+    }
+
     pub fn get_meta(&self) -> Result<ProjectMeta, String> {
         ProjectMeta::new(self.paths.get_main_dir())
     }
@@ -585,19 +600,10 @@ pub fn get() -> ProjectConfig {
         ));
     });
 
-    let string = std::fs::read_to_string(&path).unwrap_or_else(|err| {
-        exit_err(format!(
-            "Failed to open '{}': {}",
-            path.to_str().unwrap(),
-            err
-        ));
-    });
+    let project = ProjectConfig::parse_file(path);
 
-    let parsed = ProjectConfig::parse_str(string.as_str())
-        .unwrap_or_else(|err| exit_err(format!("Project config parse error: {}", err)));
-
-    parsed.validate();
-    parsed
+    project.validate();
+    project
 }
 
 #[cfg(test)]
