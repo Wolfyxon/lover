@@ -23,9 +23,9 @@ const IGNORE_MARKER: &str = "---@lover:ignoreFile";
 pub struct ProjectConfig {
     pub package: Package,
 
-    #[serde(default = "Directories::default")]
-    #[serde(skip_serializing_if = "Directories::is_default")]
-    pub directories: Directories,
+    #[serde(default = "Paths::default")]
+    #[serde(skip_serializing_if = "Paths::is_default")]
+    pub directories: Paths,
 
     #[serde(default = "Build::default")]
     #[serde(skip_serializing_if = "Build::is_default")]
@@ -44,7 +44,7 @@ impl ProjectConfig {
     pub fn new(name: impl Into<String>) -> Self {
         Self {
             package: Package::new(name),
-            directories: Directories::default(),
+            directories: Paths::default(),
             build: Build::default(),
             run: Run::default(),
             env: Env::default(),
@@ -114,7 +114,7 @@ impl ProjectConfig {
         Self {
             package: pkg,
             env: Env::default(),
-            directories: Directories::default(),
+            directories: Paths::default(),
             run: Run::default(),
             build: Build::default(),
         }
@@ -256,18 +256,18 @@ impl Package {
 }
 
 #[derive(Serialize, Deserialize, PartialEq)]
-pub struct Directories {
-    #[serde(default = "Directories::default_source")]
+pub struct Paths {
+    #[serde(default = "Paths::default_source")]
     pub source: String,
 
-    #[serde(default = "Directories::default_exclude")]
+    #[serde(default = "Paths::default_exclude")]
     pub exclude: Vec<String>,
 
-    #[serde(default = "Directories::default_build")]
+    #[serde(default = "Paths::default_build")]
     pub build: String,
 }
 
-impl Directories {
+impl Paths {
     fn default() -> Self {
         Self {
             source: Self::default_source(),
