@@ -10,9 +10,9 @@ use serde::{Deserialize, Serialize};
 use std::{
     collections::HashMap,
     env,
-    fs::File,
+    fs::{self, File},
     io::Read,
-    path::PathBuf,
+    path::{Path, PathBuf},
     time::{Duration, SystemTime, UNIX_EPOCH},
 };
 
@@ -331,6 +331,48 @@ impl Paths {
         self.get_root_dir().join(&self.main)
     }
 
+    pub fn find_main_script(&self) -> Option<PathBuf> {
+        return Self::find_main_script_at(self.get_root_dir());
+    }
+
+    pub fn find_main_script_at(path: impl Into<PathBuf>) -> Option<PathBuf> {
+        let path: PathBuf = path.into();
+
+        match path.read_dir() {
+            Ok(read) => {
+                for entry_res in read {
+                    
+                    match entry_res {
+                        Ok(entry) => {
+                            let entry_path_buf = entry.path();
+                            let entry_path = entry_path_buf.as_path();
+                            let name_res = entry_path.file_name();
+                            
+                            if entry_path.is_file() && name_res.is_some() {
+                                if name_res.unwrap() == "main.lua" {
+                                    return Some(entry_path_buf);
+                                }
+                            } else if entry_path.is_dir() {
+                                let dir_res = Self::find_main_script_at(entry_path_buf);
+
+                                if dir_res.is_some() {
+                                    return dir_res;
+                                }
+                            }
+                        }
+                        Err(err) => print_warn(format!("Entry read error: {}", err)),
+                    }
+                }
+
+                None
+            }
+            Err(err) => {
+                print_warn(format!("Unable to read: {}: {}", path.to_str().unwrap(), err));
+                None
+            }
+        }
+    }
+
     //`only_ignored == true` -> returns only the ignored files
     //`only_ignored == false` -> returns non-ignored files
     fn filter_files(&self, only_ignored: bool) -> Vec<PathBuf> {
@@ -574,6 +616,17 @@ mod tests {
             ProjectConfig::parse_str(include_str!("testData/projects/old.toml")).unwrap();
 
         assert_eq!(project.paths.main, "src");
+    }
+
+    #[test]
+    fn main_script_finding() {
+        let path = Paths::find_main_script_at("src/testData/projects/project").expect("main.lua not found");
+
+        assert!(
+            files::compare_paths(&path, "src/testData/projects/project/src/main.lua"), 
+            "main.lua found at different location: {}",
+            path.to_str().unwrap()
+        )
     }
 
     #[test]
