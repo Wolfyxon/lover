@@ -434,7 +434,7 @@ fn cmd_version(_command: &Command) {
 
 fn cmd_run(_command: &Command) {
     let mut project_conf = project_config::get();
-    let src = project_conf.directories.get_source_dir();
+    let src = project_conf.paths.get_source_dir();
     let cmd_settings = get_command_line_settings();
 
     print_significant("Running", src.to_str().unwrap());
@@ -474,7 +474,7 @@ fn cmd_run(_command: &Command) {
 }
 
 fn cmd_parse(_command: &Command) {
-    let src = project_config::get().directories.get_source_dir();
+    let src = project_config::get().paths.get_source_dir();
 
     actions::get_parser().unwrap_or_else(|| {
         exit_err(format!("Cannot parse. Luac Lua parser not found."));
@@ -513,7 +513,7 @@ fn cmd_build(command: &Command) {
         print_success("All dependencies are installed.".to_string());
     }
 
-    files::create_dir(&project_conf.directories.get_temp_dir());
+    files::create_dir(&project_conf.paths.get_temp_dir());
 
     println!();
 
@@ -540,7 +540,7 @@ fn cmd_build(command: &Command) {
 }
 
 fn cmd_clean(_command: &Command) {
-    let build = &project_config::get().directories.get_build_dir();
+    let build = &project_config::get().paths.get_build_dir();
 
     print_significant("Removing", build.to_str().unwrap());
     actions::clean(build);

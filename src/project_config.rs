@@ -22,10 +22,12 @@ const IGNORE_MARKER: &str = "---@lover:ignoreFile";
 #[derive(Serialize, Deserialize)]
 pub struct ProjectConfig {
     pub package: Package,
+    
+    pub directories: Option<Paths>,
 
     #[serde(default = "Paths::default")]
     #[serde(skip_serializing_if = "Paths::is_default")]
-    pub directories: Paths,
+    pub paths: Paths,
 
     #[serde(default = "Build::default")]
     #[serde(skip_serializing_if = "Build::is_default")]
@@ -44,7 +46,8 @@ impl ProjectConfig {
     pub fn new(name: impl Into<String>) -> Self {
         Self {
             package: Package::new(name),
-            directories: Paths::default(),
+            paths: Paths::default(),
+            directories: None,
             build: Build::default(),
             run: Run::default(),
             env: Env::default(),
@@ -56,11 +59,11 @@ impl ProjectConfig {
     }
 
     pub fn get_meta(&self) -> Result<ProjectMeta, String> {
-        ProjectMeta::new(self.directories.get_source_dir())
+        ProjectMeta::new(self.paths.get_source_dir())
     }
 
     pub fn get_meta_path(&self) -> PathBuf {
-        self.directories.get_temp_dir().join("meta.toml")
+        self.paths.get_temp_dir().join("meta.toml")
     }
 
     pub fn get_cached_meta(&self) -> Option<ProjectMeta> {
@@ -98,7 +101,7 @@ impl ProjectConfig {
     pub fn validate(&self) {
         let mut errors: Vec<&str> = Vec::new();
 
-        if self.directories.source == self.directories.build {
+        if self.paths.source == self.paths.build {
             errors.push("Do not attempt to use the same directory for build and source files!");
         }
 
@@ -114,7 +117,8 @@ impl ProjectConfig {
         Self {
             package: pkg,
             env: Env::default(),
-            directories: Paths::default(),
+            directories: None,
+            paths: Paths::default(),
             run: Run::default(),
             build: Build::default(),
         }

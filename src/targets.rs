@@ -316,7 +316,7 @@ pub fn build_windows_zip(arch: Arch) {
     let pkg = project_conf.package;
     let pkg_name = &pkg.name;
 
-    let build_dir = &project_conf.directories.get_build_dir();
+    let build_dir = &project_conf.paths.get_build_dir();
     let zip_path = &deps::get_dep_or_crash(format!("love-{}", &name)).get_path();
 
     let path = build_dir.join(&name);
@@ -391,11 +391,11 @@ fn build_virtual() {
 
 fn build_love() {
     let config = project_config::get();
-    let src = config.directories.get_source_dir();
-    let build = config.directories.get_build_dir();
-    let temp = config.directories.get_temp_dir();
+    let src = config.paths.get_source_dir();
+    let build = config.paths.get_build_dir();
+    let temp = config.paths.get_temp_dir();
 
-    let ignored_files = config.directories.get_ignored_files();
+    let ignored_files = config.paths.get_ignored_files();
 
     let output = build.join(config.package.name + ".love");
 
@@ -439,8 +439,8 @@ fn build_linux() {
     let pkg_name = project_conf.package.name;
 
     // Paths
-    let build_dir = project_conf.directories.get_build_dir();
-    let temp = project_conf.directories.get_temp_dir();
+    let build_dir = project_conf.paths.get_build_dir();
+    let temp = project_conf.paths.get_temp_dir();
 
     let love = build_dir.join(format!("{}.love", &pkg_name));
 

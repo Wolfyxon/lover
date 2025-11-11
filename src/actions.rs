@@ -349,7 +349,7 @@ impl CommandRunner {
         self.set_env("__NV_PRIME_RENDER_OFFLOAD", "1");
         self.set_env("__GLX_VENDOR_LIBRARY_NAME", "nvidia");
         self.set_env("__VK_LAYER_NV_optimus", "NVIDIA_only");
-        
+
         self.set_env(
             "VK_ICD_FILENAMES",
             "/usr/share/vulkan/icd.d/nvidia_icd.json",
@@ -509,9 +509,9 @@ pub fn compile(arch: Arch, os: OS) {
     compiler.check_exists();
 
     let project = project_config::get();
-    let src = project.directories.get_source_dir();
-    let build = project.directories.get_build_dir();
-    let comp_dir = project.directories.get_temp_dir().join("compiled_lua");
+    let src = project.paths.get_source_dir();
+    let build = project.paths.get_build_dir();
+    let comp_dir = project.paths.get_temp_dir().join("compiled_lua");
     let dir = comp_dir.join(format!("{}-{}", os.to_string(), arch.to_short_string()));
 
     let all_scripts = files::get_file_tree_of_type(&src, "lua");
