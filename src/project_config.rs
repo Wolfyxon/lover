@@ -23,8 +23,6 @@ const IGNORE_MARKER: &str = "---@lover:ignoreFile";
 pub struct ProjectConfig {
     pub package: Package,
 
-    pub directories: Option<Paths>,
-
     #[serde(default = "Paths::default")]
     #[serde(skip_serializing_if = "Paths::is_default")]
     pub paths: Paths,
@@ -40,6 +38,8 @@ pub struct ProjectConfig {
     #[serde(default = "Env::default")]
     #[serde(skip_serializing_if = "Env::is_default")]
     pub env: Env,
+
+    directories: Option<Paths> // old 'paths'
 }
 
 impl ProjectConfig {
