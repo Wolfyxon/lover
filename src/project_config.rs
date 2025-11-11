@@ -22,7 +22,7 @@ const IGNORE_MARKER: &str = "---@lover:ignoreFile";
 #[derive(Serialize, Deserialize)]
 pub struct ProjectConfig {
     pub package: Package,
-    
+
     pub directories: Option<Paths>,
 
     #[serde(default = "Paths::default")]
@@ -66,13 +66,13 @@ impl ProjectConfig {
 
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         let parse_res: Result<Self, toml::de::Error> = toml::from_str(string);
-        
+
         match parse_res {
             Ok(mut parsed) => {
                 parsed.adapt_old_structure();
                 Ok(parsed)
-            },
-            Err(err) => Err(err)
+            }
+            Err(err) => Err(err),
         }
     }
 
@@ -288,7 +288,7 @@ pub struct Paths {
     #[serde(default = "Paths::default_build")]
     pub build: String,
 
-    source: Option<String> // old 'main
+    source: Option<String>, // old 'main
 }
 
 impl Paths {
@@ -297,7 +297,7 @@ impl Paths {
             main: Self::default_main(),
             exclude: Self::default_exclude(),
             build: Self::default_build(),
-            source: None
+            source: None,
         }
     }
 
@@ -341,13 +341,12 @@ impl Paths {
         match path.read_dir() {
             Ok(read) => {
                 for entry_res in read {
-                    
                     match entry_res {
                         Ok(entry) => {
                             let entry_path_buf = entry.path();
                             let entry_path = entry_path_buf.as_path();
                             let name_res = entry_path.file_name();
-                            
+
                             if entry_path.is_file() && name_res.is_some() {
                                 if name_res.unwrap() == "main.lua" {
                                     return Some(entry_path_buf);
@@ -367,7 +366,11 @@ impl Paths {
                 None
             }
             Err(err) => {
-                print_warn(format!("Unable to read: {}: {}", path.to_str().unwrap(), err));
+                print_warn(format!(
+                    "Unable to read: {}: {}",
+                    path.to_str().unwrap(),
+                    err
+                ));
                 None
             }
         }
@@ -612,18 +615,18 @@ mod tests {
 
     #[test]
     fn backwards_compatibility() {
-        let project = 
-            ProjectConfig::parse_str(include_str!("testData/projects/old.toml")).unwrap();
+        let project = ProjectConfig::parse_str(include_str!("testData/projects/old.toml")).unwrap();
 
         assert_eq!(project.paths.main, "src");
     }
 
     #[test]
     fn main_script_finding() {
-        let path = Paths::find_main_script_at("src/testData/projects/project").expect("main.lua not found");
+        let path = Paths::find_main_script_at("src/testData/projects/project")
+            .expect("main.lua not found");
 
         assert!(
-            files::compare_paths(&path, "src/testData/projects/project/src/main.lua"), 
+            files::compare_paths(&path, "src/testData/projects/project/src/main.lua"),
             "main.lua found at different location: {}",
             path.to_str().unwrap()
         )

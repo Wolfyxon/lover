@@ -162,7 +162,7 @@ pub fn compare_paths(a: impl Into<PathBuf>, b: impl Into<PathBuf>) -> bool {
     if a_buf.exists() && b_buf.exists() {
         let a_c = fs::canonicalize(a_buf);
         let b_c = fs::canonicalize(b_buf);
-        
+
         return (a_c.is_ok() && b_c.is_ok()) && (a_c.unwrap() == b_c.unwrap());
     } else {
         let a_str = a_buf.to_str().unwrap().to_string();
@@ -181,7 +181,7 @@ mod tests {
         assert!(compare_paths("nonexistent.txt", "nonexistent.txt"));
         assert!(compare_paths("src", "./src"));
         assert!(compare_paths("src/testData/", "src/testData"));
-        
+
         assert!(!compare_paths("src/", "src/lua"));
     }
 }

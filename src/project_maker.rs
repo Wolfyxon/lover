@@ -1,5 +1,7 @@
 use crate::{
-    console::{exit_err, input, input_non_empty, print_err, print_note, print_success}, files, project_config::{self, Package, ProjectConfig}
+    console::{exit_err, input, input_non_empty, print_err, print_note, print_success},
+    files,
+    project_config::{self, Package, ProjectConfig},
 };
 use std::{
     fs,
@@ -65,7 +67,7 @@ pub fn create(name: String, path: &Path) {
     extract_template(path);
     files::create_dir(path.join("src"));
     files::create_dir(path.join("assets"));
-    
+
     /* Generating project config */
 
     let config_path = path.join(project_config::PROJECT_FILE);

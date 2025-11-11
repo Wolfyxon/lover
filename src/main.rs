@@ -439,7 +439,9 @@ fn cmd_run(_command: &Command) {
     let cmd_settings = get_command_line_settings();
 
     let main_script_path = project_conf.paths.find_main_script().unwrap_or_else(|| {
-        exit_err(format!("Could not find 'main.lua'. Your game needs it to run"));
+        exit_err(format!(
+            "Could not find 'main.lua'. Your game needs it to run"
+        ));
     });
 
     let main_script_parent_res = main_script_path.parent();
