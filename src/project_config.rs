@@ -571,8 +571,8 @@ mod tests {
     #[test]
     fn backwards_compatibility() {
         let project = 
-            ProjectConfig::parse_str(include_str!("testData/projects/generic.toml")).unwrap();
-        
+            ProjectConfig::parse_str(include_str!("testData/projects/old.toml")).unwrap();
+
         assert_eq!(project.paths.main, "src");
     }
 
