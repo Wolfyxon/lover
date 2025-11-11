@@ -562,7 +562,8 @@ pub fn get_parser() -> Option<CommandRunner> {
     Some(parser)
 }
 
-pub fn parse_all(root: &Path) {
+pub fn parse_all(root: impl Into<PathBuf>) {
+    let root: PathBuf = root.into();
     let parser_res = get_parser();
 
     if parser_res.is_none() {
