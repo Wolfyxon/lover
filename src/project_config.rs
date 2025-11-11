@@ -54,8 +54,26 @@ impl ProjectConfig {
         }
     }
 
+    fn adapt_old_structure(&mut self) {
+        if self.directories.is_some() {
+            self.paths = self.directories.as_mut().unwrap().clone();
+        }
+
+        if self.paths.source.is_some() {
+            self.paths.main = self.paths.source.as_mut().unwrap().clone();
+        }
+    }
+
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
-        toml::from_str(string)
+        let parse_res: Result<Self, toml::de::Error> = toml::from_str(string);
+        
+        match parse_res {
+            Ok(mut parsed) => {
+                parsed.adapt_old_structure();
+                Ok(parsed)
+            },
+            Err(err) => Err(err)
+        }
     }
 
     pub fn get_meta(&self) -> Result<ProjectMeta, String> {
@@ -259,7 +277,7 @@ impl Package {
     }
 }
 
-#[derive(Serialize, Deserialize, PartialEq)]
+#[derive(Serialize, Deserialize, PartialEq, Clone)]
 pub struct Paths {
     #[serde(default = "Paths::default_main")]
     pub main: String,
@@ -269,6 +287,8 @@ pub struct Paths {
 
     #[serde(default = "Paths::default_build")]
     pub build: String,
+
+    source: Option<String> // old 'main
 }
 
 impl Paths {
@@ -277,6 +297,7 @@ impl Paths {
             main: Self::default_main(),
             exclude: Self::default_exclude(),
             build: Self::default_build(),
+            source: None
         }
     }
 
