@@ -1,6 +1,10 @@
 use reqwest::blocking::{Client, Response};
 use serde::de::DeserializeOwned;
-use std::{fs::File, io::{Read, Write}, path::Path};
+use std::{
+    fs::File,
+    io::{Read, Write},
+    path::Path,
+};
 
 use crate::console::{exit_err, ProgressBar};
 
@@ -12,8 +16,7 @@ pub struct Downloadable {
 impl<'a> Downloadable {
     pub fn request(url: impl Into<String>) -> Self {
         Self {
-            response: get_request(url)
-            //url: url
+            response: get_request(url), //url: url
         }
     }
 
@@ -66,12 +69,16 @@ pub fn get_request(url: impl Into<String>) -> Response {
 
 pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<String>) {
     let mut file = File::create(path).unwrap_or_else(|err| {
-        exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err));
+        exit_err(format!(
+            "Failed to open '{}': {}",
+            path.to_str().unwrap(),
+            err
+        ));
     });
 
     let len = match response.content_length() {
         Some(len) => len as usize,
-        None => 0
+        None => 0,
     };
 
     let mut bar = ProgressBar::new(len);
@@ -79,7 +86,7 @@ pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<
     bar.memory_mode();
 
     let mut bytes: usize = 0;
-    
+
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
 
@@ -87,7 +94,9 @@ pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<
             exit_err(format!("Read failed: {}", err));
         });
 
-        if bytes_read == 0 { break; }
+        if bytes_read == 0 {
+            break;
+        }
 
         file.write_all(&buf[..bytes_read]).unwrap_or_else(|err| {
             bar.finish();
@@ -102,6 +111,6 @@ pub fn download_response(response: &mut Response, path: &Path, alias: impl Into<
 
         bar.update(bytes);
     }
-    
+
     bar.finish();
 }

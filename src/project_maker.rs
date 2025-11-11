@@ -1,25 +1,34 @@
-use std::{fs, io::Write, path::{Path, PathBuf}, process::exit};
-use crate::{console::{exit_err, input, input_non_empty, print_err, print_note, print_success}, files, project_config::{self, Package, ProjectConfig}};
+use crate::{
+    console::{exit_err, input, input_non_empty, print_err, print_note, print_success},
+    files,
+    project_config::{self, Package, ProjectConfig},
+};
+use std::{
+    fs,
+    io::Write,
+    path::{Path, PathBuf},
+    process::exit,
+};
 
 struct ComponentFile<'a> {
     path: &'a Path,
-    buffer: &'a [u8]
-} 
+    buffer: &'a [u8],
+}
 
 fn get_template_files<'a>() -> Vec<ComponentFile<'a>> {
     vec![
         ComponentFile {
             path: Path::new(".gitignore"),
-            buffer: include_bytes!("lua/template/.gitignore")
+            buffer: include_bytes!("lua/template/.gitignore"),
         },
         ComponentFile {
             path: Path::new("src/main.lua"),
-            buffer: include_bytes!("lua/template/src/main.lua")
+            buffer: include_bytes!("lua/template/src/main.lua"),
         },
         ComponentFile {
             path: Path::new("icon.png"),
-            buffer: include_bytes!("lua/template/icon.png")
-        }
+            buffer: include_bytes!("lua/template/icon.png"),
+        },
     ]
 }
 
@@ -30,24 +39,31 @@ pub fn extract_template(path: &Path) {
 
         if !parent.exists() {
             fs::create_dir_all(parent).unwrap_or_else(|err| {
-                exit_err(format!("Failed to create directory {}: {}", parent.to_str().unwrap(), err));
+                exit_err(format!(
+                    "Failed to create directory {}: {}",
+                    parent.to_str().unwrap(),
+                    err
+                ));
             });
         }
 
         let mut file = files::create(&target_path);
-        
+
         file.write_all(component.buffer).unwrap_or_else(|err| {
-            exit_err(format!("Failed to write file '{}': {}", target_path.to_str().unwrap(), err));
+            exit_err(format!(
+                "Failed to write file '{}': {}",
+                target_path.to_str().unwrap(),
+                err
+            ));
         });
     }
 }
 
 pub fn create(name: String, path: &Path) {
-
     if !validate_project_dir(path.to_path_buf()) {
         exit(1);
     }
-    
+
     extract_template(path);
 
     /* Generating project config */
@@ -55,29 +71,34 @@ pub fn create(name: String, path: &Path) {
     let config_path = path.join(project_config::PROJECT_FILE);
 
     let pkg = Package {
-            name: name.to_owned(),
-            display_name: None,
-            copyright: None,
-            author: "".to_string(),
-            description: "".to_string(),
-            version: Package::default_version(),
-            icon: Package::default_icon()
+        name: name.to_owned(),
+        display_name: None,
+        copyright: None,
+        author: "".to_string(),
+        description: "".to_string(),
+        version: Package::default_version(),
+        icon: Package::default_icon(),
     };
 
-    
     let project = ProjectConfig::from_package(pkg);
     let project_string = toml::to_string_pretty(&project).expect("Serialization failed");
-    
+
     fs::write(config_path, project_string).unwrap_or_else(|err| {
         exit_err(format!("Failed to create project config: {err}"));
     });
 
-    print_success(format!("Successfully initialized new project '{}' in {}", name, path.to_str().unwrap()));
-
+    print_success(format!(
+        "Successfully initialized new project '{}' in {}",
+        name,
+        path.to_str().unwrap()
+    ));
 }
 
 pub fn setup() {
-    print_note(format!("All settings can be changed at any time you want in the {} file.", project_config::PROJECT_FILE));
+    print_note(format!(
+        "All settings can be changed at any time you want in the {} file.",
+        project_config::PROJECT_FILE
+    ));
     println!();
 
     setup_init();
@@ -114,19 +135,22 @@ pub fn validate_project_dir(path: PathBuf) -> bool {
             print_err("The given path is a file. You must either use an empty directory or a non existing one");
             return false;
         }
-    
+
         match path.read_dir() {
             Ok(reader) => {
                 if reader.count() != 0 {
                     print_err("The project directory must be empty.");
                     return false;
                 }
-            },
+            }
             Err(err) => {
-                print_err(format!("Failed to read directory: {}. Consider changing the path", err));
+                print_err(format!(
+                    "Failed to read directory: {}. Consider changing the path",
+                    err
+                ));
                 return false;
             }
-        }    
+        }
     }
 
     true
@@ -134,8 +158,11 @@ pub fn validate_project_dir(path: PathBuf) -> bool {
 
 pub fn setup_dir(project: &mut ProjectConfig) -> PathBuf {
     let name = &project.package.name;
-    let mut entered_path = input(format!("Where should your project files be? (default: {}): ", name));
-    
+    let mut entered_path = input(format!(
+        "Where should your project files be? (default: {}): ",
+        name
+    ));
+
     if entered_path.is_empty() {
         entered_path = name.to_string();
     }
@@ -147,9 +174,12 @@ pub fn setup_dir(project: &mut ProjectConfig) -> PathBuf {
     }
 
     match fs::create_dir_all(path) {
-        Ok(()) => {},
+        Ok(()) => {}
         Err(err) => {
-            print_err(format!("Failed to create directories: {}. Consider changing the path", err));
+            print_err(format!(
+                "Failed to create directories: {}. Consider changing the path",
+                err
+            ));
             return setup_dir(project);
         }
     }

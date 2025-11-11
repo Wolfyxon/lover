@@ -1,7 +1,20 @@
-use std::{collections::HashMap, env, fs::File, io::Read, path::PathBuf, time::{Duration, SystemTime, UNIX_EPOCH}};
-use serde::{Deserialize, Serialize};
+use crate::{
+    actions::Context,
+    console::{exit_err, print_warn},
+    files,
+    meta::ProjectMeta,
+    targets,
+};
 use globset::{Glob, GlobSetBuilder};
-use crate::{actions::Context, console::{exit_err, print_warn}, files, meta::ProjectMeta, targets};
+use serde::{Deserialize, Serialize};
+use std::{
+    collections::HashMap,
+    env,
+    fs::File,
+    io::Read,
+    path::PathBuf,
+    time::{Duration, SystemTime, UNIX_EPOCH},
+};
 
 pub const PROJECT_FILE: &str = "lover.toml";
 const IGNORE_MARKER: &str = "---@lover:ignoreFile";
@@ -24,7 +37,7 @@ pub struct ProjectConfig {
 
     #[serde(default = "Env::default")]
     #[serde(skip_serializing_if = "Env::is_default")]
-    pub env: Env
+    pub env: Env,
 }
 
 impl ProjectConfig {
@@ -34,10 +47,10 @@ impl ProjectConfig {
             directories: Directories::default(),
             build: Build::default(),
             run: Run::default(),
-            env: Env::default()
+            env: Env::default(),
         }
     }
-    
+
     pub fn parse_str(string: &str) -> Result<Self, toml::de::Error> {
         toml::from_str(string)
     }
@@ -63,14 +76,20 @@ impl ProjectConfig {
         let read_res = file.read_to_string(&mut text);
 
         if read_res.is_err() {
-            print_warn(format!("Failed to read meta cache: {}. Assuming it doesn't exist.", read_res.unwrap_err().to_string()));
+            print_warn(format!(
+                "Failed to read meta cache: {}. Assuming it doesn't exist.",
+                read_res.unwrap_err().to_string()
+            ));
             return None;
         }
 
         let parse_res = ProjectMeta::parse(text);
 
         if parse_res.is_err() {
-            print_warn(format!("Failed to parse meta cache: {}. Assuming it doesn't exist.", parse_res.as_ref().err().unwrap().to_string()));
+            print_warn(format!(
+                "Failed to parse meta cache: {}. Assuming it doesn't exist.",
+                parse_res.as_ref().err().unwrap().to_string()
+            ));
         }
 
         Some(parse_res.unwrap())
@@ -82,9 +101,12 @@ impl ProjectConfig {
         if self.directories.source == self.directories.build {
             errors.push("Do not attempt to use the same directory for build and source files!");
         }
-        
+
         if !errors.is_empty() {
-            exit_err(format!("Invalid project configuration: \n{}", errors.join("\n")));
+            exit_err(format!(
+                "Invalid project configuration: \n{}",
+                errors.join("\n")
+            ));
         }
     }
 
@@ -94,48 +116,59 @@ impl ProjectConfig {
             env: Env::default(),
             directories: Directories::default(),
             run: Run::default(),
-            build: Build::default()
+            build: Build::default(),
         }
     }
 
     pub fn get_env_map(&self, context: Context) -> HashMap<String, String> {
         let mut map: HashMap<String, String> = HashMap::new();
-    
+
         let env = &self.env;
         let pkg = &self.package;
-    
+
         let ctx_map = match context {
             Context::Build => &env.build,
-            Context::Run => &env.run
-        }.to_owned();
-    
+            Context::Run => &env.run,
+        }
+        .to_owned();
+
         for (k, v) in ctx_map {
             map.insert(k, v);
         }
-    
+
         for (k, v) in &env.global {
             map.insert(k.to_owned(), v.to_owned());
         }
-    
+
         let ctx_str = match context {
             Context::Build => "build",
-            Context::Run => "run"
-        }.to_string();
-    
-        let timestamp = SystemTime::now().duration_since(UNIX_EPOCH).unwrap_or_else(|err| {
-            print_warn(format!("Error getting UNIX timestamp: {}.\nLOVER_TIMESTAMP will be equal to 0", err));
-            Duration::from_secs(0)
-        }).as_secs();
-    
+            Context::Run => "run",
+        }
+        .to_string();
+
+        let timestamp = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap_or_else(|err| {
+                print_warn(format!(
+                    "Error getting UNIX timestamp: {}.\nLOVER_TIMESTAMP will be equal to 0",
+                    err
+                ));
+                Duration::from_secs(0)
+            })
+            .as_secs();
+
         map.insert("LOVER_CONTEXT".to_string(), ctx_str);
         map.insert("LOVER_TIMESTAMP".to_string(), timestamp.to_string());
-    
+
         map.insert("LOVER_PKG_DISPLAY_NAME".to_string(), pkg.get_display_name());
         map.insert("LOVER_PKG_VERSION".to_string(), pkg.version.to_owned());
         map.insert("LOVER_PKG_NAME".to_string(), pkg.name.to_owned());
         map.insert("LOVER_PKG_AUTHOR".to_string(), pkg.author.to_owned());
-        map.insert("LOVER_PKG_DESCRIPTION".to_string(), pkg.description.to_owned());
-        
+        map.insert(
+            "LOVER_PKG_DESCRIPTION".to_string(),
+            pkg.description.to_owned(),
+        );
+
         return map;
     }
 }
@@ -149,17 +182,17 @@ pub struct Package {
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
     pub description: String,
-    
+
     #[serde(default)]
     #[serde(skip_serializing_if = "String::is_empty")]
     pub author: String,
-    
+
     #[serde(default = "Package::default_version")]
     pub version: String,
 
     #[serde(default = "Package::default_icon")]
     #[serde(skip_serializing_if = "Package::is_default_icon")]
-    pub icon: String
+    pub icon: String,
 }
 
 impl Package {
@@ -171,23 +204,25 @@ impl Package {
             description: String::new(),
             author: String::new(),
             version: Self::default_version(),
-            icon: Self::default_icon()
+            icon: Self::default_icon(),
         }
     }
 
     pub fn get_display_name(&self) -> String {
-        self.display_name.to_owned().unwrap_or(format!("{} {}", self.name, self.version))
+        self.display_name
+            .to_owned()
+            .unwrap_or(format!("{} {}", self.name, self.version))
     }
 
     pub fn get_rcedit_args(&self) -> Vec<String> {
         let mut res: Vec<String> = Vec::new();
         let mut map: HashMap<&str, String> = HashMap::new();
 
-        map.insert("ProductName", self.name.to_owned());    
+        map.insert("ProductName", self.name.to_owned());
         map.insert("FileDescription", self.get_display_name());
-        map.insert("CompanyName", self.author.to_owned()); 
+        map.insert("CompanyName", self.author.to_owned());
         map.insert("ProductVersion", self.version.to_owned());
-        
+
         self.copyright.to_owned().map(|c| {
             map.insert("LegalCopyright", c);
         });
@@ -196,7 +231,7 @@ impl Package {
             res.append(&mut vec![
                 "--set-version-string".to_string(),
                 k.to_string(),
-                v
+                v,
             ]);
         }
 
@@ -237,7 +272,7 @@ impl Directories {
         Self {
             source: Self::default_source(),
             exclude: Self::default_exclude(),
-            build: Self::default_build()
+            build: Self::default_build(),
         }
     }
 
@@ -282,7 +317,9 @@ impl Directories {
 
         for pat in &self.exclude {
             match Glob::new(pat) {
-                Ok(glob) => { builder.add(glob); }
+                Ok(glob) => {
+                    builder.add(glob);
+                }
                 Err(err) => print_warn(format!("Invalid ignore pattern `{}`: {}", pat, err)),
             }
         }
@@ -306,7 +343,7 @@ impl Directories {
                     .expect("All paths must be under source")
                     .to_string_lossy()
                     .replace("\\", "/");
-            
+
                 let is_allowed = allowed.iter().any(|allowed| rel_path == *allowed);
                 let is_ignored = exclude_set.is_match(&rel_path);
                 let has_start = Self::has_ignore_marker(path);
@@ -324,9 +361,11 @@ impl Directories {
 
     pub fn has_ignore_marker(path: &std::path::Path) -> bool {
         let mut buffer = [0u8; IGNORE_MARKER.len()];
-        
+
         match File::open(path).and_then(|mut f| f.read_exact(&mut buffer)) {
-            Ok(_) => std::str::from_utf8(&buffer).map(|s| s == IGNORE_MARKER).unwrap_or(false),
+            Ok(_) => std::str::from_utf8(&buffer)
+                .map(|s| s == IGNORE_MARKER)
+                .unwrap_or(false),
             Err(_) => false,
         }
     }
@@ -335,7 +374,7 @@ impl Directories {
         self.filter_files(true)
     }
 
-    pub  fn get_files(&self) -> Vec<PathBuf> {
+    pub fn get_files(&self) -> Vec<PathBuf> {
         self.filter_files(false)
     }
 
@@ -347,13 +386,13 @@ impl Directories {
 #[derive(Serialize, Deserialize, PartialEq)]
 pub struct Run {
     #[serde(default = "Run::default_default_run_args")]
-    pub default_args: Vec<String>
+    pub default_args: Vec<String>,
 }
 
 impl Run {
     pub fn default() -> Self {
         Self {
-            default_args: Self::default_default_run_args()
+            default_args: Self::default_default_run_args(),
         }
     }
 
@@ -368,14 +407,12 @@ impl Run {
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub struct Build {
-    pub default: Option<Vec<String>>
+    pub default: Option<Vec<String>>,
 }
 
 impl Build {
     fn default() -> Self {
-        Self {
-            default: None
-        }
+        Self { default: None }
     }
 
     pub fn get_default_targets(&self) -> Vec<String> {
@@ -389,10 +426,10 @@ impl Build {
                     list.to_owned()
                 }
             }
-            None => platform_targets
+            None => platform_targets,
         }
     }
-    
+
     pub fn is_default(&self) -> bool {
         return self == &Self::default();
     }
@@ -407,7 +444,7 @@ pub struct Env {
     pub run: HashMap<String, String>,
 
     #[serde(default = "Env::default_any_env")]
-    pub build: HashMap<String, String>
+    pub build: HashMap<String, String>,
 }
 
 impl Env {
@@ -415,7 +452,7 @@ impl Env {
         Self {
             global: Self::default_any_env(),
             run: Self::default_any_env(),
-            build: Self::default_any_env()
+            build: Self::default_any_env(),
         }
     }
 
@@ -446,7 +483,7 @@ pub fn find_project_config() -> Option<PathBuf> {
                     if entry.file_name() == PROJECT_FILE && path.is_file() {
                         return Some(path);
                     }
-                },
+                }
                 Err(err) => {
                     print_warn(format!("Failed to read entry in {}: {}", current_str, err));
                 }
@@ -455,35 +492,39 @@ pub fn find_project_config() -> Option<PathBuf> {
 
         match current.parent() {
             Some(parent) => current = parent.to_path_buf(),
-            None => return None
+            None => return None,
         }
     }
 }
 
 pub fn find_project_dir() -> Option<PathBuf> {
     match find_project_config() {
-        Some(path) => {
-            match path.parent() {
-                Some(parent) => Some(parent.to_path_buf()),
-                None => None
-            }
+        Some(path) => match path.parent() {
+            Some(parent) => Some(parent.to_path_buf()),
+            None => None,
         },
-        None => None
+        None => None,
     }
 }
 
 pub fn get() -> ProjectConfig {
     let path = find_project_config().unwrap_or_else(|| {
-        exit_err(format!("Could not find {} in the current or parent directories.", PROJECT_FILE));
+        exit_err(format!(
+            "Could not find {} in the current or parent directories.",
+            PROJECT_FILE
+        ));
     });
 
     let string = std::fs::read_to_string(&path).unwrap_or_else(|err| {
-         exit_err(format!("Failed to open '{}': {}", path.to_str().unwrap(), err)); 
+        exit_err(format!(
+            "Failed to open '{}': {}",
+            path.to_str().unwrap(),
+            err
+        ));
     });
 
-    let parsed = ProjectConfig::parse_str(string.as_str()).unwrap_or_else(|err| {
-        exit_err(format!("Project config parse error: {}", err))
-    });
+    let parsed = ProjectConfig::parse_str(string.as_str())
+        .unwrap_or_else(|err| exit_err(format!("Project config parse error: {}", err)));
 
     parsed.validate();
     parsed
@@ -495,7 +536,8 @@ mod tests {
 
     #[test]
     fn parse_valid() {
-        let project = ProjectConfig::parse_str(include_str!("testData/projects/generic.toml")).unwrap();
+        let project =
+            ProjectConfig::parse_str(include_str!("testData/projects/generic.toml")).unwrap();
 
         assert_eq!(project.package.name, "Some game");
         assert_eq!(project.package.version, "1.2");

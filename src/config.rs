@@ -1,6 +1,6 @@
-use std::path::PathBuf;
-use serde::Deserialize;
 use crate::console::exit_err;
+use serde::Deserialize;
+use std::path::PathBuf;
 
 //const DKP_TOOLS: &str = "/opt/devkitpro/tools/bin/";
 
@@ -16,7 +16,7 @@ pub struct Config {
     pub run: Run,
 
     #[serde(default = "Software::default")]
-    pub software: Software
+    pub software: Software,
 }
 
 impl Config {
@@ -25,7 +25,7 @@ impl Config {
             verbose_logging: Self::default_verbose_logging(),
             build: Build::default(),
             run: Run::default(),
-            software: Software::default()
+            software: Software::default(),
         }
     }
 
@@ -40,13 +40,13 @@ impl Config {
 
 #[derive(Deserialize)]
 pub struct Run {
-    pub prime: bool
+    pub prime: bool,
 }
 
 impl Run {
     pub fn default() -> Self {
         Self {
-            prime: Run::default_prime()
+            prime: Run::default_prime(),
         }
     }
 
@@ -59,7 +59,6 @@ impl Run {
 pub struct Build {
     #[serde(default = "Build::default_zip")]
     pub zip: bool,
-
     /*#[serde(default = "Build::default_sign")]
     pub sign: bool*/
 }
@@ -95,7 +94,6 @@ pub struct Software {
 
     #[serde(default = "Software::default_rcedit")]
     pub rcedit: String,
-    
     /*
     #[serde(default = "Software::default_smdhtool")]
     pub smdhtool: String,
@@ -117,9 +115,9 @@ impl Software {
             luac: Software::default_luac(),
             wine: Software::default_wine(),
             rcedit: Software::default_rcedit(), /*
-            smdhtool: Software::default_smdhtool(),
-            n3dsxtool: Software::default_3dsxtool(),
-            n3dslink: Software::default_3dslink() */
+                                                smdhtool: Software::default_smdhtool(),
+                                                n3dsxtool: Software::default_3dsxtool(),
+                                                n3dslink: Software::default_3dslink() */
         }
     }
 
@@ -155,7 +153,6 @@ impl Software {
     fn default_3dslink() -> String {
         DKP_TOOLS.to_owned() + "/3dslink"
     }*/
-        
 }
 
 pub fn get_dir() -> PathBuf {
@@ -176,9 +173,13 @@ pub fn get() -> Config {
     }
 
     let path: PathBuf = get_config_path();
-    
+
     let string = std::fs::read_to_string(&path).unwrap_or_else(|err| {
-        exit_err(format!("Failed to open config at '{}': {}", &path.display(), err));
+        exit_err(format!(
+            "Failed to open config at '{}': {}",
+            &path.display(),
+            err
+        ));
     });
 
     Config::parse_str(string.as_str()).unwrap_or_else(|err| {

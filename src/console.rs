@@ -1,7 +1,7 @@
+use ansi_term::Color::{Blue, Cyan, Green, Purple, Red, Yellow};
+use ansi_term::Style;
 use std::io::{stdin, stdout, BufRead, Read, Write};
 use std::process::exit;
-use ansi_term::Style;
-use ansi_term::Color::{Red, Yellow, Green, Cyan, Blue, Purple};
 use termsize::Size;
 
 use crate::config;
@@ -26,7 +26,7 @@ pub struct ProgressBar {
     pub max: usize,
     pub prefix: Option<String>,
     pub suffix: Option<String>,
-    pub convert: fn(unit: f32) -> f32
+    pub convert: fn(unit: f32) -> f32,
 }
 
 impl ProgressBar {
@@ -35,7 +35,7 @@ impl ProgressBar {
             max: max,
             prefix: None,
             suffix: None,
-            convert: |unit| unit
+            convert: |unit| unit,
         }
     }
 
@@ -78,7 +78,7 @@ impl ProgressBar {
     }
 
     pub fn update(&self, progress: usize) {
-        let term_width = termsize::get().unwrap_or(Size {rows: 1, cols: 200}).cols;
+        let term_width = termsize::get().unwrap_or(Size { rows: 1, cols: 200 }).cols;
 
         let mut bar_margin: usize = (term_width as f32 * 0.3).max(42.0) as usize;
         let width = (term_width as f32 * 0.2).min(30.0);
@@ -99,17 +99,18 @@ impl ProgressBar {
 
         let pre_space_size = bar_margin.saturating_sub(prefix_len);
 
-        let fill = "=".repeat( (amt * width) as usize );
-        let spaces = " ".repeat( (width - amt * width).ceil() as usize );
+        let fill = "=".repeat((amt * width) as usize);
+        let spaces = " ".repeat((width - amt * width).ceil() as usize);
         let pre_space = " ".repeat(pre_space_size);
         let prefix = self.prefix.clone().unwrap_or("".to_string());
         let suffix = self.suffix.clone().unwrap_or("".to_string());
 
-        let zero_factor = 1000.0; 
+        let zero_factor = 1000.0;
         let disp_progress = ((self.convert)(progress as f32) * zero_factor).round() / zero_factor;
         let disp_max = ((self.convert)(self.max as f32) * zero_factor).round() / zero_factor;
-        
-        let bar_string = format!("{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max} {suffix}");
+
+        let bar_string =
+            format!("{prefix} {pre_space} [{fill}{spaces}] {disp_progress}/{disp_max} {suffix}");
         let clear_space = " ".repeat(term_width.saturating_sub(bar_string.len() as u16) as usize);
 
         print!("\r{}{}", bar_string, clear_space);
@@ -147,7 +148,7 @@ pub fn get_command_line_settings() -> CommandLineSettings {
     CommandLineSettings {
         args: args,
         flags: flags,
-        verbose: conf.verbose_logging || verbose_flag
+        verbose: conf.verbose_logging || verbose_flag,
     }
 }
 
@@ -158,8 +159,8 @@ pub fn flush() {
 pub fn confirm(message: impl Into<String>) -> bool {
     print!("{} [Y/N]: ", message.into());
     flush();
-    
-    let mut handle = stdin().lock();  
+
+    let mut handle = stdin().lock();
     let mut ch = [0_u8];
 
     handle.read_exact(&mut ch).expect("Failed to read stdin");
@@ -174,8 +175,11 @@ pub fn input(message: impl Into<String>) -> String {
     let stdin = std::io::stdin();
     let mut res = String::new();
 
-    stdin.lock().read_line(&mut res).expect("Failed to read stdin");
-    
+    stdin
+        .lock()
+        .read_line(&mut res)
+        .expect("Failed to read stdin");
+
     res.trim().to_string()
 }
 
@@ -198,7 +202,11 @@ pub fn confirm_or_exit(message: &str) {
 }
 
 pub fn print_err(message: impl Into<String>) {
-    eprintln!("{} {}", Style::new().fg(Red).bold().paint("Error:"), message.into());
+    eprintln!(
+        "{} {}",
+        Style::new().fg(Red).bold().paint("Error:"),
+        message.into()
+    );
 }
 
 pub fn exit_err(message: impl Into<String>) -> ! {
@@ -220,19 +228,38 @@ pub fn print_success_verbose(settings: &CommandLineSettings, message: impl Into<
 }
 
 pub fn print_warn(message: impl Into<String>) {
-    println!("{} {}", Style::new().fg(Yellow).bold().paint("Warning:"), message.into());
+    println!(
+        "{} {}",
+        Style::new().fg(Yellow).bold().paint("Warning:"),
+        message.into()
+    );
 }
 
 pub fn print_success(message: impl Into<String>) {
-    println!("{} {}", Style::new().fg(Green).bold().paint("OK:"), message.into())
+    println!(
+        "{} {}",
+        Style::new().fg(Green).bold().paint("OK:"),
+        message.into()
+    )
 }
 
 pub fn print_note(message: impl Into<String>) {
-    println!("{} {}", Style::new().fg(Purple).bold().paint("Note:"), message.into())
+    println!(
+        "{} {}",
+        Style::new().fg(Purple).bold().paint("Note:"),
+        message.into()
+    )
 }
 
 pub fn print_significant(prefix: impl Into<String>, message: impl Into<String>) {
-    println!("{} {}", Style::new().fg(Cyan).bold().paint(format!("> {}:", prefix.into())), message.into())
+    println!(
+        "{} {}",
+        Style::new()
+            .fg(Cyan)
+            .bold()
+            .paint(format!("> {}:", prefix.into())),
+        message.into()
+    )
 }
 
 pub fn get_step_prefix() -> String {

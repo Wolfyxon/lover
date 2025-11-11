@@ -1,14 +1,14 @@
+use ansi_term::Color::Blue;
+use ansi_term::Style;
 use std::collections::HashMap;
 use std::env::split_paths;
+use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::{Path, PathBuf};
-use std::fs::File;
 use std::process::exit;
 use std::process::Command;
 use std::process::Stdio;
-use ansi_term::Style;
-use ansi_term::Color::Blue;
 use zip::write::SimpleFileOptions;
 use zip::ZipArchive;
 
@@ -21,7 +21,7 @@ use crate::console::print_err;
 use crate::console::print_step_verbose;
 use crate::console::print_success_verbose;
 use crate::console::ProgressBar;
-use crate::console::{print_warn, print_success, print_step};
+use crate::console::{print_step, print_success, print_warn};
 use crate::files;
 use crate::files::get_file_tree;
 use crate::project_config;
@@ -30,13 +30,13 @@ use crate::targets::OS;
 
 pub enum Context {
     Run,
-    Build
+    Build,
 }
 
 pub struct Archiver {
     dir: PathBuf,
     progress_bar: Option<ProgressBar>,
-    ignored_files: Vec<PathBuf>
+    ignored_files: Vec<PathBuf>,
 }
 
 impl Archiver {
@@ -44,21 +44,21 @@ impl Archiver {
         Self {
             dir: dir.into(),
             progress_bar: None,
-            ignored_files: Vec::new()
+            ignored_files: Vec::new(),
         }
     }
 
     pub fn add_progress_bar(&mut self, prefix: impl Into<String>) -> &mut Self {
         let mut bar = ProgressBar::new(1);
         bar.set_prefix(format!("{} {}", console::get_step_prefix(), prefix.into()));
-        
+
         self.progress_bar = Some(bar);
         self
     }
 
     pub fn ignore_file(&mut self, file: impl Into<PathBuf>) -> &mut Self {
         self.ignored_files.push(file.into());
-        
+
         self
     }
 
@@ -83,35 +83,43 @@ impl Archiver {
         self.progress_bar.as_mut().map(|bar| {
             bar.max = tree.len() - self.ignored_files.len();
         });
-    
+
         print_step_verbose(
-            &get_command_line_settings(), 
-            format!("Archiving '{}' into '{}'...", &self.dir.to_str().unwrap(), output_dir.to_str().unwrap())
+            &get_command_line_settings(),
+            format!(
+                "Archiving '{}' into '{}'...",
+                &self.dir.to_str().unwrap(),
+                output_dir.to_str().unwrap()
+            ),
         );
 
-        let ignored_set: std::collections::HashSet<PathBuf> = self.ignored_files.iter().map(|p| self.dir.join(p)).collect();
+        let ignored_set: std::collections::HashSet<PathBuf> = self
+            .ignored_files
+            .iter()
+            .map(|p| self.dir.join(p))
+            .collect();
 
         for path in tree {
             if ignored_set.contains(&path) {
                 continue;
             }
-    
+
             let out_path = files::skip_path(&path, &self.dir);
             let mut file = File::open(path).unwrap();
-            
+
             file.read_to_end(&mut buffer).unwrap();
             zip.start_file_from_path(out_path, options).unwrap();
             zip.write_all(&buffer).unwrap();
-    
+
             buffer.clear();
-    
+
             progress += 1;
-            
+
             self.progress_bar.as_mut().map(|bar| {
                 bar.update(progress);
             });
         }
-    
+
         self.progress_bar.as_mut().map(|bar| {
             bar.finish();
         });
@@ -120,21 +128,21 @@ impl Archiver {
 
 pub struct Extractor {
     source: PathBuf,
-    progress_bar: Option<ProgressBar>
+    progress_bar: Option<ProgressBar>,
 }
 
 impl Extractor {
     pub fn new(source: impl Into<PathBuf>) -> Self {
         Self {
             source: source.into(),
-            progress_bar: None
+            progress_bar: None,
         }
     }
 
     pub fn add_progress_bar(&mut self, prefix: impl Into<String>) -> &mut Self {
         let mut bar = ProgressBar::new(1);
         bar.set_prefix(format!("{} {}", console::get_step_prefix(), prefix.into()));
-        
+
         self.progress_bar = Some(bar);
         self
     }
@@ -147,80 +155,89 @@ impl Extractor {
         let zip_file = files::open(&self.source);
         let source_str = &self.source.to_str().unwrap();
         let dir_str = &output_dir.to_str().unwrap();
-    
-        let mut archive = ZipArchive::new(zip_file).unwrap_or_else(|err| {
-            exit_err(format!("ZIP failed for '{}': {}", source_str, err))
-        });
-    
+
+        let mut archive = ZipArchive::new(zip_file)
+            .unwrap_or_else(|err| exit_err(format!("ZIP failed for '{}': {}", source_str, err)));
+
         let archive_len = archive.len();
-    
+
         print_step_verbose(
             &get_command_line_settings(),
-            format!("Extracting '{}' to '{}'...", source_str, dir_str)
+            format!("Extracting '{}' to '{}'...", source_str, dir_str),
         );
-        
+
         self.progress_bar.as_mut().map(|bar| {
             bar.max = archive_len;
             bar.update(0);
         });
-    
+
         for i in 0..archive_len {
             let mut file = archive.by_index(i).unwrap_or_else(|err| {
-                exit_err(format!("Failed to get file at index {} of '{}': {}", i, source_str, err));
+                exit_err(format!(
+                    "Failed to get file at index {} of '{}': {}",
+                    i, source_str, err
+                ));
             });
-    
+
             let path = match file.enclosed_name() {
                 Some(path) => {
                     PathBuf::from(path.file_name().unwrap())
-    
+
                     // Enable if nested files are needed.
                     /*
                     let mut res = path.to_owned();
                     let components = path.components();
                     let cmp_len = components.to_owned().count();
-    
+
                     if cmp_len > 1 {
                         let mut new_path = PathBuf::new();
                         let mut skipped = false;
-    
+
                         for cmp in components {
                             if !skipped {
                                 skipped = true;
                                 continue;
                             }
-    
+
                             new_path = new_path.join(cmp);
                         }
-    
+
                         res = new_path;
                     }
-    
+
                     res*/
-                },
-                None => exit_err(format!("Failed to get path of file at index {} of '{}'", i, source_str))
+                }
+                None => exit_err(format!(
+                    "Failed to get path of file at index {} of '{}'",
+                    i, source_str
+                )),
             };
-    
+
             let mut out_file = files::create(output_dir.join(path).as_path());
-            
+
             loop {
                 let mut buf: [u8; 1024] = [0; 1024];
-                
-                let bytes_read = file.read(&mut buf).unwrap_or_else(|err| {
-                    exit_err(format!("Read failed: {}", err))
-                });
-        
-                if bytes_read == 0 { break; }
-        
-                out_file.write_all(&buf[..bytes_read]).unwrap_or_else(|err| {
-                    exit_err(format!("Write failed: {}", err));
-                });
+
+                let bytes_read = file
+                    .read(&mut buf)
+                    .unwrap_or_else(|err| exit_err(format!("Read failed: {}", err)));
+
+                if bytes_read == 0 {
+                    break;
+                }
+
+                out_file
+                    .write_all(&buf[..bytes_read])
+                    .unwrap_or_else(|err| {
+                        exit_err(format!("Write failed: {}", err));
+                    });
             }
-    
+
             self.progress_bar.as_mut().map(|bar| {
                 bar.update(i + 1);
             });
         }
-    
+
         self.progress_bar.as_mut().map(|bar| {
             bar.finish();
         });
@@ -237,7 +254,7 @@ pub struct CommandRunner {
     required: bool,
     ignore_os_path: bool,
     ignore: bool,
-    error_hint: Option<String>
+    error_hint: Option<String>,
 }
 
 impl CommandRunner {
@@ -251,7 +268,7 @@ impl CommandRunner {
             required: true,
             ignore_os_path: false,
             ignore: false,
-            error_hint: None
+            error_hint: None,
         }
     }
 
@@ -263,7 +280,7 @@ impl CommandRunner {
     }
 
     pub fn unrequire(&mut self) -> &mut Self {
-        self.required = false;  
+        self.required = false;
         self
     }
 
@@ -271,7 +288,7 @@ impl CommandRunner {
         self.paths.push(path.into());
         self
     }
-    
+
     pub fn get_all_paths(&self) -> Vec<PathBuf> {
         let mut res: Vec<PathBuf> = Vec::new();
 
@@ -289,8 +306,8 @@ impl CommandRunner {
                             res.push(file_path.with_extension("exe"));
                         }
                     }
-                },
-                None => ()
+                }
+                None => (),
             }
         }
 
@@ -319,10 +336,7 @@ impl CommandRunner {
 
     pub fn envs(&mut self, map: &HashMap<String, String>) {
         for (k, v) in map {
-            self.env.insert(
-                k.to_owned(), 
-                v.to_owned()
-            );
+            self.env.insert(k.to_owned(), v.to_owned());
         }
     }
 
@@ -335,7 +349,11 @@ impl CommandRunner {
         self.set_env("__NV_PRIME_RENDER_OFFLOAD", "1");
         self.set_env("__GLX_VENDOR_LIBRARY_NAME", "nvidia");
         self.set_env("__VK_LAYER_NV_optimus", "NVIDIA_only");
-        self.set_env("VK_ICD_FILENAMES", "/usr/share/vulkan/icd.d/nvidia_icd.json");
+        
+        self.set_env(
+            "VK_ICD_FILENAMES",
+            "/usr/share/vulkan/icd.d/nvidia_icd.json",
+        );
 
         self
     }
@@ -354,8 +372,11 @@ impl CommandRunner {
 
     pub fn check_exists(&self) -> bool {
         if !self.exists() {
-            let err = format!("'{}' not found. (OS PATH and Lover config was searched too)", &self.command);
-            
+            let err = format!(
+                "'{}' not found. (OS PATH and Lover config was searched too)",
+                &self.command
+            );
+
             if self.required {
                 exit_err(err);
             } else {
@@ -365,17 +386,19 @@ impl CommandRunner {
         }
 
         return true;
-    } 
+    }
 
     pub fn to_wine(&mut self) -> Self {
-        #[cfg(target_family = "windows")] {
+        #[cfg(target_family = "windows")]
+        {
             return self.to_owned();
         }
 
-        #[cfg(target_family = "unix")] {
+        #[cfg(target_family = "unix")]
+        {
             let wine = config::get().software.wine;
             let mut new = CommandRunner::new(wine);
-    
+
             self.ignore_os_path = true;
 
             if !self.check_exists() {
@@ -387,13 +410,15 @@ impl CommandRunner {
             new.set_env("WINEDEBUG", "-all");
             new.envs(&self.env);
             new.set_quiet(self.quiet);
-            
-            new.add_args(vec![self.get_path()
-                                    .expect("Path retrieval failed despite previous checks").to_str()
-                                    .expect("Path to str failed")]);
-            
+
+            new.add_args(vec![self
+                .get_path()
+                .expect("Path retrieval failed despite previous checks")
+                .to_str()
+                .expect("Path to str failed")]);
+
             new.add_args(self.args.to_owned());
-    
+
             new
         }
     }
@@ -408,9 +433,9 @@ impl CommandRunner {
         if self.ignore || !self.check_exists() {
             return;
         }
-        
+
         let mut quiet = self.quiet;
-        
+
         if get_command_line_settings().verbose {
             quiet = false;
         }
@@ -447,7 +472,7 @@ impl CommandRunner {
 
         let exit_code_text = match out.status.code() {
             Some(code) => code.to_string(),
-            None => "unknown".to_string()
+            None => "unknown".to_string(),
         };
 
         if !out.status.success() {
@@ -495,27 +520,27 @@ pub fn compile(arch: Arch, os: OS) {
         .iter()
         .filter(|path| !path.starts_with(&build))
         .collect();
-    
+
     let mut bar = ProgressBar::new(scripts.len());
     bar.set_prefix(get_step_prefix() + " Compiling scripts");
-    
+
     let mut progress: usize = 0;
 
     for script in scripts {
-        let new_path = dir.join(PathBuf::from_iter(script.components().skip(src.components().count())));
+        let new_path = dir.join(PathBuf::from_iter(
+            script.components().skip(src.components().count()),
+        ));
 
         files::create_dir(&new_path.parent().unwrap());
 
         let cmd = compiler.with_args(vec![
             "-b".to_string(),
-            script.display().to_string(), 
+            script.display().to_string(),
             new_path.display().to_string(),
-
             "-a".to_string(),
             arch.to_short_string(),
-
             "-o".to_string(),
-            os.to_string()
+            os.to_string(),
         ]);
 
         cmd.run();
@@ -551,7 +576,7 @@ pub fn parse_all(root: &Path) {
     print_step("Checking validity of Lua scripts...");
 
     for script in &scripts {
-            parser
+        parser
             .with_args(vec!["-p", script.to_str().unwrap()])
             .set_quiet(true)
             .run();
@@ -567,26 +592,32 @@ pub fn parse_all(root: &Path) {
         let script_path_str = script.to_str().unwrap();
 
         file.read_to_string(&mut buf).unwrap_or_else(|err| {
-            exit_err(format!("Failed to read buffer of {}: {}", script_path_str, err))
+            exit_err(format!(
+                "Failed to read buffer of {}: {}",
+                script_path_str, err
+            ))
         });
 
         let lines: Vec<&str> = buf.lines().collect();
-        
+
         for i in 0..lines.len() {
             let line = lines[i].to_string();
 
             for (old, new) in &env_repl {
                 if line.contains(old) {
-                    print_warn(format!("{}:{} Use '{}' instead of {}", script_path_str, i + 1, new, old));
+                    print_warn(format!(
+                        "{}:{} Use '{}' instead of {}",
+                        script_path_str,
+                        i + 1,
+                        new,
+                        old
+                    ));
                 }
             }
         }
     }
 
-    print_success_verbose(
-        &get_command_line_settings(),
-        "Parsing successful"
-    );
+    print_success_verbose(&get_command_line_settings(), "Parsing successful");
 }
 
 pub fn clean(path: &Path) {
@@ -601,7 +632,11 @@ pub fn clean(path: &Path) {
 
     match std::fs::remove_dir_all(path) {
         Ok(()) => print_success("Clean successful"),
-        Err(err) => exit_err(format!("Failed to delete '{}': {}", path.to_str().unwrap(), err))
+        Err(err) => exit_err(format!(
+            "Failed to delete '{}': {}",
+            path.to_str().unwrap(),
+            err
+        )),
     };
 }
 
@@ -614,16 +649,25 @@ pub fn add_to_archive(archive_path: &Path, file_path: &Path, inner_path: &Path) 
     });
 
     print_step_verbose(
-        &get_command_line_settings(), 
-        format!("Adding {} to {}", file_path.to_str().unwrap(), archive_path.to_str().unwrap())
+        &get_command_line_settings(),
+        format!(
+            "Adding {} to {}",
+            file_path.to_str().unwrap(),
+            archive_path.to_str().unwrap()
+        ),
     );
 
     let mut buf: Vec<u8> = Vec::new();
     file.read_to_end(&mut buf).unwrap();
 
-    zip.start_file_from_path(&inner_path, SimpleFileOptions::default()).unwrap_or_else(|err| {
-        exit_err(format!("Failed to start file '{}': {}", &inner_path.to_str().unwrap(), err))
-    });
+    zip.start_file_from_path(&inner_path, SimpleFileOptions::default())
+        .unwrap_or_else(|err| {
+            exit_err(format!(
+                "Failed to start file '{}': {}",
+                &inner_path.to_str().unwrap(),
+                err
+            ))
+        });
 
     zip.write_all(&buf).unwrap_or_else(|err| {
         exit_err(format!("Failed to write to zip: {}", err));
@@ -640,18 +684,18 @@ pub fn append_file(from: &Path, to: &Path, text: impl Into<String>) {
 
     bar.set_prefix(format!("{} {}", console::get_step_prefix(), text.into()));
     bar.memory_mode();
-    
+
     let mut progress: usize = 0;
 
     loop {
         let mut buf: [u8; 1024] = [0; 1024];
-        
+
         let bytes_read = from_file.read(&mut buf).unwrap_or_else(|err| {
             exit_err(format!("Read failed: {}", err));
         });
 
-        if bytes_read == 0 { 
-            break; 
+        if bytes_read == 0 {
+            break;
         } else {
             progress = progress.saturating_add(bytes_read);
             bar.update(progress);
@@ -673,8 +717,11 @@ pub fn get_env_replacement_map() -> HashMap<String, String> {
     map.insert("LOVER_NAME".to_string(), "LOVER_PKG_VERSION".to_string());
     map.insert("LOVER_VERSION".to_string(), "LOVER_PKG_VERSION".to_string());
     map.insert("LOVER_AUTHOR".to_string(), "LOVER_PKG_AUTHOR".to_string());
-    map.insert("LOVER_DESCRIPTION".to_string(), "LOVER_PKG_DESCRIPTION".to_string());
-    
+    map.insert(
+        "LOVER_DESCRIPTION".to_string(),
+        "LOVER_PKG_DESCRIPTION".to_string(),
+    );
+
     map
 }
 
@@ -702,7 +749,7 @@ pub fn get_comment_locations(code: impl Into<String>) -> Vec<(usize, usize)> {
                 escaped = true;
                 continue;
             }
-            
+
             if !in_ml_string {
                 if *char == '"' || *char == '\'' {
                     in_string = !in_string;
@@ -767,7 +814,7 @@ mod tests {
 
         for (begin, end) in get_comment_locations(&code) {
             let cmt = code[begin..end].to_string();
-            
+
             println!("= {} {} ==================", begin, end);
             println!("<<{}>>", &cmt);
 
@@ -775,9 +822,13 @@ mod tests {
         }
 
         assert_eq!(found.len(), sure.len(), "Comment amount differs");
-        
+
         for comment in found {
-            assert!(sure.contains(&comment.as_str()), "Extra comment: \n{}", comment);
+            assert!(
+                sure.contains(&comment.as_str()),
+                "Extra comment: \n{}",
+                comment
+            );
         }
     }
 }
