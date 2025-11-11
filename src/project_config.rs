@@ -59,7 +59,7 @@ impl ProjectConfig {
     }
 
     pub fn get_meta(&self) -> Result<ProjectMeta, String> {
-        ProjectMeta::new(self.paths.get_source_dir())
+        ProjectMeta::new(self.paths.get_main_dir())
     }
 
     pub fn get_meta_path(&self) -> PathBuf {
@@ -101,7 +101,7 @@ impl ProjectConfig {
     pub fn validate(&self) {
         let mut errors: Vec<&str> = Vec::new();
 
-        if self.paths.source == self.paths.build {
+        if self.paths.main == self.paths.build {
             errors.push("Do not attempt to use the same directory for build and source files!");
         }
 
@@ -261,8 +261,8 @@ impl Package {
 
 #[derive(Serialize, Deserialize, PartialEq)]
 pub struct Paths {
-    #[serde(default = "Paths::default_source")]
-    pub source: String,
+    #[serde(default = "Paths::default_main")]
+    pub main: String,
 
     #[serde(default = "Paths::default_exclude")]
     pub exclude: Vec<String>,
@@ -274,13 +274,13 @@ pub struct Paths {
 impl Paths {
     fn default() -> Self {
         Self {
-            source: Self::default_source(),
+            main: Self::default_main(),
             exclude: Self::default_exclude(),
             build: Self::default_build(),
         }
     }
 
-    fn default_source() -> String {
+    fn default_main() -> String {
         "src".to_string()
     }
 
@@ -306,14 +306,14 @@ impl Paths {
         self.get_build_dir().join("temp")
     }
 
-    pub fn get_source_dir(&self) -> PathBuf {
-        self.get_root_dir().join(&self.source)
+    pub fn get_main_dir(&self) -> PathBuf {
+        self.get_root_dir().join(&self.main)
     }
 
     //`only_ignored == true` -> returns only the ignored files
     //`only_ignored == false` -> returns non-ignored files
     fn filter_files(&self, only_ignored: bool) -> Vec<PathBuf> {
-        let src = self.get_source_dir();
+        let src = self.get_main_dir();
         //TODO: Improve explicitly allowed.
         let allowed = ["main.lua", "conf.lua"];
 
@@ -334,7 +334,7 @@ impl Paths {
 
         let exclude_set = builder.build().expect("Building globset shouldn't fail.");
 
-        files::get_file_tree(self.get_source_dir())
+        files::get_file_tree(self.get_main_dir())
             .into_iter()
             .filter(|path| {
                 //Ignore files in build directory

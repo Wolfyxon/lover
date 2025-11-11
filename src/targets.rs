@@ -391,7 +391,7 @@ fn build_virtual() {
 
 fn build_love() {
     let config = project_config::get();
-    let src = config.paths.get_source_dir();
+    let src = config.paths.get_main_dir();
     let build = config.paths.get_build_dir();
     let temp = config.paths.get_temp_dir();
 

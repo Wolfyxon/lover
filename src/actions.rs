@@ -509,7 +509,7 @@ pub fn compile(arch: Arch, os: OS) {
     compiler.check_exists();
 
     let project = project_config::get();
-    let src = project.paths.get_source_dir();
+    let src = project.paths.get_main_dir();
     let build = project.paths.get_build_dir();
     let comp_dir = project.paths.get_temp_dir().join("compiled_lua");
     let dir = comp_dir.join(format!("{}-{}", os.to_string(), arch.to_short_string()));
