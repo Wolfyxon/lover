@@ -177,11 +177,7 @@ impl ProjectConfig {
             map.insert(k.to_owned(), v.to_owned());
         }
 
-        let ctx_str = match context {
-            Context::Build => "build",
-            Context::Run => "run",
-        }
-        .to_string();
+        let ctx_str = context.to_string();
 
         let timestamp = SystemTime::now()
             .duration_since(UNIX_EPOCH)
