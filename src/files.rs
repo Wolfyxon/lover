@@ -1,5 +1,5 @@
 use std::{
-    fs::{File, OpenOptions},
+    fs::{self, File, OpenOptions},
     io::Read,
     path::{Path, PathBuf},
 };
@@ -151,8 +151,8 @@ pub fn to_current_os_path(string: String) -> String {
 }
 
 pub fn compare_paths(a: impl Into<PathBuf>, b: impl Into<PathBuf>) -> bool {
-    let a_str = a.into().to_str().unwrap().to_string();
-    let b_str = b.into().to_str().unwrap().to_string();
-
-    return to_current_os_path(a_str) == to_current_os_path(b_str);
+    let a_c = fs::canonicalize(a.into());
+    let b_c = fs::canonicalize(b.into());
+    
+    return (a_c.is_ok() && b_c.is_ok()) && (a_c.unwrap() == b_c.unwrap());
 }
