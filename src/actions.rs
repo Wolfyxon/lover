@@ -324,6 +324,11 @@ impl CommandRunner {
         None
     }
 
+    pub fn add_arg(&mut self, arg: impl Into<String>) -> &mut Self {
+        self.args.push(arg.into());
+        self
+    }
+
     pub fn add_args(&mut self, args: Vec<impl Into<String>>) -> &mut Self {
         self.args.extend(args.into_iter().map(Into::into));
         self
