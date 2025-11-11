@@ -437,9 +437,8 @@ fn cmd_version(_command: &Command) {
 
 fn run_with_project(
     cmd: &mut CommandRunner,
-    cmd_settings: &CommandLineSettings,
     project: &mut ProjectConfig,
-    run_args: &mut Vec<String>,
+    run_args: &mut Vec<String>
 ) -> PathBuf {
     let main_script_path = project.paths.find_main_script().unwrap_or_else(|| {
         exit_err("Could not find 'main.lua'. Your game needs it to run.");
@@ -489,7 +488,7 @@ fn run_with_project(
     main
 }
 
-fn run_without_project(cmd_settings: &CommandLineSettings) -> PathBuf {
+fn run_without_project() -> PathBuf {
     let current_dir = env::current_dir().unwrap_or_else(|err| {
         exit_err(format!(
             "Unable to get the current working directory: {}",
@@ -518,8 +517,6 @@ fn run_without_project(cmd_settings: &CommandLineSettings) -> PathBuf {
         main_script_str
     );
 
-    checked_parse(cmd_settings, &main);
-
     main.to_path_buf()
 }
 
@@ -535,14 +532,18 @@ fn cmd_run(_command: &Command) {
     let main: PathBuf = match project_path {
         Some(path) => {
             let mut project = ProjectConfig::parse_file(path);
-            run_with_project(&mut cmd, &cmd_settings, &mut project, &mut run_args)
+            run_with_project(&mut cmd, &mut project, &mut run_args)
         }
 
         None => {
             print_warn("'lover.toml' not found. You're missing out on many features!");
-            run_without_project(&cmd_settings)
+            run_without_project()
         }
     };
+
+    if !cmd_settings.has_flag("no-parse") {
+        actions::parse_all(&main);
+    }
 
     if (conf.run.prime || cmd_settings.has_flag("prime")) && !cmd_settings.has_flag("no-prime") {
         cmd.prime();
@@ -552,12 +553,6 @@ fn cmd_run(_command: &Command) {
     cmd.add_args(run_args);
 
     cmd.run();
-}
-
-fn checked_parse(cmd_settings: &CommandLineSettings, root: impl Into<PathBuf>) {
-    if !cmd_settings.has_flag("no-parse") {
-        actions::parse_all(root);
-    }
 }
 
 fn cmd_parse(_command: &Command) {
