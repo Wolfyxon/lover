@@ -86,7 +86,7 @@ impl<'a> BuildTarget<'a> {
         res
     }
 
-    pub fn get_all_deps(&self) -> Vec<Dependency> {
+    pub fn get_all_deps(&'a self) -> Vec<Dependency<'a>> {
         deps::get_deps_by_strings(self.get_all_dep_names())
     }
 
