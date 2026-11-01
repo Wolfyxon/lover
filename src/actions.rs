@@ -303,9 +303,7 @@ impl CommandRunner {
         let mut res: Vec<PathBuf> = Vec::new();
 
         let cmd_path = self.command.to_owned();
-
         res.push(PathBuf::from(cmd_path));
-        res.append(&mut self.paths.clone());
         
         if !&self.ignore_os_path {
             match std::env::var_os("PATH") {
@@ -323,14 +321,19 @@ impl CommandRunner {
                 None => (),
             }
         }
-        
+
+        res.append(&mut self.paths.clone());
+
         res
     }
 
     pub fn get_path(&self) -> Option<PathBuf> {
         for path in self.get_all_paths() {
             if path.is_file() {
+                println!("{:?} found", path);
                 return Some(path);
+            } else {
+                println!("{:?} not found", path);
             }
         }
 
