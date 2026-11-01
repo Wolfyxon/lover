@@ -381,7 +381,14 @@ impl CommandRunner {
     }
 
     pub fn to_string(&self) -> String {
-        format!("{} {}", self.command, self.args.join(" "))
+        let mut alias = self.command.to_owned();
+
+        match self.get_path() {
+            Some(path) => alias = path.to_str().expect("Failed to convert command path to string").to_string(),
+            None => ()
+        };
+
+        format!("{} {}", alias, self.args.join(" "))
     }
 
     fn get_exe_prefix() -> String {
