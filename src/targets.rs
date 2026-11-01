@@ -371,8 +371,7 @@ fn apply_rcedit(exe: &PathBuf, project_root: &PathBuf, config: &Config, package:
     rcedit_add_icon(&mut args, &package, &project_root);
 
     #[allow(unused_mut)]
-    let mut cmd = CommandRunner::new("rcedit")
-        .add_path(config.software.rcedit.to_owned())
+    let mut cmd = CommandRunner::new(config.software.rcedit.to_owned())
         .add_path(deps::get_dep_or_crash("rcedit").get_path())
         .unrequire()
         .add_args(args)
