@@ -273,7 +273,7 @@ pub fn rcedit_add_icon(args: &mut Vec<String>, package: &Package, path: &PathBuf
     match ImageReader::new(reader).with_guessed_format() {
         Ok(img_reader) => match img_reader.decode() {
             Ok(mut img) => {
-                print_step("Converting icon to the ICO format");
+                //print_step("Converting icon to the ICO format");
 
                 let (mut w, mut h) = img.dimensions();
 
