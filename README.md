@@ -127,7 +127,6 @@ OK: Successfully built 'love'
 >> Extracting Windows Love2D files                  [==============================] 14/14 
 >> Embedding game into the LOVE executable          [==============================] 0.763/0.763 KB
 OK: The EXE should now be usable, even if something fails.
->> Converting icon to the ICO format
 >> Applying info with RCEdit
 OK: Successfully built 'win64' 
 
