@@ -330,10 +330,7 @@ impl CommandRunner {
     pub fn get_path(&self) -> Option<PathBuf> {
         for path in self.get_all_paths() {
             if path.is_file() {
-                println!("{:?} found", path);
                 return Some(path);
-            } else {
-                println!("{:?} not found", path);
             }
         }
 
