@@ -302,8 +302,11 @@ impl CommandRunner {
     pub fn get_all_paths(&self) -> Vec<PathBuf> {
         let mut res: Vec<PathBuf> = Vec::new();
 
-        res.append(&mut self.paths.clone());
+        let cmd_path = self.command.to_owned();
 
+        res.push(PathBuf::from(cmd_path));
+        res.append(&mut self.paths.clone());
+        
         if !&self.ignore_os_path {
             match std::env::var_os("PATH") {
                 Some(paths) => {
@@ -320,7 +323,7 @@ impl CommandRunner {
                 None => (),
             }
         }
-
+        
         res
     }
 
